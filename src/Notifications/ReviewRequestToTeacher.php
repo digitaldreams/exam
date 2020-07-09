@@ -4,9 +4,8 @@ namespace Exam\Notifications;
 
 use Exam\Models\ExamUser;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ReviewRequestToTeacher extends Notification
 {
@@ -29,7 +28,8 @@ class ReviewRequestToTeacher extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function via($notifiable)
@@ -40,12 +40,13 @@ class ReviewRequestToTeacher extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->line('The introduction to the notification.')
             ->action('Notification Action', url('/'))
             ->line('Thank you for using our application!');
@@ -58,7 +59,7 @@ class ReviewRequestToTeacher extends Notification
     {
         return [
             'message' => $this->examUser->user->name . ' completed ' . $this->examUser->exam->title . ' has some question that need manual checking',
-            'link' => route('exam::exams.reviews.index', $this->examUser->exam->slug)
+            'link' => route('exam::exams.reviews.index', $this->examUser->exam->slug),
         ];
     }
 }

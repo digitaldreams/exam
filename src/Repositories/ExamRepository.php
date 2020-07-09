@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Exam\Repositories;
-
 
 use App\Repositories\Repository;
 use Exam\Models\Exam;
@@ -66,5 +64,4 @@ class ExamRepository extends Repository
 
         return count($mustCompleted) == $count;
     }
-
 }

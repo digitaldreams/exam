@@ -2,7 +2,7 @@
 
 namespace Exam\Policies;
 
-use \Exam\Models\Question;
+use Exam\Models\Question;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class QuestionPolicy
@@ -11,6 +11,7 @@ class QuestionPolicy
 
     /**
      * @param  $user
+     *
      * @return bool
      */
     public function before($user)
@@ -22,6 +23,7 @@ class QuestionPolicy
 
     /**
      * @param User $user
+     *
      * @return bool
      */
     public function index($user)
@@ -33,7 +35,8 @@ class QuestionPolicy
      * Determine whether the user can view the Question.
      *
      * @param  $user
-     * @param  Question $question
+     * @param Question $question
+     *
      * @return mixed
      */
     public function view($user, Question $question)
@@ -44,7 +47,8 @@ class QuestionPolicy
     /**
      * Determine whether the user can create Question.
      *
-     * @param  User $user
+     * @param User $user
+     *
      * @return mixed
      */
     public function create($user)
@@ -56,7 +60,8 @@ class QuestionPolicy
      * Determine whether the user can update the Question.
      *
      * @param  $user
-     * @param  Question $question
+     * @param Question $question
+     *
      * @return mixed
      */
     public function update($user, Question $question)
@@ -68,12 +73,12 @@ class QuestionPolicy
      * Determine whether the user can delete the Question.
      *
      * @param  $user
-     * @param  Question $question
+     * @param Question $question
+     *
      * @return mixed
      */
     public function delete($user, Question $question)
     {
         return false;
     }
-
 }

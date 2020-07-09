@@ -4,11 +4,9 @@ namespace Exam\Notifications;
 
 use Exam\Models\Invitation;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 use Permit\Models\User;
-use Permit\Notifications\Channels\Model as ModelChannel;
 
 class InvitationNotification extends Notification
 {
@@ -26,7 +24,7 @@ class InvitationNotification extends Notification
      * Create a new notification instance.
      *
      * @param Invitation $invitation
-     * @param User $actor
+     * @param User       $actor
      */
     public function __construct(Invitation $invitation, User $actor)
     {
@@ -37,7 +35,8 @@ class InvitationNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function via($notifiable)
@@ -48,20 +47,21 @@ class InvitationNotification extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->line($this->actor->name . ' invites you to take exam ' . $this->invitation->exam->title)
             ->action('Accept', route('exam::exams.invitations.response', [
-                'exam' => $this->invitation->exam->slug, 'invitation' => $this->invitation->token
+                'exam' => $this->invitation->exam->slug, 'invitation' => $this->invitation->token,
             ]))
             ->action('Reject', route('exam::exams.invitations.response', [
                 'exam' => $this->invitation->exam->slug,
                 'invitation' => $this->invitation->token,
-                'status' => Invitation::STATUS_REJECTED
+                'status' => Invitation::STATUS_REJECTED,
             ]))
             ->line('Thank you for using our application!');
     }
@@ -69,7 +69,8 @@ class InvitationNotification extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function toArray($notifiable)
@@ -88,7 +89,7 @@ class InvitationNotification extends Notification
             'message' => $this->actor->name . ' invites you to take exam ' . $this->invitation->exam->title,
             'link' => route('exam::exams.invitations.show', [
                 'exam' => $this->invitation->exam->slug,
-                'invitation' => $this->invitation->token
+                'invitation' => $this->invitation->token,
             ]),
         ];
     }

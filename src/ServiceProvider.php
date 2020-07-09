@@ -3,32 +3,31 @@
 namespace Exam;
 
 use Exam\Console\Commands\ExamReminderCommand;
-use Exam\Models\Invitation;
-use Exam\Policies\InvitationPolicy;
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use Illuminate\Support\Facades\Gate;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
+use Exam\Models\Invitation;
 use Exam\Models\Question;
 use Exam\Policies\ExamPolicy;
 use Exam\Policies\ExamUserPolicy;
+use Exam\Policies\InvitationPolicy;
 use Exam\Policies\QuestionPolicy;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 /**
- * Class ServiceProvider
- * @package LaraCrud
+ * Class ServiceProvider.
  */
 class ServiceProvider extends BaseServiceProvider
 {
-
     protected $defer = false;
 
     /**
      * List of command which will be registered.
+     *
      * @var array
      */
     protected $commands = [
-        ExamReminderCommand::class
+        ExamReminderCommand::class,
     ];
 
     /**
@@ -41,7 +40,7 @@ class ServiceProvider extends BaseServiceProvider
         Exam::class => ExamPolicy::class,
         ExamUser::class => ExamUserPolicy::class,
         Question::class => QuestionPolicy::class,
-        Invitation::class => InvitationPolicy::class
+        Invitation::class => InvitationPolicy::class,
     ];
 
     /**
@@ -79,11 +78,10 @@ class ServiceProvider extends BaseServiceProvider
 
             $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         }
-
     }
 
     /**
-     * To register laracrud as first level command. E.g. laracrud:model
+     * To register laracrud as first level command. E.g. laracrud:model.
      *
      * @return array
      */

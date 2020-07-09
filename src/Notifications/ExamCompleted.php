@@ -4,11 +4,9 @@ namespace Exam\Notifications;
 
 use Exam\Models\Exam;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use Permit\Notifications\Channels\Model as ModelChannel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notification;
+use Permit\Notifications\Channels\Model as ModelChannel;
 
 class ExamCompleted extends Notification
 {
@@ -26,7 +24,7 @@ class ExamCompleted extends Notification
     /**
      * Create a new notification instance.
      *
-     * @param Exam $exam
+     * @param Exam  $exam
      * @param Model $user
      */
     public function __construct(Exam $exam, Model $user)
@@ -38,7 +36,8 @@ class ExamCompleted extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function via($notifiable)
@@ -51,14 +50,15 @@ class ExamCompleted extends Notification
         return [
             'model' => $this->exam,
             'actor' => $this->user,
-            'verb' => 'completed'
+            'verb' => 'completed',
         ];
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function toArray($notifiable)

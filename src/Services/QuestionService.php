@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: Tuhin
  * Date: 8/2/2018
- * Time: 12:59 PM
+ * Time: 12:59 PM.
  */
 
 namespace App\Services;
-
 
 class QuestionService
 {
@@ -21,6 +20,5 @@ class QuestionService
 
     public function save()
     {
-        
     }
 }

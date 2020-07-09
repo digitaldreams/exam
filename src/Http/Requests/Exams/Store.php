@@ -2,17 +2,17 @@
 
 namespace Exam\Http\Requests\Exams;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Exam\Models\Exam;
-class Store extends FormRequest 
-{
+use Illuminate\Foundation\Http\FormRequest;
 
+class Store extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize() 
+    public function authorize()
     {
         return auth()->check() && auth()->user()->can('create', Exam::class);
     }
@@ -22,25 +22,23 @@ class Store extends FormRequest
      *
      * @return array
      */
-    public function rules() 
+    public function rules()
     {
         return [
-			'title' => 'required|max:191',
-			'description' => 'nullable|max:191',
-			'tag_id' => 'nullable|exists:blog_tags,id|numeric',
+            'title' => 'required|max:191',
+            'description' => 'nullable|max:191',
+            'tag_id' => 'nullable|exists:blog_tags,id|numeric',
         ];
     }
 
     /**
-    * Get the error messages for the defined validation rules.
-    *
-    * @return array
-    */
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [
-     
         ];
     }
-
 }

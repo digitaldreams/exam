@@ -110,5 +110,4 @@ abstract class Repository
     {
         return $this->model->newQuery()->whereIn('id', $ids)->get();
     }
-
 }

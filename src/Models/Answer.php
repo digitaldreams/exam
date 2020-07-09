@@ -21,12 +21,12 @@ class Answer extends Model
     const STATUS_PENDING = 2;
 
     /**
-     * Database table name
+     * Database table name.
      */
     protected $table = 'exam_user_answer';
 
     /**
-     * Mass assignable columns
+     * Mass assignable columns.
      */
     protected $fillable = ['exam_user_id', 'question_id', 'answer', 'status', 'spent_time'];
 
@@ -42,12 +42,13 @@ class Answer extends Model
             if (is_array($model->answer)) {
                 $model->answer = json_encode($model->answer);
             }
+
             return true;
         });
     }
 
     /**
-     * question
+     * question.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -57,7 +58,7 @@ class Answer extends Model
     }
 
     /**
-     * examUser
+     * examUser.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -70,6 +71,4 @@ class Answer extends Model
     {
         return $this->status == static::STATUS_CORRECT;
     }
-
-
 }

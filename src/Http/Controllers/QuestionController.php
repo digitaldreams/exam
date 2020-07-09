@@ -13,9 +13,8 @@ use Exam\Http\Requests\Questions\Update;
 use Exam\Models\Question;
 use Illuminate\Http\Request;
 
-
 /**
- * Description of QuestionController
+ * Description of QuestionController.
  *
  * @author Tuhin Bepari <digitaldreams40@gmail.com>
  */
@@ -34,6 +33,7 @@ class QuestionController extends Controller
         if (!empty($request->get('search'))) {
             $question = $question->search($request->get('search'));
         }
+
         return view('exam::pages.questions.index', ['records' => $question->paginate(8)]);
     }
 
@@ -62,7 +62,7 @@ class QuestionController extends Controller
      */
     public function create(Create $request)
     {
-        $model = new Question;
+        $model = new Question();
         $questionableType = null;
         $questionableId = null;
 
@@ -77,9 +77,10 @@ class QuestionController extends Controller
             $model->answer_type = $request->get('answer_type');
             $model = $model->callService($request->get('q_type'), $request->get('q_id'));
         }
-        if ($request->get('type') == Question::TYPE_FREEHAND_WRITING || $request->get('answer_type') == Question::ANSWER_TYPE_WRITE) {
+        if (Question::TYPE_FREEHAND_WRITING == $request->get('type') || Question::ANSWER_TYPE_WRITE == $request->get('answer_type')) {
             $model->review_type = Question::REVIEW_TYPE_MANUAL;
         }
+
         return view('exam::pages.questions.create', [
             'model' => $model,
             'parents' => Question::onlyParent()->get(['id', 'title']),
@@ -96,20 +97,22 @@ class QuestionController extends Controller
      */
     public function store(Store $request)
     {
-        $model = new Question;
+        $model = new Question();
         $model->fill($request->all());
         if (is_array($model->answer)) {
-            if ($model->type == Question::TYPE_REARRANGE) {
+            if (Question::TYPE_REARRANGE == $model->type) {
                 $model->answer = array_intersect_key($request->get('answer'), $request->get('options'));
             }
             $model->answer = json_encode($model->answer);
         }
         if ($model->save()) {
             session()->flash('permit_message', 'Question saved successfully');
+
             return redirect()->route('exam::questions.index');
         } else {
             session()->flash('permit_error', 'Something is wrong while saving Question');
         }
+
         return redirect()->back();
     }
 
@@ -120,6 +123,7 @@ class QuestionController extends Controller
      * @param Question $question
      *
      * @return \Illuminate\Http\Response
+     *
      * @throws \Exception
      */
     public function edit(Edit $request, Question $question)
@@ -143,17 +147,19 @@ class QuestionController extends Controller
     {
         $question->fill($request->all());
         if (is_array($question->answer)) {
-            if ($question->type == Question::TYPE_REARRANGE) {
+            if (Question::TYPE_REARRANGE == $question->type) {
                 $question->answer = array_intersect_key($request->get('answer'), $request->get('options'));
             }
             $question->answer = json_encode($question->answer);
         }
         if ($question->save()) {
             session()->flash('permit_message', 'Question successfully updated');
+
             return redirect()->route('exam::questions.index');
         } else {
             session()->flash('permit_error', 'Something is wrong while updating Question');
         }
+
         return redirect()->back();
     }
 
@@ -164,6 +170,7 @@ class QuestionController extends Controller
      * @param Question $question
      *
      * @return \Illuminate\Http\Response
+     *
      * @throws \Exception
      */
     public function destroy(Destroy $request, Question $question)
@@ -173,6 +180,7 @@ class QuestionController extends Controller
         } else {
             session()->flash('permit_error', 'Error occurred while deleting Question');
         }
+
         return redirect()->back();
     }
 }

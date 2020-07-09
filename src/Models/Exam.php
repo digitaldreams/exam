@@ -14,30 +14,30 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
- * @property string                                   $title              title
- * @property string                                   $status             status
- * @property string                                   $description        description
- * @property int                                      $duration           Duration
- * @property string                                   $show_answer        Duration
- * @property string                                   $slug               Duration
- * @property array                                    $must_completed     Duration
- * @property \Carbon\Carbon                           $created_at         created at
- * @property \Carbon\Carbon                           $updated_at         updated at
- * @property \Illuminate\Database\Eloquent\Collection $question           belongsToMany
- * @property \Illuminate\Database\Eloquent\Collection $tags               belongsToMany
- * @property \Illuminate\Database\Eloquent\Collection $examUser           hasMany
+ * @property string                                   $title          title
+ * @property string                                   $status         status
+ * @property string                                   $description    description
+ * @property int                                      $duration       Duration
+ * @property string                                   $show_answer    Duration
+ * @property string                                   $slug           Duration
+ * @property array                                    $must_completed Duration
+ * @property \Carbon\Carbon                           $created_at     created at
+ * @property \Carbon\Carbon                           $updated_at     updated at
+ * @property \Illuminate\Database\Eloquent\Collection $question       belongsToMany
+ * @property \Illuminate\Database\Eloquent\Collection $tags           belongsToMany
+ * @property \Illuminate\Database\Eloquent\Collection $examUser       hasMany
  */
 class Exam extends Model
 {
     use FullTextSearch;
 
     /**
-     * Database table name
+     * Database table name.
      */
     protected $table = 'exams';
 
     /**
-     * Mass assignable columns
+     * Mass assignable columns.
      */
     protected $fillable = [
         'title',
@@ -62,7 +62,6 @@ class Exam extends Model
      * @var array
      */
     protected $casts = ['must_completed' => 'array'];
-
 
     /**
      * @return string
@@ -113,7 +112,7 @@ class Exam extends Model
     }
 
     /**
-     * Relationship between exams and exam_users
+     * Relationship between exams and exam_users.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -158,6 +157,7 @@ class Exam extends Model
     public function scopeNotTaken(Builder $query, ?int $user_id = null): Builder
     {
         $user_id = empty($user_id) && auth()->check() ? auth()->id() : $user_id;
+
         return $query->whereHas('examUser', function ($q) use ($user_id) {
             $q->where('user_id', '!=', $user_id);
         });
@@ -198,7 +198,7 @@ class Exam extends Model
      */
     public function showInstantly(): bool
     {
-        return $this->show_answer == ExamShowAnswer::INSTANTLY;
+        return ExamShowAnswer::INSTANTLY == $this->show_answer;
     }
 
     /**
@@ -220,5 +220,4 @@ class Exam extends Model
     {
         return $this->tags()->allRelatedIds()->toArray();
     }
-
 }

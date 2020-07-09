@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class Create extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +25,6 @@ class Create extends FormRequest
     public function rules()
     {
         return [
-
         ];
     }
 
@@ -38,8 +36,6 @@ class Create extends FormRequest
     public function messages()
     {
         return [
-
         ];
     }
-
 }

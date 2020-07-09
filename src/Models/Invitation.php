@@ -5,10 +5,10 @@ namespace Exam\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int $exam_id exam id
- * @property varchar $email email
- * @property varchar $status status
- * @property varchar $token token
+ * @property int       $exam_id    exam id
+ * @property varchar   $email      email
+ * @property varchar   $status     status
+ * @property varchar   $token      token
  * @property timestamp $created_at created at
  * @property timestamp $updated_at updated at
  */
@@ -18,18 +18,18 @@ class Invitation extends Model
     const STATUS_ACCEPTED = 'accepted';
     const STATUS_REJECTED = 'rejected';
     /**
-     * Database table name
+     * Database table name.
      */
     protected $table = 'exam_invitations';
 
     /**
-     * Mass assignable columns
+     * Mass assignable columns.
      */
     protected $fillable = [
         'exam_id',
         'user_id',
         'status',
-        'token'
+        'token',
     ];
 
     public static function boot()
@@ -39,6 +39,7 @@ class Invitation extends Model
             if (empty($model->token)) {
                 $model->token = str_random(64);
             }
+
             return true;
         });
     }
@@ -57,5 +58,4 @@ class Invitation extends Model
     {
         return 'token';
     }
-
 }

@@ -6,9 +6,8 @@ use Exam\Models\Answer;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ReviewCompletedNotification extends Notification
 {
@@ -28,7 +27,7 @@ class ReviewCompletedNotification extends Notification
      * Create a new notification instance.
      *
      * @param Answer $answer
-     * @param Exam $exam
+     * @param Exam   $exam
      */
     public function __construct(Answer $answer, Exam $exam)
     {
@@ -39,7 +38,8 @@ class ReviewCompletedNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function via($notifiable)
@@ -50,12 +50,13 @@ class ReviewCompletedNotification extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->line('The introduction to the notification.')
             ->action('Notification Action', url('/'))
             ->line('Thank you for using our application!');
@@ -64,7 +65,8 @@ class ReviewCompletedNotification extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function toArray($notifiable)
@@ -81,7 +83,7 @@ class ReviewCompletedNotification extends Notification
     {
         return [
             'message' => 'Your exam question ' . $this->answer->question->title . ' answer reviewed. ',
-            'link' => route('exam::exams.show', $this->exam->slug)
+            'link' => route('exam::exams.show', $this->exam->slug),
         ];
     }
 }

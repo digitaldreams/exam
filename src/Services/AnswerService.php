@@ -3,18 +3,17 @@
  * Created by PhpStorm.
  * User: Tuhin
  * Date: 8/12/2018
- * Time: 2:32 PM
+ * Time: 2:32 PM.
  */
 
 namespace Exam\Services;
 
-
 use Exam\Models\Answer;
 use Exam\Models\ExamUser;
 use Exam\Models\Question;
+use Exam\Models\Question as QuestionModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Exam\Models\Question as QuestionModel;
 
 class AnswerService
 {
@@ -35,6 +34,7 @@ class AnswerService
 
     /**
      * AnswerService constructor.
+     *
      * @param $answer
      * @param Question $question
      * @param $examUser
@@ -50,7 +50,7 @@ class AnswerService
         if (is_array($this->answer)) {
             foreach ($this->answer as $key => $value) {
                 $model = QuestionModel::find($key);
-                $correctAns = $model->review_type === Question::REVIEW_TYPE_MANUAL ? Answer::STATUS_PENDING : $this->checkSingle($value, $model);
+                $correctAns = Question::REVIEW_TYPE_MANUAL === $model->review_type ? Answer::STATUS_PENDING : $this->checkSingle($value, $model);
                 $this->questionAnswers[] = $this->save($key, $value, $correctAns);
             }
         }
@@ -60,24 +60,27 @@ class AnswerService
      * @param $qid
      * @param $answer
      * @param $correctAns
+     *
      * @return mixed
      */
     protected function save($qid, $answer, $correctAns)
     {
         $questionAnswer = Answer::firstOrNew([
             'exam_user_id' => $this->examUser->id,
-            'question_id' => $qid
+            'question_id' => $qid,
         ]);
         $questionAnswer->answer = $answer;
         $questionAnswer->question_id = $qid;
         $questionAnswer->status = $correctAns;
         $questionAnswer->save();
+
         return $questionAnswer;
     }
 
     /**
      * @param $userAnswer
      * @param Question $question
+     *
      * @return bool
      */
     private function checkSingle($userAnswer, $question)
@@ -89,14 +92,15 @@ class AnswerService
                 $correctAns = true;
             }
         } else {
-            if ($question->type == QuestionModel::TYPE_WRITE_SENTENCE) {
-                if (stripos($userAnswer, $question->answer) !== false) {
+            if (QuestionModel::TYPE_WRITE_SENTENCE == $question->type) {
+                if (false !== stripos($userAnswer, $question->answer)) {
                     $correctAns = true;
                 }
-            } elseif (strcasecmp($userAnswer, $question->answer) == 0) {
+            } elseif (0 == strcasecmp($userAnswer, $question->answer)) {
                 $correctAns = true;
             }
         }
+
         return $correctAns;
     }
 

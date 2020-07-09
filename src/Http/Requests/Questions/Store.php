@@ -2,12 +2,11 @@
 
 namespace Exam\Http\Requests\Questions;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Exam\Models\Question;
+use Illuminate\Foundation\Http\FormRequest;
 
 class Store extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -42,8 +41,6 @@ class Store extends FormRequest
     public function messages()
     {
         return [
-
         ];
     }
-
 }

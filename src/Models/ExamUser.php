@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 use Permit\Models\User;
 
 /**
- * @property int $exam_id exam id
- * @property int $user_id user id
- * @property varchar $status status
- * @property text $completed completed
- * @property double $total_mark total mark
- * @property bool $reminder  Reminder
- * @property double $achieved_mark achieved mark
- * @property timestamp $created_at created at
- * @property timestamp $updated_at updated at
+ * @property int       $exam_id       exam id
+ * @property int       $user_id       user id
+ * @property varchar   $status        status
+ * @property text      $completed     completed
+ * @property float     $total_mark    total mark
+ * @property bool      $reminder      Reminder
+ * @property float     $achieved_mark achieved mark
+ * @property timestamp $created_at    created at
+ * @property timestamp $updated_at    updated at
  */
 class ExamUser extends Model
 {
@@ -29,7 +29,7 @@ class ExamUser extends Model
     const VISIBILITY_PRIVATE = 'private';
 
     /**
-     * Database table name
+     * Database table name.
      */
     protected $table = 'exam_user';
 
@@ -37,10 +37,10 @@ class ExamUser extends Model
      * @var array
      */
     protected $casts = [
-        'completed' => 'array'
+        'completed' => 'array',
     ];
     /**
-     * Mass assignable columns
+     * Mass assignable columns.
      */
     protected $fillable = [
         'exam_id',
@@ -89,19 +89,19 @@ class ExamUser extends Model
     public function pendingAnswers()
     {
         return $this->hasMany(Answer::class, 'exam_user_id', 'id')->where('status', Answer::STATUS_PENDING);
-
     }
-
 
     /**
      * @param $query
      * @param $examId
      * @param string $userId
+     *
      * @return mixed
      */
     public function scopeForUser($query, $examId, $userId = '')
     {
         $userId = empty($userId) && auth()->check() ? auth()->id() : $userId;
+
         return $query->where('exam_id', $examId)
             ->where('user_id', $userId);
     }
@@ -118,6 +118,7 @@ class ExamUser extends Model
     {
         $total = $this->exam->questions()->count();
         $completed = $this->answers()->count();
+
         return $total == $completed;
     }
 
@@ -129,12 +130,10 @@ class ExamUser extends Model
         $total = $this->exam->questions()->count();
         $completed = $this->answers()->count();
         $remaining = $total - $completed;
+
         return $remaining > 0 ? $remaining : false;
     }
 
-    /**
-     *
-     */
     public function getCorrectionRate()
     {
         $total = $this->answers()->whereIn('status', [Answer::STATUS_WRONG, Answer::STATUS_CORRECT])->count();
@@ -142,12 +141,14 @@ class ExamUser extends Model
         if ($total > 0) {
             return round(($correctAns / $total) * 100);
         }
+
         return 'n/a';
     }
 
     /**
      * Return the title of the model. For example
-     *  John Doe and 30 others likes {Tour to Silliong part one}
+     *  John Doe and 30 others likes {Tour to Silliong part one}.
+     *
      * @return mixed
      */
     public function getNotificationMessage()
@@ -159,13 +160,16 @@ class ExamUser extends Model
     {
         if ($this->status == static::STATUS_COMPLETED) {
             $certificate = new CertificateService($this);
+
             return $certificate->getFileName();
         }
+
         return false;
     }
 
     /**
      * @param string $default
+     *
      * @return string
      */
     public function getDuration($default = '')
@@ -173,6 +177,7 @@ class ExamUser extends Model
         if (!empty($this->started_at) && !empty($this->completed_at)) {
             return Carbon::parse($this->completed_at)->diff(Carbon::parse($this->started_at))->format('%H:%I:%S');
         }
+
         return $default;
     }
 
@@ -180,8 +185,10 @@ class ExamUser extends Model
     {
         if (!empty($this->started_at)) {
             $lastTime = Carbon::parse($this->started_at)->addMinutes($this->exam->duration);
+
             return $lastTime->diff(Carbon::now())->format('%H:%I:%S');
         }
+
         return '';
     }
 
@@ -189,10 +196,10 @@ class ExamUser extends Model
     {
         if ($this->exam->hasTimeLimit()) {
             $lastTime = Carbon::parse($this->started_at)->addMinutes($this->exam->duration);
+
             return $lastTime->lt(Carbon::now());
         }
+
         return false;
     }
-
-
 }

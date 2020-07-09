@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: Tuhin
  * Date: 8/12/2018
- * Time: 6:15 PM
+ * Time: 6:15 PM.
  */
 
 namespace Exam\Services;
@@ -12,8 +12,8 @@ use Exam\Models\ExamUser;
 use Exam\Models\Question;
 use Exam\Notifications\ReviewRequestToTeacher;
 use Image;
-use Permit\Models\User;
 use Notification;
+use Permit\Models\User;
 
 class CertificateService
 {
@@ -99,12 +99,10 @@ class CertificateService
             });
         $this->image->save($this->filePath);
         $this->notify();
+
         return $this->image;
     }
 
-    /**
-     *
-     */
     protected function notify()
     {
         $totalPendingQuestion = $this->examUser->exam->questions()->where('review_type', Question::REVIEW_TYPE_MANUAL)->count();
@@ -118,11 +116,11 @@ class CertificateService
         if (!file_exists($this->filePath)) {
             $this->make();
         }
+
         return 'storage/' . $this->fileName;
     }
 
     /**
-     *
      * @return string
      */
     public function getFilePath()
@@ -130,7 +128,7 @@ class CertificateService
         if (!file_exists($this->filePath)) {
             $this->make();
         }
+
         return $this->filePath;
     }
-
 }

@@ -45,12 +45,12 @@ class Question extends Model
     const REVIEW_TYPE_MANUAL = 'manual';
 
     /**
-     * Database table name
+     * Database table name.
      */
     protected $table = 'questions';
 
     /**
-     * Mass assignable columns
+     * Mass assignable columns.
      */
     protected $fillable = [
         'type',
@@ -166,7 +166,6 @@ class Question extends Model
                 'title' => 'Image',
                 'type' => static::ANSWER_SINGLE,
             ],
-
         ];
     }
 
@@ -185,8 +184,9 @@ class Question extends Model
     public function getAnswers()
     {
         if (in_array($this->type, static::generic()) && $this->answer_type == static::ANSWER_TYPE_MULTIPLE) {
-            return explode(",", $this->answer);
+            return explode(',', $this->answer);
         }
+
         return $this->answer;
     }
 
@@ -218,6 +218,7 @@ class Question extends Model
         if (is_array($options)) {
             return !empty($key) ? array_key_exists($word, $options) : in_array($word, $options);
         }
+
         return $options == $word;
     }
 
@@ -231,14 +232,15 @@ class Question extends Model
     {
         $modelClass = config('exam.services.' . $type . '.model');
         if (empty($modelClass)) {
-            return new static;
+            return new static();
         }
         $serviceClass = config('exam.services.' . $type . '.service');
         if (empty($serviceClass)) {
-            return new static;
+            return new static();
         }
         $modelObj = $modelClass::find($id);
         $serviceObj = new $serviceClass($modelObj, $this);
+
         return $serviceObj->make();
     }
 
@@ -264,8 +266,7 @@ class Question extends Model
         if (empty($key)) {
             return $this->data;
         }
+
         return is_array($this->data) ? Arr::get($this->data, $key) : false;
     }
-
-
 }

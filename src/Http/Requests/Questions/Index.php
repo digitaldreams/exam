@@ -2,12 +2,11 @@
 
 namespace Exam\Http\Requests\Questions;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Exam\Models\Question;
+use Illuminate\Foundation\Http\FormRequest;
 
 class Index extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +25,6 @@ class Index extends FormRequest
     public function rules()
     {
         return [
-
         ];
     }
 
@@ -38,8 +36,6 @@ class Index extends FormRequest
     public function messages()
     {
         return [
-
         ];
     }
-
 }

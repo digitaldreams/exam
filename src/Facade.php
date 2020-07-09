@@ -1,8 +1,7 @@
 <?php
-namespace Exam;
 
+namespace Exam;
 
 class Facade
 {
-
 }

@@ -2,54 +2,51 @@
 
 namespace Exam\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use Exam\Enums\ExamStatus;
 use Exam\Http\Requests\Exams\Create;
 use Exam\Http\Requests\Exams\Destroy;
 use Exam\Http\Requests\Exams\Edit;
-use Exam\Http\Requests\Exams\Index;
 use Exam\Http\Requests\Exams\Show;
 use Exam\Http\Requests\Exams\Store;
 use Exam\Http\Requests\Exams\Update;
 use Exam\Models\Exam;
-use Exam\Models\ExamUser;
 use Exam\Models\Question as QuestionModel;
-use App\Http\Controllers\Controller;
 
 class ExamController extends Controller
 {
     /**
-     * @param Index $index
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(Index $index)
+    public function index()
     {
-        $pendingIds = ExamUser::where('user_id', auth()->id())
-            ->pluck('exam_id')->toArray();
-        $exams = Exam::query();
+        $this->authorize('viewAny', Exam::class);
+
+        $builder = Exam::query();
+
         if (!auth()->user()->isAdmin()) {
-            $exams = $exams->forUser()->where('status', Exam::STATUS_ACTIVE);
+            $builder = $builder->forUser()->where('status', ExamStatus::ACTIVE);
         }
-        $exams = $exams->whereNotIn('id', $pendingIds)->paginate(6);
+
         return view('exam::pages.exams.index', [
-            'records' => $exams,
-            'pendingExams' => ExamUser::where('user_id', auth()->id())
-                ->where('status', Exam::STATUS_PENDING)
-                ->orderBy('started_at', 'desc')->take(2)->get(),
-            'completedExams' => ExamUser::where('user_id', auth()->id())
-                ->where('status', Exam::STATUS_COMPLETED)
-                ->orderBy('completed_at', 'desc')->take(2)->get(),
+            'records' => $builder->paginate(6),
         ]);
     }
 
     /**
      * @param Show $show
      * @param Exam $exam
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Show $show, Exam $exam)
     {
         $exam->load(['questions', 'users', 'examUser']);
+
         return view('exam::pages.exams.show', [
-            'record' => $exam
+            'record' => $exam,
         ]);
     }
 
@@ -61,10 +58,12 @@ class ExamController extends Controller
             $exam->questions()->sync($store->get('questions'));
             $exam->tags()->sync($store->get('tags'));
             session()->flash('permit_message', 'Exam successfully saved');
+
             return redirect()->route('exam::exams.index');
         } else {
             session()->flash('permit_error', 'Something is wrong while saving Exam');
         }
+
         return redirect()->back();
     }
 
@@ -72,9 +71,9 @@ class ExamController extends Controller
     {
         return view('exam::pages.exams.create', [
             'model' => new Exam(),
-            'tags' =>[],
+            'tags' => [],
             'questions' => QuestionModel::onlyParent()->get(['id', 'title']),
-            'exams' => Exam::where('status', Exam::STATUS_ACTIVE)->select(['id', 'title'])->get()
+            'exams' => Exam::where('status', Exam::STATUS_ACTIVE)->select(['id', 'title'])->get(),
         ]);
     }
 
@@ -85,10 +84,12 @@ class ExamController extends Controller
             $exam->questions()->sync($update->get('questions'));
             $exam->tags()->sync($update->get('tags'));
             session()->flash('permit_message', 'Exam successfully updated');
+
             return redirect()->route('exam::exams.index');
         } else {
             session()->flash('permit_error', 'Something is wrong while updating Exam');
         }
+
         return redirect()->back();
     }
 
@@ -99,7 +100,7 @@ class ExamController extends Controller
             'tags' => Tag::all(),
             'questions' => QuestionModel::onlyParent()->get(['id', 'title']),
             'enableVoice' => true,
-            'exams' => Exam::where('status', Exam::STATUS_ACTIVE)->where('id', '!=', $exam->id)->select(['id', 'title'])->get()
+            'exams' => Exam::where('status', Exam::STATUS_ACTIVE)->where('id', '!=', $exam->id)->select(['id', 'title'])->get(),
         ]);
     }
 
@@ -110,6 +111,7 @@ class ExamController extends Controller
         } else {
             session()->flash('permit_error', 'Error occurred while deleting Exam');
         }
+
         return redirect()->back();
     }
 }

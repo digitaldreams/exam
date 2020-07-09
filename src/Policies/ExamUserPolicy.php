@@ -2,10 +2,10 @@
 
 namespace Exam\Policies;
 
-use \Exam\Models\Exam;
+use Exam\Models\Exam;
 use Exam\Models\ExamUser;
-use Permit\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Permit\Models\User;
 
 class ExamUserPolicy
 {
@@ -13,6 +13,7 @@ class ExamUserPolicy
 
     /**
      * @param User $user
+     *
      * @return bool
      */
     public function before(User $user)
@@ -24,6 +25,7 @@ class ExamUserPolicy
 
     /**
      * @param User $user
+     *
      * @return bool
      */
     public function index(User $user)
@@ -34,8 +36,9 @@ class ExamUserPolicy
     /**
      * Determine whether the user can view the Exam.
      *
-     * @param  User $user
+     * @param User     $user
      * @param ExamUser $examUser
+     *
      * @return mixed
      */
     public function view(User $user, ExamUser $examUser)
@@ -46,7 +49,8 @@ class ExamUserPolicy
     /**
      * Determine whether the user can create Exam.
      *
-     * @param  User $user
+     * @param User $user
+     *
      * @return mixed
      */
     public function create(User $user)
@@ -57,8 +61,9 @@ class ExamUserPolicy
     /**
      * Determine whether the user can update the Exam.
      *
-     * @param User $user
+     * @param User     $user
      * @param ExamUser $examUser
+     *
      * @return mixed
      */
     public function update(User $user, ExamUser $examUser)
@@ -69,8 +74,9 @@ class ExamUserPolicy
     /**
      * Determine whether the user can delete the Exam.
      *
-     * @param User $user
+     * @param User     $user
      * @param ExamUser $examUser
+     *
      * @return mixed
      */
     public function delete(User $user, ExamUser $examUser)
@@ -81,8 +87,9 @@ class ExamUserPolicy
     /**
      * Determine whether the user can delete the Exam.
      *
-     * @param User $user
+     * @param User     $user
      * @param ExamUser $examUser
+     *
      * @return mixed
      */
     public function answer(User $user, ExamUser $examUser)
@@ -93,14 +100,13 @@ class ExamUserPolicy
     /**
      * Determine whether the user can delete the Exam.
      *
-     * @param User $user
+     * @param User     $user
      * @param ExamUser $examUser
+     *
      * @return mixed
      */
     public function result(User $user, ExamUser $examUser)
     {
-        return $user->id == $examUser->user_id || $examUser->visibility == ExamUser::VISIBILITY_PUBLIC;
+        return $user->id == $examUser->user_id || ExamUser::VISIBILITY_PUBLIC == $examUser->visibility;
     }
-
-
 }

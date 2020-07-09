@@ -6,29 +6,29 @@ use Illuminate\Database\Eloquent\Model;
 use Permit\Models\User;
 
 /**
- * @property varchar $feedbackable_type feedbackable type
- * @property int $feedbackable_id feedbackable id
- * @property double $rating rating
- * @property varchar $feedback feedback
- * @property timestamp $created_at created at
- * @property timestamp $updated_at updated at
+ * @property varchar   $feedbackable_type feedbackable type
+ * @property int       $feedbackable_id   feedbackable id
+ * @property float     $rating            rating
+ * @property varchar   $feedback          feedback
+ * @property timestamp $created_at        created at
+ * @property timestamp $updated_at        updated at
  */
 class Feedback extends Model
 {
 
     /**
-     * Database table name
+     * Database table name.
      */
     protected $table = 'exam_feedback';
 
     /**
-     * Mass assignable columns
+     * Mass assignable columns.
      */
     protected $fillable = [
         'feedbackable_type',
         'feedbackable_id',
         'rating',
-        'feedback'
+        'feedback',
     ];
 
     /**
@@ -43,6 +43,7 @@ class Feedback extends Model
             if (empty($model->user_id) && auth()->check()) {
                 $model->user_id = auth()->id();
             }
+
             return true;
         });
     }
@@ -59,5 +60,4 @@ class Feedback extends Model
     {
         return $this->belongsTo(User::class);
     }
-
 }

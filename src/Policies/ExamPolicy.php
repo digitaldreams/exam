@@ -2,7 +2,7 @@
 
 namespace Exam\Policies;
 
-use \Exam\Models\Exam;
+use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -12,6 +12,7 @@ class ExamPolicy
 
     /**
      * @param $user
+     *
      * @return bool
      */
     public function before($user)
@@ -23,9 +24,10 @@ class ExamPolicy
 
     /**
      * @param  $user
+     *
      * @return bool
      */
-    public function index($user)
+    public function viewAny($user)
     {
         return true;
     }
@@ -33,8 +35,9 @@ class ExamPolicy
     /**
      * Determine whether the user can view the Exam.
      *
-     * @param   $user
-     * @param  Exam $exam
+     * @param      $user
+     * @param Exam $exam
+     *
      * @return mixed
      */
     public function view($user, Exam $exam)
@@ -45,7 +48,8 @@ class ExamPolicy
     /**
      * Determine whether the user can create Exam.
      *
-     * @param   $user
+     * @param $user
+     *
      * @return mixed
      */
     public function create($user)
@@ -57,7 +61,8 @@ class ExamPolicy
      * Determine whether the user can update the Exam.
      *
      * @param User $user
-     * @param  Exam $exam
+     * @param Exam $exam
+     *
      * @return mixed
      */
     public function update($user, Exam $exam)
@@ -69,7 +74,8 @@ class ExamPolicy
      * Determine whether the user can delete the Exam.
      *
      * @param  $user
-     * @param  Exam $exam
+     * @param Exam $exam
+     *
      * @return mixed
      */
     public function delete($user, Exam $exam)
@@ -77,14 +83,21 @@ class ExamPolicy
         return false;
     }
 
+    /**
+     * @param                   $user
+     * @param \Exam\Models\Exam $exam
+     *
+     * @return bool
+     */
     public function start($user, Exam $exam)
     {
         $examUser = ExamUser::where('exam_id', $exam->id)
             ->where('user_id', $user->id)
             ->first();
         if ($examUser) {
-            return $examUser->status !== ExamUser::STATUS_COMPLETED;
+            return ExamUser::STATUS_COMPLETED !== $examUser->status;
         }
+
         return true;
     }
 
@@ -92,13 +105,12 @@ class ExamPolicy
      * Determine whether the user can delete the Exam.
      *
      * @param  $user
-     * @param  Exam $exam
+     * @param Exam $exam
+     *
      * @return mixed
      */
     public function answer($user, Exam $exam)
     {
         return false;
     }
-
-
 }

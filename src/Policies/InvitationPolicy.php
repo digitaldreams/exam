@@ -2,9 +2,9 @@
 
 namespace Exam\Policies;
 
-use \Exam\Models\Invitation;
-use Permit\Models\User;
+use Exam\Models\Invitation;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Permit\Models\User;
 
 class InvitationPolicy
 {
@@ -12,6 +12,7 @@ class InvitationPolicy
 
     /**
      * @param User $user
+     *
      * @return bool
      */
     public function before(User $user)
@@ -23,6 +24,7 @@ class InvitationPolicy
 
     /**
      * @param User $user
+     *
      * @return bool
      */
     public function index(User $user)
@@ -33,8 +35,9 @@ class InvitationPolicy
     /**
      * Determine whether the user can view the Invitation.
      *
-     * @param  User $user
-     * @param  Invitation $invitation
+     * @param User       $user
+     * @param Invitation $invitation
+     *
      * @return mixed
      */
     public function view(User $user, Invitation $invitation)
@@ -45,7 +48,8 @@ class InvitationPolicy
     /**
      * Determine whether the user can create Invitation.
      *
-     * @param  User $user
+     * @param User $user
+     *
      * @return mixed
      */
     public function create(User $user)
@@ -56,8 +60,9 @@ class InvitationPolicy
     /**
      * Determine whether the user can update the Invitation.
      *
-     * @param User $user
-     * @param  Invitation $invitation
+     * @param User       $user
+     * @param Invitation $invitation
+     *
      * @return mixed
      */
     public function update(User $user, Invitation $invitation)
@@ -68,13 +73,13 @@ class InvitationPolicy
     /**
      * Determine whether the user can delete the Invitation.
      *
-     * @param User $user
-     * @param  Invitation $invitation
+     * @param User       $user
+     * @param Invitation $invitation
+     *
      * @return mixed
      */
     public function delete(User $user, Invitation $invitation)
     {
         return false;
     }
-
 }

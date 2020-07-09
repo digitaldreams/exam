@@ -50,6 +50,5 @@ class ExamReminderCommand extends Command
             $pendingExam->save();
         }
         $this->info(count($pendingExams) . ' notification sent');
-
     }
 }

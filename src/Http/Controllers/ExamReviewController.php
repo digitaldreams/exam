@@ -2,21 +2,22 @@
 
 namespace Exam\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Exam\Http\Requests\Answers\Index;
 use Exam\Http\Requests\Answers\Show;
 use Exam\Http\Requests\Answers\Update;
 use Exam\Models\Answer;
-use Exam\Models\ExamUser;
-use App\Http\Controllers\Controller;
-use Exam\Models\Question;
 use Exam\Models\Exam;
+use Exam\Models\ExamUser;
+use Exam\Models\Question;
 use Exam\Notifications\ReviewCompletedNotification;
 
 class ExamReviewController extends Controller
 {
     /**
      * @param Index $index
-     * @param Exam $exam
+     * @param Exam  $exam
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Index $index, Exam $exam)
@@ -27,28 +28,31 @@ class ExamReviewController extends Controller
                     $aq->where('status', Answer::STATUS_PENDING);
                 });
         })->paginate(6);
+
         return view('exam::pages.reviews.index', [
             'records' => $examUsers,
-            'exam' => $exam
+            'exam' => $exam,
         ]);
     }
 
     /**
-     * @param Show $show
+     * @param Show   $show
      * @param Answer $answer
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Show $show, Answer $answer)
     {
         return view('exam::pages.reviews.show', [
-            'record' => $answer
+            'record' => $answer,
         ]);
     }
 
     /**
      * @param Update $request
-     * @param Exam $exam
+     * @param Exam   $exam
      * @param Answer $answer
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Update $request, Exam $exam, Answer $answer)
@@ -57,11 +61,12 @@ class ExamReviewController extends Controller
         if ($answer->save()) {
             $answer->examUser->user->notify(new ReviewCompletedNotification($answer, $exam));
             session()->flash('permit_message', 'Answer successfully reviewed');
+
             return redirect()->route('exam::exams.reviews.index', $exam->slug);
         } else {
             session()->flash('permit_error', 'Something is wrong while reviewing answer');
         }
+
         return redirect()->back();
     }
-
 }
