@@ -49,8 +49,8 @@
             <div class="input-group">
                 <input type="number" name="duration" class="form-control" value="{{$model->duration}}" min="1" max="180"
                        step="1" placeholder="e.g 60">
-                <div class="input-group-addon">
-                    <i class="fa fa-clock-o"></i> Min
+                <div class="input-group-text">
+                    <i class="fa fa-clock-o"></i>  Min
                 </div>
             </div>
             <small class="text-muted">Empty duraton will make exam unlimited</small>
