@@ -1,0 +1,224 @@
+<?php
+
+namespace Exam\Models;
+
+use App\Models\User;
+use Blog\Models\Tag;
+use Blog\Services\FullTextSearch;
+use Exam\Enums\ExamShowAnswer;
+use Exam\Enums\ExamVisibility;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
+/**
+ * @property string                                   $title              title
+ * @property string                                   $status             status
+ * @property string                                   $description        description
+ * @property int                                      $duration           Duration
+ * @property string                                   $show_answer        Duration
+ * @property string                                   $slug               Duration
+ * @property array                                    $must_completed     Duration
+ * @property \Carbon\Carbon                           $created_at         created at
+ * @property \Carbon\Carbon                           $updated_at         updated at
+ * @property \Illuminate\Database\Eloquent\Collection $question           belongsToMany
+ * @property \Illuminate\Database\Eloquent\Collection $tags               belongsToMany
+ * @property \Illuminate\Database\Eloquent\Collection $examUser           hasMany
+ */
+class Exam extends Model
+{
+    use FullTextSearch;
+
+    /**
+     * Database table name
+     */
+    protected $table = 'exams';
+
+    /**
+     * Mass assignable columns
+     */
+    protected $fillable = [
+        'title',
+        'status',
+        'visibility',
+        'description',
+        'slug',
+        'duration',
+        'show_answer',
+        'must_completed',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $searchable = [
+        'title',
+        'description',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $casts = ['must_completed' => 'array'];
+
+
+    /**
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
+     * Relationship between exams and blog_tags via exam_tag table.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'exam_tag');
+    }
+
+    /**
+     * Relationship between exams and questions via exam_questions table.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function questions(): BelongsToMany
+    {
+        return $this->belongsToMany(Question::class, 'exam_question');
+    }
+
+    /**
+     * Relationship between exams and users via exam_user table.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'exam_user');
+    }
+
+    /**
+     * Relationship between exams and invitations.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class);
+    }
+
+    /**
+     * Relationship between exams and exam_users
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function examUser(): HasMany
+    {
+        return $this->hasMany(ExamUser::class);
+    }
+
+    /**
+     * MorphMany Relationship between exams and feedback table.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function feedback(): MorphMany
+    {
+        return $this->morphMany(Feedback::class, 'feedbackable');
+    }
+
+    /**
+     * Filter Exam by tag id.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int                                   $id
+     *
+     * @return Builder
+     */
+    public function scopeTagId(Builder $query, int $id): Builder
+    {
+        return $query->whereHas('tags', function ($q) use ($id) {
+            $q->where('id', $id);
+        });
+    }
+
+    /**
+     * Filter exam that user is not taken yet.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int|null                              $user_id
+     *
+     * @return mixed
+     */
+    public function scopeNotTaken(Builder $query, ?int $user_id = null): Builder
+    {
+        $user_id = empty($user_id) && auth()->check() ? auth()->id() : $user_id;
+        return $query->whereHas('examUser', function ($q) use ($user_id) {
+            $q->where('user_id', '!=', $user_id);
+        });
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int|null                              $user_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForUser(Builder $query, ?int $user_id = null): Builder
+    {
+        $user_id = empty($user_id) && auth()->check() ? auth()->id() : $user_id;
+
+        return $query->where(function ($q) use ($user_id) {
+            $q->orWhere('visibility', ExamVisibility::PUBLIC)
+                ->orWhereHas('invitations', function ($i) use ($user_id) {
+                    $i->where('user_id', $user_id)->where('status', Invitation::STATUS_ACCEPTED);
+                });
+        });
+    }
+
+    /**
+     * Whether this exam has a time limit or not?
+     *
+     * @return bool
+     */
+    public function hasTimeLimit(): bool
+    {
+        return !empty($this->duration);
+    }
+
+    /**
+     * Does answer of the previous question will be shown on top of the next question?
+     *
+     * @return bool
+     */
+    public function showInstantly(): bool
+    {
+        return $this->show_answer == ExamShowAnswer::INSTANTLY;
+    }
+
+    /**
+     * List of Question ids this exam has.
+     *
+     * @return array
+     */
+    public function questionIds(): array
+    {
+        return $this->questions()->allRelatedIds()->toArray();
+    }
+
+    /**
+     * List of tag ids this exam has.
+     *
+     * @return array
+     */
+    public function tagIds(): array
+    {
+        return $this->tags()->allRelatedIds()->toArray();
+    }
+
+}

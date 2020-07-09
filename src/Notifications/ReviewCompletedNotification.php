@@ -1,0 +1,87 @@
+<?php
+
+namespace Exam\Notifications;
+
+use Exam\Models\Answer;
+use Exam\Models\Exam;
+use Exam\Models\ExamUser;
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+
+class ReviewCompletedNotification extends Notification
+{
+    use Queueable;
+
+    /**
+     * @var ExamUser
+     */
+    protected $answer;
+
+    /**
+     * @var Exam
+     */
+    protected $exam;
+
+    /**
+     * Create a new notification instance.
+     *
+     * @param Answer $answer
+     * @param Exam $exam
+     */
+    public function __construct(Answer $answer, Exam $exam)
+    {
+        $this->answer = $answer;
+        $this->exam = $exam;
+    }
+
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param  mixed $notifiable
+     * @return array
+     */
+    public function via($notifiable)
+    {
+        return ['database'];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param  mixed $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed $notifiable
+     * @return array
+     */
+    public function toArray($notifiable)
+    {
+        return [
+            //
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function toDatabase()
+    {
+        return [
+            'message' => 'Your exam question ' . $this->answer->question->title . ' answer reviewed. ',
+            'link' => route('exam::exams.show', $this->exam->slug)
+        ];
+    }
+}
