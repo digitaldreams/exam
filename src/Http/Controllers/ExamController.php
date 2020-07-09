@@ -3,18 +3,29 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Exam\Enums\ExamStatus;
-use Exam\Http\Requests\Exams\Create;
-use Exam\Http\Requests\Exams\Destroy;
-use Exam\Http\Requests\Exams\Edit;
-use Exam\Http\Requests\Exams\Show;
 use Exam\Http\Requests\Exams\Store;
 use Exam\Http\Requests\Exams\Update;
 use Exam\Models\Exam;
-use Exam\Models\Question as QuestionModel;
+use Exam\Repositories\ExamRepository;
+use Illuminate\Http\RedirectResponse;
 
 class ExamController extends Controller
 {
+    /**
+     * @var \Exam\Repositories\ExamRepository
+     */
+    protected ExamRepository $examRepository;
+
+    /**
+     * ExamController constructor.
+     *
+     * @param \Exam\Repositories\ExamRepository $examRepository
+     */
+    public function __construct(ExamRepository $examRepository)
+    {
+        $this->examRepository = $examRepository;
+    }
+
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      *
@@ -24,94 +35,97 @@ class ExamController extends Controller
     {
         $this->authorize('viewAny', Exam::class);
 
-        $builder = Exam::query();
-
-        if (!auth()->user()->isAdmin()) {
-            $builder = $builder->forUser()->where('status', ExamStatus::ACTIVE);
-        }
-
         return view('exam::pages.exams.index', [
-            'records' => $builder->paginate(6),
+            'records' => $this->examRepository->paginateForUser(auth()->user(), 6),
         ]);
     }
 
     /**
-     * @param Show $show
      * @param Exam $exam
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show(Show $show, Exam $exam)
+    public function show(Exam $exam)
     {
-        $exam->load(['questions', 'users', 'examUser']);
+        $this->authorize('view', $exam);
 
         return view('exam::pages.exams.show', [
             'record' => $exam,
         ]);
     }
 
-    public function store(Store $store)
+    /**
+     * Create a new Exam.
+     *
+     * @param \Exam\Http\Requests\Exams\Store $store
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Store $store): RedirectResponse
     {
-        $exam = new Exam();
-        $exam->fill($store->all());
-        if ($exam->save()) {
-            $exam->questions()->sync($store->get('questions'));
-            $exam->tags()->sync($store->get('tags'));
-            session()->flash('permit_message', 'Exam successfully saved');
+        $exam = $this->examRepository->create($store->all());
+        $exam->tags()->sync($store->get('tags'));
 
-            return redirect()->route('exam::exams.index');
-        } else {
-            session()->flash('permit_error', 'Something is wrong while saving Exam');
-        }
-
-        return redirect()->back();
+        return redirect()->route('exam::exams.index')->with('message', 'Exam successfully saved');
     }
 
-    public function create(Create $create)
+    /**
+     * Show new exam form.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function create()
     {
+        $this->authorize('create', Exam::class);
+
         return view('exam::pages.exams.create', [
             'model' => new Exam(),
-            'tags' => [],
-            'questions' => QuestionModel::onlyParent()->get(['id', 'title']),
-            'exams' => Exam::where('status', Exam::STATUS_ACTIVE)->select(['id', 'title'])->get(),
         ]);
     }
 
-    public function update(Update $update, Exam $exam)
+    /**
+     * Update an Exam.
+     *
+     * @param \Exam\Http\Requests\Exams\Update $update
+     * @param \Exam\Models\Exam                $exam
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Update $update, Exam $exam): RedirectResponse
     {
-        $exam->fill($update->all());
-        if ($exam->save()) {
-            $exam->questions()->sync($update->get('questions'));
-            $exam->tags()->sync($update->get('tags'));
-            session()->flash('permit_message', 'Exam successfully updated');
+        $exam = $this->examRepository->update($update->all(), $exam);
+        $exam->tags()->sync($update->get('tags'));
 
-            return redirect()->route('exam::exams.index');
-        } else {
-            session()->flash('permit_error', 'Something is wrong while updating Exam');
-        }
-
-        return redirect()->back();
+        return redirect()->route('exam::exams.index')->with('message', 'Exam updated successfully');
     }
 
-    public function edit(Edit $edit, Exam $exam)
+    /**
+     * @param \Exam\Models\Exam $exam
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function edit(Exam $exam)
     {
+        $this->authorize('update', $exam);
+
         return view('exam::pages.exams.edit', [
             'model' => $exam,
-            'tags' => Tag::all(),
-            'questions' => QuestionModel::onlyParent()->get(['id', 'title']),
-            'enableVoice' => true,
-            'exams' => Exam::where('status', Exam::STATUS_ACTIVE)->where('id', '!=', $exam->id)->select(['id', 'title'])->get(),
         ]);
     }
 
-    public function destroy(Destroy $destroy, Exam $exam)
+    /**
+     * @param \Exam\Models\Exam $exam
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
+    public function destroy(Exam $exam): RedirectResponse
     {
-        if ($exam->delete()) {
-            session()->flash('permit_message', 'Exam successfully deleted');
-        } else {
-            session()->flash('permit_error', 'Error occurred while deleting Exam');
-        }
+        $this->examRepository->delete($exam);
 
-        return redirect()->back();
+        return redirect()->route('exam::exams.index')->with('message', 'Exam successfully deleted');
     }
 }

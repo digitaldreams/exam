@@ -7,6 +7,9 @@
         Create
     </li>
 @endsection
+@section('header')
+    Create New Exam
+@endsection
 @section('content')
     <div class="row">
         <div class='col-md-12'>

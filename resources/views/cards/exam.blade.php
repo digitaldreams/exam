@@ -10,7 +10,7 @@
             {{$record->title}}
           </a>
         </div>        
-        @if($record->visibility==\Exam\Models\Exam::VISIBILITY_PRIVATE)
+        @if($record->visibility==\Exam\Enums\ExamVisibility::PRIVATE)
           <div class="status" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="private">
               <i class="ti-world"></i>
           </div>
@@ -83,7 +83,6 @@
         <label class="badge badge-secondary">{{$record->questions_count}} Questions</label>
         <label class="badge badge-secondary">
 
-           <!-- {{$record->feedbacks()->avg('rating')}}         -->
           <i class="fa fa-star text-yellow"></i>
         </label>
         <label class="badge badge-secondary">{{$record->tag->name ?? ''}}</label>

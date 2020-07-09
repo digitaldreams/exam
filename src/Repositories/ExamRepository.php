@@ -2,7 +2,8 @@
 
 namespace Exam\Repositories;
 
-use App\Repositories\Repository;
+use App\Models\User;
+use Exam\Enums\ExamStatus;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,6 +18,25 @@ class ExamRepository extends Repository
     public function __construct(Exam $exam)
     {
         $this->model = $exam;
+    }
+
+    /**
+     * Exam pagination for user.
+     *
+     * @param \App\Models\User $user
+     * @param int              $perPage
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function paginateForUser(User $user, int $perPage = 6)
+    {
+        $builder = $this->model->newQuery();
+
+        if (!$user->isAdmin()) {
+            $builder = $builder->forUser($user->id)->where('status', ExamStatus::ACTIVE);
+        }
+
+        return $builder->paginate($perPage);
     }
 
     /**
