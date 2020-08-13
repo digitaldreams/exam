@@ -16,7 +16,8 @@ class CreatePreferencesTable extends Migration
         Schema::create('preferences', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained('categories', 'id')->cascadeOnDelete();
+
+            $table->foreignId('category_id')->constrained('blog_categories', 'id')->cascadeOnDelete();
             $table->timestamps();
         });
     }

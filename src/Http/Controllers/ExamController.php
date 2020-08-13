@@ -3,6 +3,9 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Exam\Enums\ExamShowAnswer;
+use Exam\Enums\ExamStatus;
+use Exam\Enums\ExamVisibility;
 use Exam\Http\Requests\Exams\Store;
 use Exam\Http\Requests\Exams\Update;
 use Exam\Models\Exam;
@@ -65,9 +68,8 @@ class ExamController extends Controller
     public function store(Store $store): RedirectResponse
     {
         $exam = $this->examRepository->create($store->all());
-        $exam->tags()->sync($store->get('tags'));
 
-        return redirect()->route('exam::exams.index')->with('message', 'Exam successfully saved');
+        return redirect()->route('exam::exams.show', $exam->id)->with('message', 'Exam successfully created');
     }
 
     /**
@@ -79,9 +81,13 @@ class ExamController extends Controller
     public function create()
     {
         $this->authorize('create', Exam::class);
+        $model = new Exam();
+        $model->status = ExamStatus::ACTIVE;
+        $model->visibility = ExamVisibility::PRIVATE;
+        $model->show_answer = ExamShowAnswer::COMPLETED;
 
         return view('exam::pages.exams.create', [
-            'model' => new Exam(),
+            'model' => $model,
         ]);
     }
 

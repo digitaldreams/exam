@@ -17,7 +17,7 @@ class CreateExamTagTable extends Migration
             $table->bigInteger('exam_id')->unsigned();
             $table->bigInteger('tag_id')->unsigned();
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
-            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
+            $table->foreign('tag_id')->references('id')->on('blog_tags')->onDelete('cascade');
             $table->primary(['exam_id', 'tag_id']);
         });
     }

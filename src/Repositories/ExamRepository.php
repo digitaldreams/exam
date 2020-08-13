@@ -7,6 +7,7 @@ use Exam\Enums\ExamStatus;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class ExamRepository extends Repository
 {
@@ -83,5 +84,16 @@ class ExamRepository extends Repository
             ->count();
 
         return count($mustCompleted) == $count;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function create(array $data): Model
+    {
+        $exam = $this->model->fill($data)->save();
+        $exam->tags()->sync($data['tags'] ?? []);
     }
 }

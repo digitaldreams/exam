@@ -48,6 +48,7 @@ class Exam extends Model
         'duration',
         'show_answer',
         'must_completed',
+        'category_id',
     ];
 
     /**
@@ -219,5 +220,13 @@ class Exam extends Model
     public function tagIds(): array
     {
         return $this->tags()->allRelatedIds()->toArray();
+    }
+
+    /**
+     * @return array
+     */
+    public function getMustCompletedIds()
+    {
+        return $this->must_completed;
     }
 }

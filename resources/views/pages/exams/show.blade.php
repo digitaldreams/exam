@@ -40,7 +40,7 @@
 
 @section('content')
     <div class="alert alert-secondary">
-        {{$record->description}}         <label class="badge badge-secondary">{{$record->feedbacks()->avg('rating')}} <i class="fa fa-star text-yellow"></i></label>
+        {{$record->description}}         <label class="badge badge-secondary">{{$record->feedback()->avg('rating')}} <i class="fa fa-star text-yellow"></i></label>
 
     @can('start',$record)
             <a class="btn btn-outline-primary btn-sm" href="{{route('exam::exams.start',$record->slug)}}">Take</a>
@@ -69,7 +69,7 @@
             @endcan
             <ul class="list-unstyled mt-3">
                 <li class="list-group-item mb-3">Feedbacks</li>
-                @foreach($record->feedbacks as $feedback)
+                @foreach($record->feedback as $feedback)
                     <li class="media bg-light mb-3">
                         <img class="mr-3" src="{{$feedback->user->getAvatarThumb()}}" width="64px"
                              alt="Generic placeholder image">

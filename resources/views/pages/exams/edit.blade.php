@@ -34,12 +34,23 @@
         </div>
     </div>
 @endSection
-@section('scripts')
-    <script type="text/javascript" src="{{asset('prototype/js/select2.full.min.js')}}"></script>
-    <script type="text/javascript">
-        $('#exam_questions').select2();
-        $('#must_completed').select2();
-        $('#tag_id').select2();
 
+@section('scripts')
+    <script type="text/javascript">
+        $('#must_completed').select2();
+
+        $('#tags').select2({
+            ajax: {
+                url: '{{route('blog::tags.select2')}}',
+                dataType: 'json'
+            }
+        });
+
+        $('#category_id').select2({
+            ajax: {
+                url: '{{route('blog::categories.select2')}}',
+                dataType: 'json'
+            }
+        });
     </script>
 @endsection
