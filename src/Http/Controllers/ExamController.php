@@ -69,7 +69,7 @@ class ExamController extends Controller
     {
         $exam = $this->examRepository->create($store->all());
 
-        return redirect()->route('exam::exams.show', $exam->id)->with('message', 'Exam successfully created');
+        return redirect()->route('exam::exams.show', $exam->slug)->with('message', 'Exam successfully created');
     }
 
     /**

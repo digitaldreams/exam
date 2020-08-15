@@ -3,6 +3,7 @@
 namespace Exam\Repositories;
 
 use App\Models\User;
+use Blog\Services\UniqueSlugGeneratorService;
 use Exam\Enums\ExamStatus;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
@@ -93,7 +94,10 @@ class ExamRepository extends Repository
      */
     public function create(array $data): Model
     {
-        $exam = $this->model->fill($data)->save();
-        $exam->tags()->sync($data['tags'] ?? []);
+        $this->model->fill($data);
+        $model = (new UniqueSlugGeneratorService())->createSlug($this->model, $this->model->title);
+        $model->save();
+        $model->tags()->sync($data['tags'] ?? []);
+        return $this->model;
     }
 }
