@@ -54,7 +54,7 @@ class ExamController extends Controller
         $this->authorize('view', $exam);
 
         return view('exam::pages.exams.show', [
-            'record' => $exam,
+            'exam' => $exam,
         ]);
     }
 
