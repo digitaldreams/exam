@@ -11,6 +11,7 @@ use Exam\Http\Requests\Exams\Update;
 use Exam\Models\Exam;
 use Exam\Repositories\ExamRepository;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class ExamController extends Controller
 {
@@ -130,8 +131,25 @@ class ExamController extends Controller
      */
     public function destroy(Exam $exam): RedirectResponse
     {
+        $this->authorize('delete', $exam);
+
         $this->examRepository->delete($exam);
 
         return redirect()->route('exam::exams.index')->with('message', 'Exam successfully deleted');
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \Exam\Models\Exam        $exam
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function questionAdd(Request $request, Exam $exam)
+    {
+        $this->authorize('update', $exam);
+        $exam->questions()->syncWithoutDetaching($request->get('questions', []));
+
+        return redirect()->back()->with('message', 'Questions successfully added');
     }
 }

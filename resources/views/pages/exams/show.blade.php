@@ -23,7 +23,7 @@
     @endcan
     @can('create',\Exam\Models\Exam::class)
         <a class="btn btn-light" href="{{'exam::exams.create'}}">
-           Create <span class="fa fa-plus"></span>
+            Create <span class="fa fa-plus"></span>
         </a>
     @endcan
     @can('update',$exam)
@@ -39,7 +39,7 @@
             {{csrf_field()}}
             {{method_field('DELETE')}}
             <button type="submit" class="btn btn-light cursor-pointer">
-              Delete  <i class="text-danger fa fa-remove"></i>
+                Delete <i class="text-danger fa fa-remove"></i>
             </button>
         </form>
     @endcan
@@ -48,21 +48,20 @@
 
 @section('content')
     @include('exam::pages.exams.exam_details_tabs')
-
-    {{$exam->description}}
-    @if($exam->getMustCompletedIds())
-        <ul class="list-group text-sm my-2">
-            <li class="list-group-item list-group-item-secondary">Must have to completed before taking this exam</li>
-            @foreach($exam->mustCompletedExams() as $parentExam)
-                <li class="list-group-item p-2">
-                    <a href="{{route('exam::exams.show',$parentExam->slug)}}">{{$parentExam->title}}</a>
-                </li>
-            @endforeach
-        </ul>
-    @endif
     <div class="row">
         <div class="col-sm-6">
             @can('update',$exam)
+                <form action="{{route('exam::exams.questionAdd',$exam->slug)}}" method="post">
+                    {{csrf_field()}}
+                    <div class="form-group form-row">
+                            <select name="questions[]" class="form-control col-11" id="questionSearch"
+                                    placeholder="Search question" multiple>
+                            </select>
+                            <button class="btn btn-secondary input-group-append col-1">Add</button>
+                        <small class="text-muted">Add question to this exam.</small>
+                    </div>
+                </form>
+
                 <ol class="list-group">
                     <li class="list-group-item bg-light">Questions</li>
                     @foreach($exam->questions as $question)
@@ -71,6 +70,28 @@
                     @endforeach
                 </ol>
             @endcan
+        </div>
+        <div class="col-sm-6">
+            {{$exam->description}}
+
+            @if($exam->getMustCompletedIds())
+                <ul class="list-group text-sm my-2">
+                    <li class="list-group-item list-group-item-secondary">Must have to completed before taking this
+                        exam
+                    </li>
+                    @foreach($exam->mustCompletedExams() as $parentExam)
+                        <li class="list-group-item p-2">
+                            <a href="{{route('exam::exams.show',$parentExam->slug)}}">{{$parentExam->title}}</a>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+
             <ul class="list-unstyled mt-3">
                 <li class="list-group-item mb-3">Feedbacks</li>
                 @foreach($exam->feedback as $feedback)
@@ -101,3 +122,15 @@
         </div>
     </div>
 @endSection
+
+@section('scripts')
+    <script>
+        $("#questionSearch").select2({
+            placeholder: 'Search questions',
+            ajax: {
+                url: '{{route('exam::questions.select2Ajax')}}',
+                dataType: 'json'
+            }
+        });
+    </script>
+@endsection

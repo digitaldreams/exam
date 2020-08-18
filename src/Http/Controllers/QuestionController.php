@@ -55,8 +55,7 @@ class QuestionController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param Create      $request
-     * @param WordMeaning $word_meaning
+     * @param Create $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -183,4 +182,25 @@ class QuestionController extends Controller
 
         return redirect()->back();
     }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function select2Ajax(Request $request)
+    {
+        $questions = Question::query()->search($request->get('term'))->take(10)->get();
+        $data = $questions->map(function ($question) {
+            return [
+                'id' => $question->id,
+                'text' => $question->title,
+            ];
+        })->all();
+
+        return response()->json([
+            'results' => $data,
+        ]);
+    }
+
 }
