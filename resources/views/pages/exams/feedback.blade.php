@@ -57,9 +57,8 @@
                      alt="Generic placeholder image">
                 <div class="media-body">
                     <div class="media-body">
-                        <h5 class="mt-0">{{$feedback->user->name or ''}} <label
-                                class="badge badge-secondary badge-pill">{{$feedback->rating}} <i
-                                    class="fa fa-star text-yellow"></i></label></h5>
+                        <h5 class="mt-0">{{$feedback->user->name ?? ''}}  <label
+                                class="badge badge-secondary badge-pill">{{$feedback->rating}}   {!! $feedback->stars() !!} </label></h5>
                         {{$feedback->feedback}}
                     </div>
                 </div>

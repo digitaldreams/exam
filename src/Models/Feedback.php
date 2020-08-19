@@ -60,4 +60,26 @@ class Feedback extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
+    /**
+     * @return string
+     */
+    public function stars()
+    {
+        $rating = $this->rating;
+
+        $yellow = '';
+        $black = '';
+        for ($r = 0; $r < $rating; ++$r) {
+            $yellow .= ' <i class="fa fa-star text-warning"></i>';
+        }
+        $remaining = 5 - $rating;
+        for ($r = 0; $r < $remaining; ++$r) {
+            $black .= ' <i class="fa fa-star text-muted"></i>';
+        }
+
+        return $yellow . $black;
+    }
+
 }
