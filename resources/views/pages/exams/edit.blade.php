@@ -1,4 +1,4 @@
-@extends('permit::layouts.app')
+@extends(config('exam.layouts.app'))
 @section('styles')
     <link rel="stylesheet" href="{{asset('prototype/css/select2.min.css')}}"/>
 @endsection

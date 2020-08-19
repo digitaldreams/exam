@@ -7,7 +7,8 @@ Route::group(['middleware' => ['web', 'auth'], 'as' => 'exam::', 'namespace' => 
     Route::get('feedbacks/{exam}', 'FeedbackController@index')->name('exams.feedback.index');
     Route::resource('feedbacks', 'FeedbackController', ['only' => ['store', 'update']]);
     Route::get('exams/select2', 'ExamController@select2Ajax')->name('exams.select2');
-    Route::post('exams/{exam}/question-add', 'ExamController@questionAdd')->name('exams.questionAdd');
+    Route::post('exams/{exam}/questions-add', 'ExamQuestionController@add')->name('exams.questionAdd');
+    Route::post('exams/{exam}/questions-remove', 'ExamQuestionController@remove')->name('exams.questionRemove');
     Route::get('exams/{exam}/completed', 'ExamUserController@completed')->name('exams.completed');
 
     Route::group(['prefix' => 'exams'], function () {

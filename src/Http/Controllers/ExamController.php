@@ -138,21 +138,6 @@ class ExamController extends Controller
         return redirect()->route('exam::exams.index')->with('message', 'Exam successfully deleted');
     }
 
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @param \Exam\Models\Exam        $exam
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function questionAdd(Request $request, Exam $exam)
-    {
-        $this->authorize('update', $exam);
-        $exam->questions()->syncWithoutDetaching($request->get('questions', []));
-
-        return redirect()->back()->with('message', 'Questions successfully added');
-    }
-
 
     /**
      * @param \Illuminate\Http\Request $request

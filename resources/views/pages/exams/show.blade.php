@@ -66,7 +66,19 @@
                     <li class="list-group-item bg-light">Questions</li>
                     @foreach($exam->questions as $question)
                         <li class="list-group-item">{{$question->title}} <label
-                                class="badge badge-light badge-pill">{{$question->type}}</label></li>
+                                class="badge badge-light badge-pill">{{$question->type}}</label>
+                            <form
+                                onsubmit="return confirm('Are you sure you want to unlink this question from this exam?')"
+                                action="{{route('exam::exams.questionRemove',$exam->slug)}}" method="post"
+                                class="d-inline">
+                                {{csrf_field()}}
+                                <input type="hidden" name="questions[]" value="{{$question->id}}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa fa-unlink"></i>
+                                </button>
+
+                            </form>
+                        </li>
                     @endforeach
                 </ol>
             @endcan
