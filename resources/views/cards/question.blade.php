@@ -1,8 +1,46 @@
 <div class="card card-default mb-2">
-    <div class="header">
-        <a href="{{route('exam::questions.show',$record->id)}}">
-            {{$record->title}}
-        </a>
+    <div class="card-header">
+        <div class="row">
+            <div class="col-11">
+                <a href="{{route('exam::questions.show',$record->id)}}">
+                    <h4> {{$record->title}}</h4>
+                </a>
+            </div>
+            <div class="col-1">
+                <div class="btn-group">
+                    <div class="dropdown" id="dropdown-{{$record->id}}">
+                        <a href="#" class="fa fa-ellipsis-v" data-toggle="dropdown" role="button" aria-expanded="false">
+                        </a>
+                        <ul class="dropdown-menu">
+                            @can('update',$record)
+                                <li>
+                                    <a class="btn btn-light btn-block"
+                                       href="{{route('exam::questions.edit',$record->id)}}">
+                                        <i class="fa fa-pencil"></i> Edit
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('delete',$record)
+                                <li>
+                                    <form class="card-link"
+                                          onsubmit="return confirm('Are you sure you want to delete?')"
+                                          action="{{route('exam::questions.destroy',$record->id)}}" method="post">
+                                        {{csrf_field()}}
+                                        {{method_field('DELETE')}}
+                                        <button class="btn btn-light text-danger btn-block" type="submit">
+                                            <i class="fa fa-remove"></i>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </li>
+                            @endcan
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
     <div class="body">
         @if($record->type==\Exam\Models\Question::TYPE_IMG_TO_WORD)
@@ -68,23 +106,12 @@
         </table>
     </div>
     <div class="card-footer text-right">
-        <label class="badge badge-secondary" title="Question Type" data-toggle="tooltip">{{$record->type}}</label>
-        <label class="badge badge-secondary" title="Total marks" data-toggle="tooltip">{{$record->total_mark}}</label>
-        @can('update',$record)
-            <a class="card-link" href="{{route('exam::questions.edit',$record->id)}}">
-                <i class="mdi mdi-table-edit"></i> Edit
-            </a>
-        @endcan
-        @can('delete',$record)
-            <form class="card-link" onsubmit="return confirm('Are you sure you want to delete?')"
-                  action="{{route('exam::questions.destroy',$record->id)}}" method="post">
-                {{csrf_field()}}
-                {{method_field('DELETE')}}
-                <button type="submit">
-                    <i class="mdi mdi-delete"></i>
-                    <div class="text">Delete</div>
-                </button>
-            </form>
-        @endcan
+        <label class="badge badge-secondary" title="Question Type" data-toggle="tooltip">
+            {{$record->type}}
+        </label>
+        <label class="badge badge-secondary" title="Total marks" data-toggle="tooltip">
+            {{$record->total_mark}} marks
+        </label>
+
     </div>
 </div>

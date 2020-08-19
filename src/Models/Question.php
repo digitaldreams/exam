@@ -125,9 +125,9 @@ class Question extends Model
     public static function types()
     {
         return [
+            'mcq' => 'MCQ',
             'img_to_word' => 'Image To Question',
             'word_to_img' => 'Question To Image',
-            'mcq' => 'MCQ',
             'voice_to_sentence' => 'Voice',
             'pronounce' => 'Pronounce',
             'audio_to_word' => 'Audio',

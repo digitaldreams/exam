@@ -21,7 +21,7 @@
         <div class="col-md-6">
             <form>
                 <div class="input-group mb-3">
-                    <input type="search" name="search" value="{{request('search')}}" class="form-control" placeholder="Search Post"
+                    <input type="search" name="search" value="{{request('search')}}" class="form-control" placeholder="Search Exams"
                            aria-label="Search Post title" aria-describedby="button-addon2">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
