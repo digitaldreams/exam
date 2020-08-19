@@ -30,14 +30,16 @@ class ExamRepository extends Repository
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginateForUser(User $user, int $perPage = 6)
+    public function paginateForUser(User $user, ?string $search = null, int $perPage = 6)
     {
         $builder = $this->model->newQuery();
 
         if (!$user->isAdmin()) {
             $builder = $builder->forUser($user->id)->where('status', ExamStatus::ACTIVE);
         }
-
+        if ($search) {
+            $builder = $builder->search($search);
+        }
         return $builder->paginate($perPage);
     }
 

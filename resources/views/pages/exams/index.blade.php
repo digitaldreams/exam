@@ -17,6 +17,22 @@
 @endsection
 
 @section('content')
+    <div class="row">
+        <div class="col-md-6">
+            <form>
+                <div class="input-group mb-3">
+                    <input type="search" name="search" value="{{request('search')}}" class="form-control" placeholder="Search Post"
+                           aria-label="Search Post title" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            {!! $records->render() !!}
+        </div>
+    </div>
     <div class="row exam-card">
         @foreach($records as $record)
             <div class="col-sm-6 col-md-4">

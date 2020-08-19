@@ -35,12 +35,12 @@ class ExamController extends Controller
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Exam::class);
 
         return view('exam::pages.exams.index', [
-            'records' => $this->examRepository->paginateForUser(auth()->user(), 6),
+            'records' => $this->examRepository->paginateForUser(auth()->user(), $request->get('search'), 6),
         ]);
     }
 
