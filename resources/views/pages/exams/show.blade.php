@@ -89,19 +89,6 @@
         </div>
     </div>
 
-    <div class="row">
-
-        <div class="col-sm-6">
-            @if(count($exam->examUser)>0)
-                <h4>Successfully completed</h4>
-                @foreach($exam->examUser as $examUser)
-                    @include('exam::cards.exam_user')
-                @endforeach
-            @else
-                <div class="alert alert-warning">No one taken this exam yet. Be the first</div>
-            @endif
-        </div>
-    </div>
 @endSection
 
 @section('scripts')

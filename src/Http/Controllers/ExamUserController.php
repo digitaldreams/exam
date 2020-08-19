@@ -9,7 +9,7 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Exam\Enums\ExamStatus;
+use App\Models\User;
 use Exam\Enums\ExamUserStatus;
 use Exam\Http\Requests\Exams\Answer;
 use Exam\Http\Requests\Exams\Question;
@@ -25,7 +25,6 @@ use Exam\Services\AnswerService;
 use Exam\Services\CertificateService;
 use Illuminate\Http\Request;
 use Notification;
-use App\Models\User;
 
 class ExamUserController extends Controller
 {
@@ -121,7 +120,7 @@ class ExamUserController extends Controller
     /**
      * @param Question $request
      * @param Exam     $exam
-     * @param $qid
+     * @param          $qid
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -157,7 +156,7 @@ class ExamUserController extends Controller
     /**
      * @param Answer $request
      * @param Exam   $exam
-     * @param $qid
+     * @param        $qid
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -199,15 +198,33 @@ class ExamUserController extends Controller
     /**
      * @param Visibility $request
      * @param ExamUser   $exam_user
-     * @param $visibility
+     * @param            $visibility
      *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function visibility(Visibility $request, ExamUser $exam_user, $visibility)
     {
+        $this->authorize('update', $exam_user->exam);
         $exam_user->visibility = $visibility;
         $exam_user->save();
 
         return redirect()->back()->with('message', 'Your exam result visibility set to ' . $visibility);
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \Exam\Models\Exam        $exam
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function completed(Request $request, Exam $exam)
+    {
+        $this->authorize('update', $exam);
+
+        return view('exam::pages.exams.completed', [
+            'exam' => $exam,
+            'completedExams' => $exam->examUser()->latest()->paginate(10),
+        ]);
     }
 }

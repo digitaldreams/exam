@@ -14,10 +14,12 @@
     <li class="nav-item">
         <a class="nav-link" href="#">Invitations</a>
     </li>
-    <li class="nav-item {{Route::currentRouteName()=='exams.reviews.index'?'active':''}}">
-        <a class="nav-link" href="{{route('exam::exams.reviews.index',$exam->slug)}}">Pending Answer Check</a>
+    <li class="nav-item ">
+        <a class="nav-link {{Route::currentRouteName()=='exam::exams.reviews.index'?'active':''}} "
+           href="{{route('exam::exams.reviews.index',$exam->slug)}}">Pending Answer Check</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">Completed</a>
+    <li class="nav-item ">
+        <a class="nav-link {{Route::currentRouteName()=='exam::exams.completed'?'active':''}}"
+           href="{{route('exam::exams.completed',$exam->slug)}}">Completed</a>
     </li>
 </ul>
