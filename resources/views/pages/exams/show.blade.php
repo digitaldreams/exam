@@ -22,7 +22,7 @@
         <a class="btn btn-outline-primary" href="{{route('exam::exams.start',$exam->slug)}}">Take</a>
     @endcan
     @can('create',\Exam\Models\Exam::class)
-        <a class="btn btn-light" href="{{'exam::exams.create'}}">
+        <a class="btn btn-light" href="{{route('exam::exams.create')}}">
             Create <span class="fa fa-plus"></span>
         </a>
     @endcan
@@ -54,10 +54,10 @@
                 <form action="{{route('exam::exams.questionAdd',$exam->slug)}}" method="post">
                     {{csrf_field()}}
                     <div class="form-group form-row">
-                            <select name="questions[]" class="form-control col-11" id="questionSearch"
-                                    placeholder="Search question" multiple>
-                            </select>
-                            <button class="btn btn-secondary input-group-append col-1">Add</button>
+                        <select name="questions[]" class="form-control col-11" id="questionSearch"
+                                placeholder="Search question" multiple>
+                        </select>
+                        <button class="btn btn-secondary input-group-append col-1">Add</button>
                         <small class="text-muted">Add question to this exam.</small>
                     </div>
                 </form>
@@ -90,26 +90,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6">
 
-            <ul class="list-unstyled mt-3">
-                <li class="list-group-item mb-3">Feedbacks</li>
-                @foreach($exam->feedback as $feedback)
-                    <li class="media bg-light mb-3">
-                        <img class="mr-3" src="{{$feedback->user->getAvatarThumb()}}" width="64px"
-                             alt="Generic placeholder image">
-                        <div class="media-body">
-                            <div class="media-body">
-                                <h5 class="mt-0">{{$feedback->user->name or ''}} <label
-                                        class="badge badge-secondary badge-pill">{{$feedback->rating}} <i
-                                            class="fa fa-star text-yellow"></i></label></h5>
-                                {{$feedback->feedback}}
-                            </div>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
         <div class="col-sm-6">
             @if(count($exam->examUser)>0)
                 <h4>Successfully completed</h4>

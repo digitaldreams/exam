@@ -9,6 +9,8 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Exam\Enums\ExamStatus;
+use Exam\Enums\ExamUserStatus;
 use Exam\Http\Requests\Exams\Answer;
 use Exam\Http\Requests\Exams\Question;
 use Exam\Http\Requests\Exams\Result;
@@ -23,7 +25,7 @@ use Exam\Services\AnswerService;
 use Exam\Services\CertificateService;
 use Illuminate\Http\Request;
 use Notification;
-use Permit\Models\User;
+use App\Models\User;
 
 class ExamUserController extends Controller
 {
@@ -46,7 +48,7 @@ class ExamUserController extends Controller
         $leftQuestions = [];
         $left = $exam_user->remaining();
         if (false == $left) {
-            $exam_user->status = Exam::STATUS_COMPLETED;
+            $exam_user->status = ExamUserStatus::COMPLETED;
             $exam_user->save();
         } else {
             $leftQuestions = $exam->questions()->whereNotIn('id', $exam_user->answers()->pluck('question_id')->toArray())->get();
@@ -80,18 +82,18 @@ class ExamUserController extends Controller
             'exam_id' => $exam->id,
             'user_id' => $user->id,
         ]);
-        if (ExamUser::STATUS_COMPLETED == $examUser->status) {
-            return redirect()->back()->with('permit_message', 'You already completed this exam');
+        if (ExamUserStatus::COMPLETED == $examUser->status) {
+            return redirect()->back()->with('message', 'You already completed this exam');
         }
         if (!$exam->doesCompleteExams()) {
-            return redirect()->back()->with('permit_message', 'Please complete all the required exams first');
+            return redirect()->back()->with('message', 'Please complete all the required exams first');
         }
-        $examUser->status = ExamUser::STATUS_PENDING;
+        $examUser->status = ExamUserStatus::PENDING;
         if (empty($examUser->started_at)) {
             $examUser->started_at = date('Y-m-d H:i:s');
         }
         if ($exam->hasTimeLimit() && $examUser->isTimeOver()) {
-            $examUser->status = Exam::STATUS_COMPLETED;
+            $examUser->status = ExamUserStatus::COMPLETED;
             $examUser->completed_at = date('Y-m-d H:i:s');
             $examUser->save();
 
@@ -104,10 +106,10 @@ class ExamUserController extends Controller
             ->first();
 
         if (!$question) {
-            $examUser->status = ExamUser::STATUS_COMPLETED;
+            $examUser->status = ExamUserStatus::COMPLETED;
             $examUser->save();
 
-            return redirect()->back()->with('permit_message', 'You completed all the questions already');
+            return redirect()->back()->with('message', 'You completed all the questions already');
         }
 
         return redirect()->route('exam::exams.question', [
@@ -164,14 +166,14 @@ class ExamUserController extends Controller
         $nextId = $request->get('nextId', false);
         $exam_user = ExamUser::forUser($exam->id)->first();
         if (!$exam_user) {
-            return redirect()->route('exam::exams.index')->with('permit_error', 'Please choose a exam first');
+            return redirect()->route('exam::exams.index')->with('error', 'Please choose a exam first');
         }
         if ($exam->hasTimeLimit() && $exam_user->isTimeOver()) {
             $exam_user->completed_at = date('Y-m-d H:i:s');
-            $exam_user->status = Exam::STATUS_COMPLETED;
+            $exam_user->status = ExamUserStatus::COMPLETED;
             $exam_user->save();
 
-            return redirect()->route('exam::exams.result', ['exam_user' => $exam_user->id])->with('permit_message', 'Time\'s up');
+            return redirect()->route('exam::exams.result', ['exam_user' => $exam_user->id])->with('message', 'Time\'s up');
         }
 
         $answerService = new AnswerService($request->get('answer'), $exam_user);
@@ -188,7 +190,7 @@ class ExamUserController extends Controller
             $exam_user->save();
             $certificate = new CertificateService($exam_user);
             $certificate->make();
-            Notification::send(User::superAdmin()->get(), new ExamCompleted($exam, auth()->user()));
+            Notification::send(User::getAdmins(), new ExamCompleted($exam, auth()->user()));
 
             return redirect()->route('exam::exams.result', ['exam_user' => $exam_user->id, 'answer' => $answerIds]);
         }
@@ -206,6 +208,6 @@ class ExamUserController extends Controller
         $exam_user->visibility = $visibility;
         $exam_user->save();
 
-        return redirect()->back()->with('permit_message', 'Your exam result visibility set to ' . $visibility);
+        return redirect()->back()->with('message', 'Your exam result visibility set to ' . $visibility);
     }
 }

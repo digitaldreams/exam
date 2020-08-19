@@ -3,7 +3,7 @@
 namespace Exam\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Permit\Models\User;
+use App\Models\User;
 
 /**
  * @property varchar   $feedbackable_type feedbackable type

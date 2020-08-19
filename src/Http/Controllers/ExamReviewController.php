@@ -60,11 +60,11 @@ class ExamReviewController extends Controller
         $answer->status = $request->get('status');
         if ($answer->save()) {
             $answer->examUser->user->notify(new ReviewCompletedNotification($answer, $exam));
-            session()->flash('permit_message', 'Answer successfully reviewed');
+            session()->flash('message', 'Answer successfully reviewed');
 
             return redirect()->route('exam::exams.reviews.index', $exam->slug);
         } else {
-            session()->flash('permit_error', 'Something is wrong while reviewing answer');
+            session()->flash('error', 'Something is wrong while reviewing answer');
         }
 
         return redirect()->back();

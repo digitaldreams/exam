@@ -23,7 +23,6 @@
 @endSection
 @section('scripts')
     <script type="text/javascript">
-        $('#must_completed').select2();
 
         $('#tags').select2({
             ajax: {
@@ -35,6 +34,13 @@
         $('#category_id').select2({
             ajax: {
                 url: '{{route('blog::categories.select2')}}',
+                dataType: 'json'
+            }
+        });
+
+        $('#must_completed').select2({
+            ajax: {
+                url: '{{route('exam::exams.select2')}}',
                 dataType: 'json'
             }
         });

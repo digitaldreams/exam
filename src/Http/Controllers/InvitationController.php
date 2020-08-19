@@ -14,7 +14,7 @@ use Exam\Notifications\InvitationNotification;
 use Exam\Notifications\InvitationResponseNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
-use Permit\Models\User;
+use App\Models\User;
 
 /**
  * Description of InvitationController.
@@ -88,11 +88,11 @@ class InvitationController extends Controller
             if ($user = $model->user) {
                 $user->notify(new InvitationNotification($model, auth()->user()));
             }
-            session()->flash('permit_message', 'Invitation send successfully');
+            session()->flash('message', 'Invitation send successfully');
 
             return redirect()->route('exam::exams.show', $exam->slug);
         } else {
-            session()->flash('permit_message', 'Something is wrong while sending Invitation');
+            session()->flash('message', 'Something is wrong while sending Invitation');
         }
 
         return redirect()->back();
@@ -114,11 +114,11 @@ class InvitationController extends Controller
         if ($invitation->save()) {
             $admins = User::superAdmin()->get();
             Notification::send($admins, new InvitationResponseNotification($invitation));
-            session()->flash('permit_message', 'Invitation successfully ' . $invitation->status);
+            session()->flash('message', 'Invitation successfully ' . $invitation->status);
 
             return redirect()->route('exam::exams.show', $exam->slug);
         } else {
-            session()->flash('permit_error', 'Something is wrong while updating Invitation');
+            session()->flash('error', 'Something is wrong while updating Invitation');
         }
 
         return redirect()->back();
@@ -138,9 +138,9 @@ class InvitationController extends Controller
     public function destroy(Destroy $request, Exam $exam, Invitation $invitation)
     {
         if ($invitation->delete()) {
-            session()->flash('permit_message', 'Invitation successfully deleted');
+            session()->flash('message', 'Invitation successfully deleted');
         } else {
-            session()->flash('permit_error', 'Error occurred while deleting Invitation');
+            session()->flash('error', 'Error occurred while deleting Invitation');
         }
 
         return redirect()->back();

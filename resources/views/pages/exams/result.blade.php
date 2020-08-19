@@ -1,4 +1,4 @@
-@extends('permit::layouts.app')
+@extends(config('exam.layouts.app'))
 @section('styles')
     <title>{{$exam_user->user->name .'- got '.$correctionRate.'% on '.$exam->title}}</title>
     <meta name="description" content="{{$exam->description}}">

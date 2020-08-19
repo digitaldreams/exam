@@ -152,4 +152,25 @@ class ExamController extends Controller
 
         return redirect()->back()->with('message', 'Questions successfully added');
     }
+
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function select2Ajax(Request $request)
+    {
+        $exams = Exam::query()->search($request->get('term'))->take(10)->get();
+        $data = $exams->map(function ($exam) {
+            return [
+                'id' => $exam->id,
+                'text' => $exam->title,
+            ];
+        })->all();
+
+        return response()->json([
+            'results' => $data,
+        ]);
+    }
 }

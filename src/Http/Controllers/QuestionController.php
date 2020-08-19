@@ -105,11 +105,11 @@ class QuestionController extends Controller
             $model->answer = json_encode($model->answer);
         }
         if ($model->save()) {
-            session()->flash('permit_message', 'Question saved successfully');
+            session()->flash('message', 'Question saved successfully');
 
             return redirect()->route('exam::questions.index');
         } else {
-            session()->flash('permit_error', 'Something is wrong while saving Question');
+            session()->flash('error', 'Something is wrong while saving Question');
         }
 
         return redirect()->back();
@@ -152,11 +152,11 @@ class QuestionController extends Controller
             $question->answer = json_encode($question->answer);
         }
         if ($question->save()) {
-            session()->flash('permit_message', 'Question successfully updated');
+            session()->flash('message', 'Question successfully updated');
 
             return redirect()->route('exam::questions.index');
         } else {
-            session()->flash('permit_error', 'Something is wrong while updating Question');
+            session()->flash('error', 'Something is wrong while updating Question');
         }
 
         return redirect()->back();
@@ -175,9 +175,9 @@ class QuestionController extends Controller
     public function destroy(Destroy $request, Question $question)
     {
         if ($question->delete()) {
-            session()->flash('permit_message', 'Question successfully deleted');
+            session()->flash('message', 'Question successfully deleted');
         } else {
-            session()->flash('permit_error', 'Error occurred while deleting Question');
+            session()->flash('error', 'Error occurred while deleting Question');
         }
 
         return redirect()->back();

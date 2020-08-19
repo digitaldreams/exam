@@ -3,6 +3,7 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Exam\Models\Exam;
 use Exam\Models\Feedback;
 use Illuminate\Http\Request;
 
@@ -13,6 +14,15 @@ use Illuminate\Http\Request;
  */
 class FeedbackController extends Controller
 {
+
+    public function index(Exam $exam)
+    {
+        return view('exam::pages.exams.feedback', [
+            'exam' => $exam,
+            'feedbacks' => $exam->feedback()->latest()->paginate(10),
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -25,9 +35,9 @@ class FeedbackController extends Controller
         $model = new Feedback();
         $model->fill($request->all());
         if ($model->save()) {
-            session()->flash('permit_message', 'Feedback saved successfully');
+            session()->flash('message', 'Feedback saved successfully');
         } else {
-            session()->flash('permit_error', 'Something is wrong while saving Feedback');
+            session()->flash('error', 'Something is wrong while saving Feedback');
         }
 
         return redirect()->back();
@@ -45,9 +55,9 @@ class FeedbackController extends Controller
     {
         $feedback->fill($request->all());
         if ($feedback->save()) {
-            session()->flash('permit_message', 'Feedback successfully updated');
+            session()->flash('message', 'Feedback successfully updated');
         } else {
-            session()->flash('permit_error', 'Something is wrong while updating Feedback');
+            session()->flash('error', 'Something is wrong while updating Feedback');
         }
 
         return redirect()->back();
@@ -66,9 +76,9 @@ class FeedbackController extends Controller
     public function destroy(Request $request, Feedback $feedback)
     {
         if ($feedback->delete()) {
-            session()->flash('app_message', 'Feedback successfully deleted');
+            session()->flash('message', 'Feedback successfully deleted');
         } else {
-            session()->flash('app_error', 'Error occurred while deleting Feedback');
+            session()->flash('error', 'Error occurred while deleting Feedback');
         }
 
         return redirect()->back();

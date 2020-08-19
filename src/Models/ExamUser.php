@@ -5,7 +5,7 @@ namespace Exam\Models;
 use Carbon\Carbon;
 use Exam\Services\CertificateService;
 use Illuminate\Database\Eloquent\Model;
-use Permit\Models\User;
+use App\Models\User;
 
 /**
  * @property int       $exam_id       exam id

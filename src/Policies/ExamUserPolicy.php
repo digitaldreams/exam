@@ -5,7 +5,7 @@ namespace Exam\Policies;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Permit\Models\User;
+use App\Models\User;
 
 class ExamUserPolicy
 {
@@ -16,9 +16,9 @@ class ExamUserPolicy
      *
      * @return bool
      */
-    public function before(User $user)
+    public function before($user)
     {
-        if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
+        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
             return true;
         }
     }
@@ -28,7 +28,7 @@ class ExamUserPolicy
      *
      * @return bool
      */
-    public function index(User $user)
+    public function index($user)
     {
         return true;
     }
@@ -41,7 +41,7 @@ class ExamUserPolicy
      *
      * @return mixed
      */
-    public function view(User $user, ExamUser $examUser)
+    public function view($user, ExamUser $examUser)
     {
         return true;
     }
@@ -53,7 +53,7 @@ class ExamUserPolicy
      *
      * @return mixed
      */
-    public function create(User $user)
+    public function create($user)
     {
         return true;
     }
@@ -66,7 +66,7 @@ class ExamUserPolicy
      *
      * @return mixed
      */
-    public function update(User $user, ExamUser $examUser)
+    public function update($user, ExamUser $examUser)
     {
         return $user->id == $examUser->user_id;
     }
@@ -79,7 +79,7 @@ class ExamUserPolicy
      *
      * @return mixed
      */
-    public function delete(User $user, ExamUser $examUser)
+    public function delete($user, ExamUser $examUser)
     {
         return $user->id == $examUser->user_id;
     }
@@ -92,7 +92,7 @@ class ExamUserPolicy
      *
      * @return mixed
      */
-    public function answer(User $user, ExamUser $examUser)
+    public function answer($user, ExamUser $examUser)
     {
         return $user->id == $examUser->user_id;
     }
@@ -105,7 +105,7 @@ class ExamUserPolicy
      *
      * @return mixed
      */
-    public function result(User $user, ExamUser $examUser)
+    public function result($user, ExamUser $examUser)
     {
         return $user->id == $examUser->user_id || ExamUser::VISIBILITY_PUBLIC == $examUser->visibility;
     }

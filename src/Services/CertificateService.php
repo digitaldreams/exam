@@ -47,19 +47,19 @@ class CertificateService
     {
         $this->image = Image::canvas(450, 235, '#fffff');
         $url = $this->user->getAvatarThumb();
-        $photo = Image::make($url);
-        $photo->resize(180, 180);
-        $this->image = $this->image->insert($photo);
+     //   $photo = Image::make($url);
+     //   $photo->resize(180, 180);
+      //  $this->image = $this->image->insert($photo);
         $this->image = $this->image->text($this->examUser->exam->title, 190, 10,
             function ($font) {
-                $font->file(public_path('permit/fonts/BLKCHCRY.TTF'));
+                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
                 $font->size(14);
                 $font->color('#000000');
                 $font->valign('top');
             });
         $this->image = $this->image->text($this->examUser->getCorrectionRate() . '% correction rate', 280, 80,
             function ($font) {
-                $font->file(public_path('permit/fonts/BLKCHCRY.TTF'));
+                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
                 $font->size(24);
                 $font->color('#00ff00');
                 $font->align('center');
@@ -67,14 +67,14 @@ class CertificateService
             });
         $this->image = $this->image->text('Date of Exam ' . date('d M Y'), 190, 60,
             function ($font) {
-                $font->file(public_path('permit/fonts/BLKCHCRY.TTF'));
+                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
                 $font->size(16);
                 $font->color('#000000');
                 $font->valign('top');
             });
         $this->image = $this->image->text($this->user->name, 50, 190,
             function ($font) {
-                $font->file(public_path('permit/fonts/BLKCHCRY.TTF'));
+                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
                 $font->size(15);
                 $font->color('#000000');
                 $font->align('center');
@@ -84,7 +84,7 @@ class CertificateService
         if ($tag) {
             $this->image = $this->image->text('Difficulty Level:  ' . $tag->name, 190, 120,
                 function ($font) {
-                    $font->file(public_path('permit/fonts/BLKCHCRY.TTF'));
+                    $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
                     $font->color('#000000');
                     $font->size(16);
                     $font->valign('top');
@@ -92,7 +92,7 @@ class CertificateService
         }
         $this->image = $this->image->text('All right reserveed ' . config('app.url'), 200, 220,
             function ($font) {
-                $font->file(public_path('permit/fonts/BLKCHCRY.TTF'));
+                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
                 $font->color('#000000');
                 $font->align('center');
                 $font->valign('top');

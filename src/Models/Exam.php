@@ -227,7 +227,15 @@ class Exam extends Model
      */
     public function getMustCompletedIds()
     {
-        return $this->must_completed;
+        return is_array($this->must_completed) ? $this->must_completed : [];
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function mustCompletedExams()
+    {
+        return static::newQuery()->whereIn('id', $this->must_completed)->get();
     }
 
     /**
@@ -248,5 +256,18 @@ class Exam extends Model
         }
 
         return $yellow . $black;
+    }
+
+    /**
+     * @param string $user_id
+     *
+     * @return bool
+     */
+    public function doesCompleteExams($user_id = '')
+    {
+        $user_id = empty($user_id) && auth()->check() ? auth()->id() : $user_id;
+        $mustCompleted = $this->getMustCompletedIds();
+        $count = ExamUser::whereIn('exam_id', $mustCompleted)->where('user_id', $user_id)->where('status', ExamUser::STATUS_COMPLETED)->count();
+        return count($mustCompleted) == $count;
     }
 }
