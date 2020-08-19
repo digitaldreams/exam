@@ -4,30 +4,29 @@ namespace Exam\Policies;
 
 use Exam\Models\Invitation;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Permit\Models\User;
 
 class InvitationPolicy
 {
     use HandlesAuthorization;
 
     /**
-     * @param User $user
+     * @param  $user
      *
      * @return bool
      */
-    public function before(User $user)
+    public function before($user)
     {
-        if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
+        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
             return true;
         }
     }
 
     /**
-     * @param User $user
+     * @param  $user
      *
      * @return bool
      */
-    public function index(User $user)
+    public function index($user)
     {
         return false;
     }
@@ -35,12 +34,12 @@ class InvitationPolicy
     /**
      * Determine whether the user can view the Invitation.
      *
-     * @param User       $user
+     * @param        $user
      * @param Invitation $invitation
      *
      * @return mixed
      */
-    public function view(User $user, Invitation $invitation)
+    public function view($user, Invitation $invitation)
     {
         return false;
     }
@@ -48,11 +47,11 @@ class InvitationPolicy
     /**
      * Determine whether the user can create Invitation.
      *
-     * @param User $user
+     * @param  $user
      *
      * @return mixed
      */
-    public function create(User $user)
+    public function create($user)
     {
         return false;
     }
@@ -60,12 +59,12 @@ class InvitationPolicy
     /**
      * Determine whether the user can update the Invitation.
      *
-     * @param User       $user
+     * @param       $user
      * @param Invitation $invitation
      *
      * @return mixed
      */
-    public function update(User $user, Invitation $invitation)
+    public function update($user, Invitation $invitation)
     {
         return false;
     }
@@ -73,12 +72,12 @@ class InvitationPolicy
     /**
      * Determine whether the user can delete the Invitation.
      *
-     * @param User       $user
+     * @param       $user
      * @param Invitation $invitation
      *
      * @return mixed
      */
-    public function delete(User $user, Invitation $invitation)
+    public function delete($user, Invitation $invitation)
     {
         return false;
     }

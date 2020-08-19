@@ -3,6 +3,7 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Exam\Http\Requests\Invitations\Create;
 use Exam\Http\Requests\Invitations\Destroy;
 use Exam\Http\Requests\Invitations\Index;
@@ -14,7 +15,6 @@ use Exam\Notifications\InvitationNotification;
 use Exam\Notifications\InvitationResponseNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
-use App\Models\User;
 
 /**
  * Description of InvitationController.
@@ -26,14 +26,17 @@ class InvitationController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Index $request
+     * @param Index             $request
+     * @param \Exam\Models\Exam $exam
      *
      * @return \Illuminate\Http\Response
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(Index $request, Exam $exam)
     {
         return view('exam::pages.invitations.index', [
-            'records' => Invitation::paginate(10),
+            'records' => $exam->invitations()->latest()->paginate(10),
             'exam' => $exam,
         ]);
     }
@@ -67,7 +70,7 @@ class InvitationController extends Controller
         return view('exam::pages.invitations.create', [
             'model' => new Invitation(),
             'exam' => $exam,
-            'users' => User::select(['id', 'first_name', 'last_name', 'email'])->get(),
+            'users' =>User::get()
         ]);
     }
 
@@ -112,7 +115,7 @@ class InvitationController extends Controller
         $invitation->status = Invitation::STATUS_REJECTED == $request->get('status') ? Invitation::STATUS_REJECTED : Invitation::STATUS_ACCEPTED;
 
         if ($invitation->save()) {
-            $admins = User::superAdmin()->get();
+            $admins = User::getAdmins();
             Notification::send($admins, new InvitationResponseNotification($invitation));
             session()->flash('message', 'Invitation successfully ' . $invitation->status);
 

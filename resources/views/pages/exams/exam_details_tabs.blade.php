@@ -12,7 +12,8 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#">Invitations</a>
+        <a class="nav-link {{Route::currentRouteName()=='exam::exams.invitations.index'?'active':''}}"
+           href="{{route('exam::exams.invitations.index',$exam->slug)}}">Invitations</a>
     </li>
     <li class="nav-item ">
         <a class="nav-link {{Route::currentRouteName()=='exam::exams.reviews.index'?'active':''}} "
