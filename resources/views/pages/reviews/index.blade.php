@@ -1,4 +1,4 @@
-@extends('permit::layouts.app')
+@extends(config('exam.layouts.app'))
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{route('exam::exams.index')}}">Exams</a>

@@ -4,11 +4,11 @@
             <div class="col-sm-9">
                 @if(isset($showExamTitle))
                     <a href="{{route('exam::exams.show',$examUser->exam->slug)}}">
-                        {{$examUser->exam->title or ''}}
+                        {{$examUser->exam->title ??''}}
                     </a>
                 @else
-                    <a href="{{route('users.show',$examUser->user_id)}}">
-                        {{$examUser->user->name or ''}}
+                    <a href="#">
+                        {{$examUser->user->name ?? ''}}
                     </a>
                 @endif
             </div>
@@ -23,13 +23,13 @@
         @if($path=$examUser->getCertificate())
             <img title="Certificate of exam" src="{{asset($path)}}" class="img-fluid">
         @else
-            <p>{{$examUser->exam->description or ''}}</p>
+            <p>{{$examUser->exam->description ?? ''}}</p>
         @endif
     </div>
     <div class="card-footer">
         <label class="badge badge-success">{{$examUser->getCorrectionRate()}}% Correct</label>
         <?php $left = $examUser->remaining(); ?>
-        @if($left && $examUser->status!==\Exam\Models\Exam::STATUS_COMPLETED)
+        @if($left && $examUser->status!== \Exam\Enums\ExamUserStatus::COMPLETED)
             <label class="badge badge-warning">{{abs($left)}} left</label>
         @else
             <label class="badge badge-success"><i class="fa fa-check-circle-o"></i> Completed</label>

@@ -116,7 +116,7 @@
                                     <img title="Correct answer" src="{{$answer->question->answer}}"
                                          class="img-fluid img-thumbnail"/>
                                 @else
-                                    <b title="Correct answer"> {{$answer->question->answer or ''}}</b>
+                                    <b title="Correct answer"> {{$answer->question->answer ?? ''}}</b>
                                 @endif
                             </div>
                             <div class="col-sm-6">
@@ -135,7 +135,7 @@
                                          class="img-fluid img-thumbnail"/>
 
                                 @else
-                                    <b title="Your answer"> {{$answer->answer or ''}}</b>
+                                    <b title="Your answer"> {{$answer->answer ?? ''}}</b>
                                 @endif
                             </div>
                         </div>
