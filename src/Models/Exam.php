@@ -3,6 +3,7 @@
 namespace Exam\Models;
 
 use App\Models\User;
+use Blog\Models\Category;
 use Blog\Models\Tag;
 use Blog\Services\FullTextSearch;
 use Exam\Enums\ExamShowAnswer;
@@ -80,6 +81,14 @@ class Exam extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'exam_tag');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     /**
@@ -235,7 +244,7 @@ class Exam extends Model
      */
     public function mustCompletedExams()
     {
-        return static::newQuery()->whereIn('id', $this->must_completed)->get();
+        return static::newQuery()->whereIn('id', $this->getMustCompletedIds())->get();
     }
 
     /**

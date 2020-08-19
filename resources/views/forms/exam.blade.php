@@ -46,7 +46,9 @@
                     <label for="category_id">Category</label>
                     <select class="form-control {{ $errors->has('category_id') ? ' is-invalid' : '' }}"
                             name="category_id" id="category_id">
-
+                        @if($model->category)
+                            <option value="{{$model->category_id}}" selected>{{$model->category->title}}</option>
+                        @endif
                     </select>
                     @if($errors->has('category_id'))
                         <div class="invalid-feedback">
@@ -59,12 +61,9 @@
                     <select class="form-control {{ $errors->has('tag_id') ? ' is-invalid' : '' }}" name="tags[]"
                             id="tags"
                             multiple>
-                        @if(isset($tags))
-                            @foreach ($tags as $data)
-                                <option
-                                    value="{{$data->id}}" {{in_array($data->id,$model->tagIds())?'selected':''}}>{{$data->name}}</option>
-                            @endforeach
-                        @endif
+                        @foreach ($model->tags as $data)
+                            <option value="{{$data->id}}" selected>{{$data->name}}</option>
+                        @endforeach
 
                     </select>
                     @if($errors->has('tags.*'))
@@ -78,7 +77,9 @@
             <div class="form-group">
                 <label for="must_completed">Must Complete this exams</label>
                 <select name="must_completed[]" class="form-control" id="must_completed" multiple>
-
+                    @foreach($model->mustCompletedExams() as $parentExam)
+                        <option value="{{$parentExam->id}}" selected>{{$parentExam->title}}</option>
+                    @endforeach
                 </select>
                 <small class="text-muted">User must completed this exams. Otherwise he is not allowed to participate in
                     this
