@@ -8,35 +8,38 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>
-                <input type="hidden" name="optionNumber" value="1">
-                <input type="text" class="form-control option" name="options[option][1]"
-                       placeholder="Type your option here">
-            </td>
-            <td>
-                <div class="form-check-inline">
-                    <label class="form-check-label">
-                        <input class="form-check-input isCorrect" name="options[isCorrect][1]" type="checkbox"
-                               value="yes">
-                        Yes
-                    </label>
-                </div>
-            </td>
-            <td>
-                <a title="Remove this row" data-toggle="tooltip" href="javascript:void(0)"
-                   onclick="removeOption($(this))"
+        @foreach($model->getOptions() as $index => $value)
+            <tr>
+                <td>
+                    <input type="hidden" name="optionNumber" value="{{$index}}">
+                    <input type="text" class="form-control option" name="options[option][1]" value="{{$value}}"
+                           placeholder="Type your option here">
+                </td>
+                <td>
+                    <div class="form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input isCorrect" name="options[isCorrect][{{$index}}]"
+                                   type="checkbox"
+                                   value="yes" {{$model->isCorrectAnswer($value)?'checked':''}}>
+                            Yes
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <a title="Remove this row" data-toggle="tooltip" href="javascript:void(0)"
+                       onclick="removeOption($(this))"
 
-                   class="btn btn-outline-danger btn-sm">
-                    <i class="fa fa-remove"></i>
-                </a>
-                <a title="Add new row" data-toggle="tooltip" href="javascript:void(0)"
-                   onclick="addOption()"
-                   class="btn btn-outline-primary btn-sm">
-                    <i class="fa fa-plus"></i>
-                </a>
-            </td>
-        </tr>
+                       class="btn btn-outline-danger btn-sm">
+                        <i class="fa fa-remove"></i>
+                    </a>
+                    <a title="Add new row" data-toggle="tooltip" href="javascript:void(0)"
+                       onclick="addOption()"
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </td>
+            </tr>
+        @endforeach
         </tbody>
     </table>
 @elseif(request('type')!==\Exam\Models\Question::TYPE_FREEHAND_WRITING)

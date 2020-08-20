@@ -175,10 +175,32 @@ class Question extends Model
     public function getOptions()
     {
         try {
+            if (empty($this->id)) {
+                return [
+                    '',
+                    '',
+                    '',
+                    '',
+                ];
+            }
             return is_array($this->options) ? $this->options : [];
         } catch (\Exception $ex) {
             return [];
         }
+    }
+
+    /**
+     * @param $value
+     *
+     * @return bool
+     */
+    public function isCorrectAnswer($value)
+    {
+        if (empty($this->id)) {
+            return false;
+        }
+        $answers = $this->getAnswers();
+        return is_array($answers) ? in_array($value, $answers) : $value == $this->answer;
     }
 
     public function getAnswers()

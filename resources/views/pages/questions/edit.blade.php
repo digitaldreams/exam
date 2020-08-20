@@ -30,49 +30,5 @@
 @endSection
 @section('scripts')
     <script type="text/javascript" src="{{asset('prototype/js/select2.full.min.js')}}"></script>
-    <script type="text/javascript">
-        $('#question_options').select2({
-            tags: true
-        });
-        $('.question_answer').select2({
-            tags: true
-        });
-        function formatState(state) {
-            if (!state.id) {
-                return state.text;
-            }
-            var $state = $(
-                '<span><img width="120px" src="' + state.id + '" class="img-thumnail" /> ' + state.text + '</span>'
-            );
-            return $state;
-        };
-        $(".worToImageOptions").select2({
-            tags: true,
-            multiple: true,
-            ajax: {
-                url: "{{route(config('exam.image.url'))}}",
-                dataType: "json",
-                type: "GET",
-                data: function (params) {
-
-                    var queryParameters = {
-                        q: params.term
-                    }
-                    return queryParameters;
-                },
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                text: item.caption,
-                                id: item.thumbnail
-                            }
-                        })
-                    };
-                }
-            },
-            templateResult: formatState,
-            formatSelection: formatState
-        })
-    </script>
+    @include('exam::pages.questions.scripts')
 @endsection

@@ -96,11 +96,17 @@ class QuestionController extends Controller
      */
     public function store(Store $request)
     {
-        echo '<pre>';
-        print_r($request->all());
-        exit();
         $model = new Question();
-        $model->fill($request->all());
+        $model->fill($request->except(['options']));
+        $options = $request->get('options', []);
+        $model->options = $options['option'];
+        $answerIndex = $options['isCorrect'];
+        $answers = [];
+        foreach ($answerIndex as $index => $value) {
+            $answers[] = $model->options[$index];
+        }
+        $model->answer = implode(',', $answers);
+
         if (is_array($model->answer)) {
             if (Question::TYPE_REARRANGE == $model->type) {
                 $model->answer = array_intersect_key($request->get('answer'), $request->get('options'));
@@ -147,7 +153,17 @@ class QuestionController extends Controller
      */
     public function update(Update $request, Question $question)
     {
-        $question->fill($request->all());
+        $question->fill($request->except(['options']));
+        $options = $request->get('options', []);
+        $question->options = $options['option'];
+        $answerIndex = $options['isCorrect'];
+        $answers = [];
+        foreach ($answerIndex as $index => $value) {
+            $answers[] = $question->options[$index];
+        }
+        $question->answer = implode(',', $answers);
+
+
         if (is_array($question->answer)) {
             if (Question::TYPE_REARRANGE == $question->type) {
                 $question->answer = array_intersect_key($request->get('answer'), $request->get('options'));
@@ -205,5 +221,4 @@ class QuestionController extends Controller
             'results' => $data,
         ]);
     }
-
 }
