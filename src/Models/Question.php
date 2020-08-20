@@ -177,10 +177,10 @@ class Question extends Model
         try {
             if (empty($this->id)) {
                 return [
-                    '',
-                    '',
-                    '',
-                    '',
+                    1 => '',
+                    2 => '',
+                    3 => '',
+                    4 => '',
                 ];
             }
             return is_array($this->options) ? $this->options : [];

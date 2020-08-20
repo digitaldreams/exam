@@ -12,7 +12,7 @@
             <tr>
                 <td>
                     <input type="hidden" name="optionNumber" value="{{$index}}">
-                    <input type="text" class="form-control option" name="options[option][1]" value="{{$value}}"
+                    <input type="text" class="form-control option" name="options[option][{{$index}}]" value="{{$value}}"
                            placeholder="Type your option here">
                 </td>
                 <td>
