@@ -37,4 +37,5 @@
         });
 
     </script>
+    @include('exam::pages.questions.scripts')
 @endsection

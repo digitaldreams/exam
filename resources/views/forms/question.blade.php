@@ -16,23 +16,6 @@
                     </div>
                 @endif
             </div>
-
-            <?php $type = request('type', $model->type);?>
-            @if(view()->exists('exam::forms.question.extra.'.$type))
-                @include('exam::forms.question.extra.'.$type)
-            @endif
-
-            @if(view()->exists('exam::forms.question.'.$type))
-                @include('exam::forms.question.'.$type)
-            @else
-                @include('exam::forms.question.default')
-            @endif
-
-            @if($errors->has('options'))
-                <div class="invalid-feedback">
-                    <strong>{{ $errors->first('options') }}</strong>
-                </div>
-            @endif
             <div class="form-row">
                 <div class="form-group col">
                     <label for="hints">Hints</label>
@@ -59,6 +42,23 @@
                     @endif
                 </div>
             </div>
+            <?php $type = request('type', $model->type);?>
+            @if(view()->exists('exam::forms.question.extra.'.$type))
+                @include('exam::forms.question.extra.'.$type)
+            @endif
+
+            @if(view()->exists('exam::forms.question.'.$type))
+                @include('exam::forms.question.'.$type)
+            @else
+                @include('exam::forms.question.default')
+            @endif
+
+            @if($errors->has('options'))
+                <div class="invalid-feedback">
+                    <strong>{{ $errors->first('options') }}</strong>
+                </div>
+            @endif
+
 
         </div>
         <div class="col-sm-3">

@@ -96,6 +96,9 @@ class QuestionController extends Controller
      */
     public function store(Store $request)
     {
+        echo '<pre>';
+        print_r($request->all());
+        exit();
         $model = new Question();
         $model->fill($request->all());
         if (is_array($model->answer)) {
