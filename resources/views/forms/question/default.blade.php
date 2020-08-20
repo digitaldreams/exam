@@ -32,16 +32,20 @@
                        class="btn btn-outline-danger btn-sm">
                         <i class="fa fa-remove"></i>
                     </a>
-                    <a title="Add new row" data-toggle="tooltip" href="javascript:void(0)"
-                       onclick="addOption()"
-                       class="btn btn-outline-primary btn-sm">
-                        <i class="fa fa-plus"></i>
-                    </a>
+
                 </td>
             </tr>
         @endforeach
         </tbody>
     </table>
+    <div class="form-group text-center">
+        <a  href="javascript:void(0)"
+           onclick="addOption()"
+           class="btn btn-primary btn-sm btn-large">
+            <i class="fa fa-plus"></i> Add New Option
+        </a>
+    </div>
+
 @elseif(request('type')!==\Exam\Models\Question::TYPE_FREEHAND_WRITING)
     <div class="form-group">
         <label>Answer</label>

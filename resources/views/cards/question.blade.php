@@ -53,7 +53,7 @@
                 </audio>
             @endif
         @elseif($record->type==\Exam\Models\Question::TYPE_VIDEO_TO_WORD)
-            @if($video=$record->getData('media.url'))
+            @if($video=$record->getVideoLink())
                 <div class="embed-responsive embed-responsive-16by9">
                     <iframe class="embed-responsive-item" src="{{$video}}" allowfullscreen></iframe>
                 </div>

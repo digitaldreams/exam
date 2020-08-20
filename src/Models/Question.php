@@ -183,6 +183,7 @@ class Question extends Model
                     4 => '',
                 ];
             }
+
             return is_array($this->options) ? $this->options : [];
         } catch (\Exception $ex) {
             return [];
@@ -200,6 +201,7 @@ class Question extends Model
             return false;
         }
         $answers = $this->getAnswers();
+
         return is_array($answers) ? in_array($value, $answers) : $value == $this->answer;
     }
 
@@ -290,5 +292,24 @@ class Question extends Model
         }
 
         return is_array($this->data) ? Arr::get($this->data, $key) : false;
+    }
+
+    public function getVideoLink()
+    {
+        $url = $this->getData('media.url');
+        if (!empty($url)) {
+            $parts = parse_url($url);
+            if (isset($parts['host']) && isset($parts['query']) && 'www.youtube.com' == $parts['host']) {
+                //                   placeholder="e.g. https://www.youtube.com/embed/nfP5N9Yc72A"
+                $id = str_replace('v=', '', $parts['query']);
+
+                return 'https://www.youtube.com/embed/' . $id;
+            } elseif ('youtu.be' == $parts['host']) {
+                $path = $parts['path'];
+
+                return 'https://www.youtube.com/embed/' . trim($path, '/');
+            }
+        }
+        return $url;
     }
 }
