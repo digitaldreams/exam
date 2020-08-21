@@ -58,11 +58,6 @@ class InvitationNotification extends Notification
             ->action('Accept', route('exam::exams.invitations.response', [
                 'exam' => $this->invitation->exam->slug, 'invitation' => $this->invitation->token,
             ]))
-            ->action('Reject', route('exam::exams.invitations.response', [
-                'exam' => $this->invitation->exam->slug,
-                'invitation' => $this->invitation->token,
-                'status' => Invitation::STATUS_REJECTED,
-            ]))
             ->line('Thank you for using our application!');
     }
 
