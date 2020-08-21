@@ -3,6 +3,8 @@
 namespace Exam\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use App\Models\User;
 
 /**
  * @property int       $exam_id    exam id
@@ -37,7 +39,7 @@ class Invitation extends Model
         parent::boot();
         static::creating(function ($model) {
             if (empty($model->token)) {
-                $model->token = str_random(64);
+                $model->token = Str::random(64);
             }
 
             return true;
@@ -51,7 +53,7 @@ class Invitation extends Model
 
     public function user()
     {
-        return $this->belongsTo(\Permit\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function getRouteKeyName()

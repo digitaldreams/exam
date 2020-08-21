@@ -6,7 +6,6 @@ use Exam\Models\Exam;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notification;
-use Permit\Notifications\Channels\Model as ModelChannel;
 
 class ExamCompleted extends Notification
 {
@@ -42,7 +41,7 @@ class ExamCompleted extends Notification
      */
     public function via($notifiable)
     {
-        return [ModelChannel::class];
+        return ['database'];
     }
 
     public function toModel($notifiable)
@@ -65,6 +64,14 @@ class ExamCompleted extends Notification
     {
         return [
             //
+        ];
+    }
+
+    public function toDatabase()
+    {
+        return [
+            'message' => $this->user->name . ' completed ' . $this->exam->title,
+            'link' => route('exam::exams.show', $this->exam->slug),
         ];
     }
 }

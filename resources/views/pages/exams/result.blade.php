@@ -18,7 +18,9 @@
         Result
     </li>
 @endsection
-
+@section('header')
+    {{$exam->title}}
+@endsection
 @section('tools')
     &nbsp;&nbsp;
     <div class="btn-group-sm">
@@ -34,7 +36,7 @@
         @can('update',$exam_user)
             &nbsp;&nbsp;
             <btn title=" Your result is {{$exam_user->visibility}}"><label
-                        class="btn btn-primary">{{$exam_user->visibility}}</label>
+                    class="btn btn-primary">{{$exam_user->visibility}}</label>
             </btn>
             <?php $setVisibility = $exam_user->visibility == \Exam\Models\ExamUser::VISIBILITY_PUBLIC ? \Exam\Models\ExamUser::VISIBILITY_PRIVATE : \Exam\Models\ExamUser::VISIBILITY_PUBLIC;?>
             <a class="btn btn-warning"
@@ -62,7 +64,7 @@
                         </span>
                     @else
                         <span class="badge badge-success"><i
-                                    class="fa fa-check-circle-o"></i> Everything Completed</span>
+                                class="fa fa-check-circle-o"></i> Everything Completed</span>
                     @endif
                 </div>
             </div>
@@ -109,7 +111,7 @@
                                     <ol class="list-group" title="Correct answer">
                                         @foreach($correctAns as $key=>$value)
                                             <li class="list-group-item">{{$key}} <i
-                                                        class="fa fa-arrow-right"></i> {{$value}}</li>
+                                                    class="fa fa-arrow-right"></i> {{$value}}</li>
                                         @endforeach
                                     </ol>
                                 @elseif($answer->question->type==\Exam\Models\Question::TYPE_WORD_TO_IMG)
@@ -126,7 +128,7 @@
                                         @if(is_array($userAns))
                                             @foreach($userAns as $word=>$mean)
                                                 <li class="list-group-item">{{$word}} <i
-                                                            class="fa fa-arrow-right"></i> {{$mean}}</li>
+                                                        class="fa fa-arrow-right"></i> {{$mean}}</li>
                                             @endforeach
                                         @endif
                                     </ol>

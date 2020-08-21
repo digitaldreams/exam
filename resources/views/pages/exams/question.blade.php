@@ -7,9 +7,11 @@
         <a href="{{route('exam::exams.show',$exam->slug)}}">{{$exam->title}}</a>
     </li>
 @endsection
-
+@section('header')
+    {{$exam->title}}
+@endsection
 @section('tools')
-    <p class=" p-2"><span class="badge badge-info">{{$position or 0}}/{{$total or 0}}</span>
+    <p class=" p-2"><span class="badge badge-info">{{$position ?? 0}}/{{$total ?? 0}}</span>
         &nbsp;&nbsp;&nbsp;
         @if($exam->hasTimeLimit())
             <label class="badge badge-secondary"><i class="fa fa-clock-o"></i> {{$examUser->timeLeft()}}</label>

@@ -13,7 +13,7 @@ use Exam\Models\Question;
 use Exam\Notifications\ReviewRequestToTeacher;
 use Image;
 use Notification;
-use Permit\Models\User;
+use App\Models\User;
 
 class CertificateService
 {
@@ -107,7 +107,7 @@ class CertificateService
     {
         $totalPendingQuestion = $this->examUser->exam->questions()->where('review_type', Question::REVIEW_TYPE_MANUAL)->count();
         if ($totalPendingQuestion > 0) {
-            Notification::send(User::superAdmin()->get(), new ReviewRequestToTeacher($this->examUser));
+            Notification::send(User::getAdmins(), new ReviewRequestToTeacher($this->examUser));
         }
     }
 

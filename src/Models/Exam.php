@@ -7,6 +7,7 @@ use Blog\Models\Category;
 use Blog\Models\Tag;
 use Blog\Services\FullTextSearch;
 use Exam\Enums\ExamShowAnswer;
+use Exam\Enums\ExamUserStatus;
 use Exam\Enums\ExamVisibility;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -276,7 +277,10 @@ class Exam extends Model
     {
         $user_id = empty($user_id) && auth()->check() ? auth()->id() : $user_id;
         $mustCompleted = $this->getMustCompletedIds();
-        $count = ExamUser::whereIn('exam_id', $mustCompleted)->where('user_id', $user_id)->where('status', ExamUser::STATUS_COMPLETED)->count();
+        $count = ExamUser::whereIn('exam_id', $mustCompleted)->where('user_id', $user_id)
+            ->where('status', ExamUserStatus::COMPLETED)
+            ->count();
+
         return count($mustCompleted) == $count;
     }
 }

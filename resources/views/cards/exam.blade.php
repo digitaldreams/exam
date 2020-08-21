@@ -40,7 +40,7 @@
                             </form>
                             <li class="list-group-item">
                                 @can('update',$record)
-                                    <a class="btn btn-outline-secondary"
+                                    <a class="btn btn-outline-secondary btn-block"
                                        href="{{route('exam::exams.edit',$record->slug)}}">
                                         <i class="fa fa-pencil"></i> Edit
                                     </a>
@@ -54,7 +54,7 @@
                                           style="display: inline">
                                         {{csrf_field()}}
                                         {{method_field('DELETE')}}
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <button type="submit" class="btn btn-outline-danger btn-block btn-sm">
                                             <i class="fa fa-remove"></i> Remove
                                         </button>
                                     </form>

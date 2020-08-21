@@ -6,7 +6,6 @@ use Exam\Models\Invitation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Permit\Notifications\Channels\Model as ModelChannel;
 
 class InvitationResponseNotification extends Notification
 {
@@ -36,7 +35,7 @@ class InvitationResponseNotification extends Notification
      */
     public function via($notifiable)
     {
-        return [ModelChannel::class];
+        return ['database'];
     }
 
     /**
@@ -68,15 +67,12 @@ class InvitationResponseNotification extends Notification
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function toModel()
+    public function toDatabase()
     {
         return [
-            'model' => $this->invitation->exam,
-            'verb' => $this->invitation->status,
-            'actor' => $this->invitation->user,
+            'message' => $this->invitation->user->name . ' accepted invitation of  ' . $this->invitation->exam->title,
+            'link' => route('exam::exams.show', $this->invitation->exam->slug),
         ];
     }
+
 }

@@ -6,7 +6,7 @@ use Exam\Models\Invitation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Permit\Models\User;
+use App\Models\User;
 
 class InvitationNotification extends Notification
 {
