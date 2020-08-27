@@ -1,4 +1,4 @@
-@if(request('answer_type')!==\Exam\Enums\QuestionAnswerType::WRITE)
+@if(in_array(request('answer_type'),[\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE,\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE]))
     <table class="table table-striped table-hover table-bordered" id="tblOptions">
         <thead>
         <tr>
@@ -39,13 +39,56 @@
         </tbody>
     </table>
     <div class="form-group text-center">
-        <a  href="javascript:void(0)"
+        <a href="javascript:void(0)"
            onclick="addOption()"
            class="btn btn-primary btn-sm btn-large">
             <i class="fa fa-plus"></i> Add New Option
         </a>
     </div>
+@elseif(request('answer_type')==\Exam\Enums\QuestionAnswerType::FILL_IN_THE_BLANK)
+    <h4>Fill In the Blank</h4>
+    <textarea class="form-control" id="fill_in_the_blank_summary" rows="8"
+              placeholder="e.g. Once upon a time there was a (1)..... She was 12 years (2)....."></textarea>
+    <h4>Answers</h4>
+    <table class="table table-striped table-hover table-bordered" id="fillInTheBlankAnswerTable">
+        <thead>
+        <tr>
+            <th>Question Number/Serial</th>
+            <th>Correct Answer</th>
+            <th>&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <input type="text" class="form-control option" name="" value=""
+                       placeholder="e.g. (1) or (a)">
+                <small class="text-muted">Question Number e.g. <b>(1)</b> or <b>(a)</b></small>
+            </td>
+            <td>
+                <input type="text" class="form-control option" name="" value=""
+                       placeholder="e.g. queen">
+                <small class="text-muted">Type the correct answer here.</small>
+            </td>
+            <td>
+                <a title="Remove this row" data-toggle="tooltip" href="javascript:void(0)"
+                   onclick="removeOption($(this))"
 
+                   class="btn btn-outline-danger btn-sm">
+                    <i class="fa fa-remove"></i>
+                </a>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="form-group text-center">
+        <a href="javascript:void(0)"
+           onclick="addOption()"
+           class="btn btn-primary btn-sm btn-large">
+            <i class="fa fa-plus"></i> Add New Option
+        </a>
+    </div>
 @elseif(request('type')!==\Exam\Enums\QuestionType::FREEHAND_WRITING)
     <div class="form-group">
         <label>Answer</label>
