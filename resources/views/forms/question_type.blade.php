@@ -5,9 +5,9 @@
         <label>Type of Question you like to create</label>
         <div class="input-group">
             <select name="answer_type" id="answer_type">
-                <option value="{{\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE}}">Single Choice</option>
-                <option value="{{\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE}}">Multiple Choice</option>
-                <option value="{{\Exam\Enums\QuestionAnswerType::WRITE}}">Write(User Input)</option>
+                @foreach(\Exam\Enums\QuestionAnswerType::toArray() as $value=>$title)
+                    <option value="{{$value}}">{{$title}}</option>
+                @endforeach
             </select>
 
             <select class="form-control" id="type" name="type">

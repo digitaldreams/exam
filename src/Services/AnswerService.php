@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Tuhin
- * Date: 8/12/2018
- * Time: 2:32 PM.
- */
 
 namespace Exam\Services;
 
+use Exam\Enums\QuestionReview;
 use Exam\Models\Answer;
 use Exam\Models\ExamUser;
 use Exam\Models\Question;
@@ -35,9 +30,9 @@ class AnswerService
     /**
      * AnswerService constructor.
      *
-     * @param $answer
+     * @param          $answer
      * @param Question $question
-     * @param $examUser
+     * @param          $examUser
      */
     public function __construct($answer, ExamUser $examUser)
     {
@@ -50,7 +45,7 @@ class AnswerService
         if (is_array($this->answer)) {
             foreach ($this->answer as $key => $value) {
                 $model = QuestionModel::find($key);
-                $correctAns = Question::REVIEW_TYPE_MANUAL === $model->review_type ? Answer::STATUS_PENDING : $this->checkSingle($value, $model);
+                $correctAns = QuestionReview::MANUAL === $model->review_type ? Answer::STATUS_PENDING : $this->checkSingle($value, $model);
                 $this->questionAnswers[] = $this->save($key, $value, $correctAns);
             }
         }
@@ -78,7 +73,7 @@ class AnswerService
     }
 
     /**
-     * @param $userAnswer
+     * @param          $userAnswer
      * @param Question $question
      *
      * @return bool
@@ -92,11 +87,7 @@ class AnswerService
                 $correctAns = true;
             }
         } else {
-            if (QuestionModel::TYPE_WRITE_SENTENCE == $question->type) {
-                if (false !== stripos($userAnswer, $question->answer)) {
-                    $correctAns = true;
-                }
-            } elseif (0 == strcasecmp($userAnswer, $question->answer)) {
+            if (0 == strcasecmp($userAnswer, $question->answer)) {
                 $correctAns = true;
             }
         }

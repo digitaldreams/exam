@@ -65,7 +65,7 @@
                     <label for="parent_id">Parent Question</label>
                     <select class="form-control" name="parent_id" id="parent_id">
                         <option value="">None</option>
-                        
+
                     </select>
                 </div>
 
@@ -73,20 +73,12 @@
                     <label>Type of Question you like to create</label>
                     <div class="input-group">
                         <select name="answer_type" id="answer_type">
-                            <option value="{{\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE}}"
-                                {{request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE?'selected':''}}>
-                                Single Choice
-                            </option>
-
-                            <option value="{{\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE}}"
-                                {{request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE?'selected':''}}
-                            >Multiple Choice
-                            </option>
-
-                            <option value="{{\Exam\Enums\QuestionAnswerType::WRITE}}"
-                                {{request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::WRITE?'selected':''}}
-                            >Write(User Input)
-                            </option>
+                            @foreach(\Exam\Enums\QuestionAnswerType::toArray() as $value => $title)
+                                <option value="{{$value}}"
+                                    {{request('answer_type',$model->answer_type)==$value?'selected':''}}>
+                                   {{$title}}
+                                </option>
+                                @endforeach
                         </select>
 
                         <select class="form-control" id="type" name="type">
