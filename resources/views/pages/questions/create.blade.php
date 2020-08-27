@@ -1,7 +1,5 @@
 @extends(config('exam.layouts.app'))
-@section('styles')
-    <link rel="stylesheet" href="{{asset('prototype/css/select2.min.css')}}"/>
-@endsection
+
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{route('exam::questions.index')}}">questions</a>

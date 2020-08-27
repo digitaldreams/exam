@@ -1,4 +1,4 @@
-@if(request('answer_type')!==\Exam\Models\Question::ANSWER_TYPE_WRITE)
+@if(request('answer_type')!==\Exam\Enums\QuestionAnswerType::WRITE)
     <table class="table table-striped table-hover table-bordered" id="tblOptions">
         <thead>
         <tr>
@@ -46,7 +46,7 @@
         </a>
     </div>
 
-@elseif(request('type')!==\Exam\Models\Question::TYPE_FREEHAND_WRITING)
+@elseif(request('type')!==\Exam\Enums\QuestionType::FREEHAND_WRITING)
     <div class="form-group">
         <label>Answer</label>
         <input type="text" name="answer" value="{{$model->answer}}" class="form-control"

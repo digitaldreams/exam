@@ -3,46 +3,30 @@
 namespace Exam\Models;
 
 use Blog\Services\FullTextSearch;
+use Exam\Enums\QuestionAnswerType;
+use Exam\Enums\QuestionType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 
 /**
- * @property varchar   $type              type
- * @property varchar   $questionable_type questionable type
- * @property int       $questionable_id   questionable id
- * @property varchar   $title             title
- * @property text      $options           options
- * @property varchar   $answer            answer
- * @property varchar   $explanation       explanation
- * @property text      $data              data
- * @property int       $total_mark        total mark
- * @property timestamp $created_at        created at
- * @property timestamp $updated_at        updated at
+ * @property string    $type        type
+ * @property string    $title       title
+ * @property string    $options     options
+ * @property string    $answer      answer
+ * @property string    $explanation explanation
+ * @property array     $data        data
+ * @property int       $total_mark  total mark
+ * @property \DateTime $created_at  created at
+ * @property \DateTime $updated_at  updated at
  */
 class Question extends Model
 {
     use FullTextSearch;
-    const  TYPE_IMG_TO_WORD = 'img_to_word';
-    const  TYPE_AUDIO_TO_WORD = 'audio_to_word';
-    const  TYPE_VIDEO_TO_WORD = 'video_to_word';
-    const  TYPE_WORD_TO_IMG = 'word_to_img';
-    const TYPE_MCQ = 'mcq';
-    const TYPE_PART_OF_SPEECH = 'part_of_speech';
-    const TYPE_CONVERSION = 'conversion';
-    const TYPE_WRITE_SENTENCE = 'write_sentence';
-    const TYPE_VOICE_TO_WORD = 'voice_to_word';
-    const TYPE_REARRANGE = 'rearrange';
-    const TYPE_SPELLING = 'spelling';
-    const TYPE_PRONOUNCE = 'pronounce';
-    const TYPE_VOICE_TO_SENTENCE = 'voice_to_sentence';
-    const TYPE_FREEHAND_WRITING = 'freehand_writing';
-
-    const  ANSWER_SINGLE = 'single';
-    const ANSWER_TYPE_MULTIPLE = 'multiple';
-    const ANSWER_TYPE_WRITE = 'write';
-    const REVIEW_PENDING = 2;
-    const REVIEW_TYPE_AUTO = 'auto';
-    const REVIEW_TYPE_MANUAL = 'manual';
 
     /**
      * Database table name.
@@ -54,8 +38,6 @@ class Question extends Model
      */
     protected $fillable = [
         'type',
-        'questionable_type',
-        'questionable_id',
         'parent_id',
         'title',
         'hints',
@@ -67,6 +49,9 @@ class Question extends Model
         'data',
     ];
 
+    /**
+     * @var array
+     */
     protected $searchable = ['title'];
 
     /**
@@ -74,22 +59,26 @@ class Question extends Model
      */
     protected $dates = [];
 
+    /**
+     * @var array
+     */
     protected $casts = [
         'data' => 'array',
         'options' => 'array',
     ];
 
-    public function questionable()
-    {
-        return $this->morphTo();
-    }
-
-    public function exam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function exam(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'exam_question');
     }
 
-    public function answer()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function answer(): HasOne
     {
         return $this->hasOne(Answer::class, 'question_id');
     }
@@ -97,7 +86,7 @@ class Question extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(static::class, 'parent_id');
     }
@@ -105,97 +94,57 @@ class Question extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function children()
+    public function children(): HasMany
     {
         return $this->hasMany(static::class, 'parent_id');
     }
 
-    public function scopeForExam($query, $examId)
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int                                   $examId
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForExam(Builder $query, int $examId): Builder
     {
-        $query->whereHas('exam', function ($q) use ($examId) {
+        return $query->whereHas('exam', function ($q) use ($examId) {
             $q->where('id', $examId);
         });
     }
 
-    public function scopeOnlyParent($query)
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOnlyParent(Builder $query): Builder
     {
         return $query->whereNull('parent_id');
-    }
-
-    public static function types()
-    {
-        return [
-            'mcq' => 'MCQ',
-            'img_to_word' => 'Image To Question',
-            'word_to_img' => 'Question To Image',
-            'voice_to_sentence' => 'Voice',
-            'pronounce' => 'Pronounce',
-            'audio_to_word' => 'Audio',
-            'video_to_word' => 'Video',
-            'freehand_writing' => 'Freehand Writing',
-        ];
     }
 
     /**
      * @return array
      */
-    public static function wordTypes()
+    public function getOptions(): array
     {
-        return [
-            'part_of_speech' => [
-                'title' => 'Parts of Speech',
-                'type' => static::ANSWER_SINGLE,
-            ],
-            'conversion' => [
-                'title' => 'PP conversion',
-                'type' => static::ANSWER_SINGLE,
-            ],
-            'write_sentence' => [
-                'title' => 'Make sentence',
-                'type' => static::ANSWER_TYPE_WRITE,
-            ],
-            'spelling' => [
-                'title' => 'Spelling',
-                'type' => static::ANSWER_SINGLE,
-            ],
-            'pronounce' => [
-                'title' => 'Pronounce',
-                'type' => static::ANSWER_SINGLE,
-            ],
-            'word_to_img' => [
-                'title' => 'Image',
-                'type' => static::ANSWER_SINGLE,
-            ],
-        ];
-    }
-
-    /**
-     * @return array|text
-     */
-    public function getOptions()
-    {
-        try {
-            if (empty($this->id)) {
-                return [
-                    1 => '',
-                    2 => '',
-                    3 => '',
-                    4 => '',
-                ];
-            }
-
-            return is_array($this->options) ? $this->options : [];
-        } catch (\Exception $ex) {
-            return [];
+        if (empty($this->id)) {
+            return [
+                1 => '',
+                2 => '',
+                3 => '',
+                4 => '',
+            ];
         }
+
+        return is_array($this->options) ? $this->options : [];
     }
 
     /**
-     * @param $value
+     * @param string|array $value
      *
      * @return bool
      */
-    public function isCorrectAnswer($value)
+    public function isCorrectAnswer($value): bool
     {
         if (empty($this->id)) {
             return false;
@@ -205,29 +154,16 @@ class Question extends Model
         return is_array($answers) ? in_array($value, $answers) : $value == $this->answer;
     }
 
+    /**
+     * @return array|string
+     */
     public function getAnswers()
     {
-        if (in_array($this->type, static::generic()) && $this->answer_type == static::ANSWER_TYPE_MULTIPLE) {
+        if (in_array($this->type, QuestionType::toArray()) && QuestionAnswerType::MULTIPLE_CHOICE == $this->answer_type) {
             return explode(',', $this->answer);
         }
 
         return $this->answer;
-    }
-
-    /**
-     * @return array
-     */
-    public static function generic()
-    {
-        return [
-            static::TYPE_MCQ,
-            static::TYPE_IMG_TO_WORD,
-            static::TYPE_PART_OF_SPEECH,
-            static::TYPE_SPELLING,
-            static::TYPE_AUDIO_TO_WORD,
-            static::TYPE_VIDEO_TO_WORD,
-            static::TYPE_FREEHAND_WRITING,
-        ];
     }
 
     /**
@@ -236,7 +172,7 @@ class Question extends Model
      *
      * @return bool|void
      */
-    public function inOptions($word, $key = true)
+    public function inOptions($word, $key = true): bool
     {
         $options = $this->getOptions();
         if (is_array($options)) {
@@ -247,43 +183,9 @@ class Question extends Model
     }
 
     /**
-     * @param $type
-     * @param $id
-     *
-     * @return Question
-     */
-    public function callService($type, $id)
-    {
-        $modelClass = config('exam.services.' . $type . '.model');
-        if (empty($modelClass)) {
-            return new static();
-        }
-        $serviceClass = config('exam.services.' . $type . '.service');
-        if (empty($serviceClass)) {
-            return new static();
-        }
-        $modelObj = $modelClass::find($id);
-        $serviceObj = new $serviceClass($modelObj, $this);
-
-        return $serviceObj->make();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isMediaInTitle()
-    {
-        return in_array($this->type, [
-            static::TYPE_WORD_TO_IMG,
-            static::TYPE_AUDIO_TO_WORD,
-            static::TYPE_VIDEO_TO_WORD,
-        ]);
-    }
-
-    /**
      * @param string $key
      *
-     * @return bool|text|mixed
+     * @return bool|mixed
      */
     public function getData($key = '')
     {
@@ -294,13 +196,17 @@ class Question extends Model
         return is_array($this->data) ? Arr::get($this->data, $key) : false;
     }
 
+    /**
+     * Parse Youtube Video link and make it embedded url.
+     *
+     * @return bool|mixed|string
+     */
     public function getVideoLink()
     {
         $url = $this->getData('media.url');
         if (!empty($url)) {
             $parts = parse_url($url);
             if (isset($parts['host']) && isset($parts['query']) && 'www.youtube.com' == $parts['host']) {
-                //                   placeholder="e.g. https://www.youtube.com/embed/nfP5N9Yc72A"
                 $id = str_replace('v=', '', $parts['query']);
 
                 return 'https://www.youtube.com/embed/' . $id;
@@ -310,6 +216,7 @@ class Question extends Model
                 return 'https://www.youtube.com/embed/' . trim($path, '/');
             }
         }
+
         return $url;
     }
 }

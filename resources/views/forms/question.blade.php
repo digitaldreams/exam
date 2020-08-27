@@ -1,8 +1,6 @@
 <form action="{{$route ?? route('exam::questions.store')}}" method="POST">
     {{csrf_field()}}
     <input type="hidden" name="_method" value="{{$method ?? 'POST'}}"/>
-    <input type="hidden" name="questionable_type" value="{{$model->questionable_type}}"/>
-    <input type="hidden" name="questionable_id" value="{{$model->questionable_id}}"/>
     <div class="row">
         <div class="col-sm-9">
             <div class="form-group">
@@ -67,10 +65,7 @@
                     <label for="parent_id">Parent Question</label>
                     <select class="form-control" name="parent_id" id="parent_id">
                         <option value="">None</option>
-                        @foreach($parents as $parent)
-                            <option
-                                value="{{$parent->id}}" {{$model->parent_id==$parent->id?'selected':''}}>{{$parent->title}}</option>
-                        @endforeach
+                        
                     </select>
                 </div>
 
@@ -78,23 +73,24 @@
                     <label>Type of Question you like to create</label>
                     <div class="input-group">
                         <select name="answer_type" id="answer_type">
-                            <option value="{{\Exam\Models\Question::ANSWER_SINGLE}}"
-                                {{request('answer_type',$model->answer_type)==\Exam\Models\Question::ANSWER_SINGLE?'selected':''}}>
-                                Single
-                                Choice
+                            <option value="{{\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE}}"
+                                {{request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE?'selected':''}}>
+                                Single Choice
                             </option>
-                            <option
-                                value="{{\Exam\Models\Question::ANSWER_TYPE_MULTIPLE}}" {{request('answer_type',$model->answer_type)==\Exam\Models\Question::ANSWER_TYPE_MULTIPLE?'selected':''}}
+
+                            <option value="{{\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE}}"
+                                {{request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE?'selected':''}}
                             >Multiple Choice
                             </option>
-                            <option value="{{\Exam\Models\Question::ANSWER_TYPE_WRITE}}"
-                                {{request('answer_type',$model->answer_type)==\Exam\Models\Question::ANSWER_TYPE_WRITE?'selected':''}}
+
+                            <option value="{{\Exam\Enums\QuestionAnswerType::WRITE}}"
+                                {{request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::WRITE?'selected':''}}
                             >Write(User Input)
                             </option>
                         </select>
 
                         <select class="form-control" id="type" name="type">
-                            @foreach(\Exam\Models\Question::types() as $key=>$name)
+                            @foreach(\Exam\Enums\QuestionType::toArray() as $key=>$name)
                                 <option
                                     value="{{$key}}" {{request('type',$model->type)==$key?'selected':''}}>{{$name}}</option>
                             @endforeach
@@ -110,8 +106,8 @@
                     <div class="form-check-inline">
                         <label>
                             <input type="radio" name="review_type"
-                                   value="{{\Exam\Models\Question::REVIEW_TYPE_AUTO}}"
-                                {{old('review_type',$model->review_type)==\Exam\Models\Question::REVIEW_TYPE_AUTO?'checked':''}}
+                                   value="{{\Exam\Enums\QuestionReview::AUTO}}"
+                                {{old('review_type',$model->review_type)==\Exam\Enums\QuestionReview::AUTO?'checked':''}}
                             >
                             Auto
                         </label>
@@ -119,8 +115,8 @@
                     <div class="form-check-inline">
                         <label>
                             <input type="radio" name="review_type"
-                                   value="{{\Exam\Models\Question::REVIEW_TYPE_MANUAL}}"
-                                {{old('review_type',$model->review_type)==\Exam\Models\Question::REVIEW_TYPE_MANUAL?'checked':''}}
+                                   value="{{\Exam\Enums\QuestionReview::MANUAL}}"
+                                {{old('review_type',$model->review_type)==\Exam\Enums\QuestionReview::MANUAL?'checked':''}}
                             >
                             Manual
                         </label>

@@ -3,6 +3,9 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Exam\Enums\QuestionAnswerType;
+use Exam\Enums\QuestionReview;
+use Exam\Enums\QuestionType;
 use Exam\Http\Requests\Questions\Create;
 use Exam\Http\Requests\Questions\Destroy;
 use Exam\Http\Requests\Questions\Edit;
@@ -11,6 +14,8 @@ use Exam\Http\Requests\Questions\Show;
 use Exam\Http\Requests\Questions\Store;
 use Exam\Http\Requests\Questions\Update;
 use Exam\Models\Question;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -62,28 +67,15 @@ class QuestionController extends Controller
     public function create(Create $request)
     {
         $model = new Question();
-        $questionableType = null;
-        $questionableId = null;
 
-        if ($request->has('q_type') && $request->has('q_id') && !empty($request->get('type'))) {
-            $questionableType = isset(Question::$mapModel[$request->get('q_type')]) ? Question::$mapModel[$request->get('q_type')] : $request->get('q_type');
-            $questionableId = $request->get('q_id');
-            $model = Question::firstOrNew([
-                'questionable_type' => $questionableType,
-                'questionable_id' => $questionableId,
-                'type' => $request->get('type'),
-            ]);
-            $model->answer_type = $request->get('answer_type');
-            $model = $model->callService($request->get('q_type'), $request->get('q_id'));
-        }
-        if (Question::TYPE_FREEHAND_WRITING == $request->get('type') || Question::ANSWER_TYPE_WRITE == $request->get('answer_type')) {
-            $model->review_type = Question::REVIEW_TYPE_MANUAL;
+        if (QuestionType::FREEHAND_WRITING == $request->get('type') || QuestionAnswerType::WRITE == $request->get('answer_type')) {
+            $model->review_type = QuestionReview::MANUAL;
+        } else {
+            $model->review_type = QuestionReview::AUTO;
         }
 
         return view('exam::pages.questions.create', [
             'model' => $model,
-            'parents' => Question::onlyParent()->get(['id', 'title']),
-            'enableVoice' => true,
         ]);
     }
 
@@ -92,9 +84,9 @@ class QuestionController extends Controller
      *
      * @param Store $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Store $request)
+    public function store(Store $request): RedirectResponse
     {
         $model = new Question();
         $model->fill($request->except(['options']));
@@ -108,9 +100,6 @@ class QuestionController extends Controller
         $model->answer = implode(',', $answers);
 
         if (is_array($model->answer)) {
-            if (Question::TYPE_REARRANGE == $model->type) {
-                $model->answer = array_intersect_key($request->get('answer'), $request->get('options'));
-            }
             $model->answer = json_encode($model->answer);
         }
         if ($model->save()) {
@@ -127,7 +116,7 @@ class QuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Request  $request
+     * @param Edit     $request
      * @param Question $question
      *
      * @return \Illuminate\Http\Response
@@ -149,9 +138,9 @@ class QuestionController extends Controller
      * @param Update   $request
      * @param Question $question
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Update $request, Question $question)
+    public function update(Update $request, Question $question): RedirectResponse
     {
         $question->fill($request->except(['options']));
         $options = $request->get('options', []);
@@ -163,11 +152,7 @@ class QuestionController extends Controller
         }
         $question->answer = implode(',', $answers);
 
-
         if (is_array($question->answer)) {
-            if (Question::TYPE_REARRANGE == $question->type) {
-                $question->answer = array_intersect_key($request->get('answer'), $request->get('options'));
-            }
             $question->answer = json_encode($question->answer);
         }
         if ($question->save()) {
@@ -187,11 +172,11 @@ class QuestionController extends Controller
      * @param Destroy  $request
      * @param Question $question
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      *
      * @throws \Exception
      */
-    public function destroy(Destroy $request, Question $question)
+    public function destroy(Destroy $request, Question $question): RedirectResponse
     {
         if ($question->delete()) {
             session()->flash('message', 'Question successfully deleted');
@@ -199,7 +184,7 @@ class QuestionController extends Controller
             session()->flash('error', 'Error occurred while deleting Question');
         }
 
-        return redirect()->back();
+        return redirect()->route('exam::questions.index');
     }
 
     /**
@@ -207,7 +192,7 @@ class QuestionController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function select2Ajax(Request $request)
+    public function select2Ajax(Request $request): JsonResponse
     {
         $questions = Question::query()->search($request->get('term'))->take(10)->get();
         $data = $questions->map(function ($question) {

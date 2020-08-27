@@ -1,7 +1,4 @@
 @extends(config('exam.layouts.app'))
-@section('styles')
-    <link rel="stylesheet" href="{{asset('prototype/css/select2.min.css')}}"/>
-@endsection
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{route('exam::questions.index')}}">questions</a>
@@ -29,6 +26,5 @@
     </div>
 @endSection
 @section('scripts')
-    <script type="text/javascript" src="{{asset('prototype/js/select2.full.min.js')}}"></script>
     @include('exam::pages.questions.scripts')
 @endsection
