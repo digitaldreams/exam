@@ -3,6 +3,7 @@
 namespace Exam\Models;
 
 use Blog\Services\FullTextSearch;
+use Exam\Services\FillInTheBlankFormService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -213,5 +214,15 @@ class Question extends Model
         }
 
         return $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function renderSummaryForm(): string
+    {
+        $summaryFormService = new FillInTheBlankFormService($this);
+
+        return $summaryFormService->render();
     }
 }

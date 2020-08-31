@@ -24,7 +24,7 @@ use Exam\Notifications\ExamCompleted;
 use Exam\Services\AnswerService;
 use Exam\Services\CertificateService;
 use Illuminate\Http\Request;
-use Notification;
+use Illuminate\Support\Facades\Notification;
 
 class ExamUserController extends Controller
 {
@@ -149,7 +149,6 @@ class ExamUserController extends Controller
             'answers' => $answer,
             'timestamp' => time(),
             'examUser' => $exam_user,
-            'enableVoice' => true,
         ]);
     }
 

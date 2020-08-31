@@ -31,9 +31,24 @@ class QuestionType
     }
 
     /**
+     * @return array
+     */
+    public static function generic()
+    {
+        return [
+            static::MCQ,
+            static::IMG_TO_QUESTION,
+            static::AUDIO,
+            static::VIDEO,
+            static::FREEHAND_WRITING,
+        ];
+    }
+
+    /**
+     * @param mixed $type
+     *
      * @return bool
      *
-     * @param mixed $type
      */
     public function isMediaInTitle($type)
     {

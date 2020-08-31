@@ -3,6 +3,7 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Exam\Enums\QuestionReview;
 use Exam\Http\Requests\Answers\Index;
 use Exam\Http\Requests\Answers\Show;
 use Exam\Http\Requests\Answers\Update;
@@ -23,7 +24,7 @@ class ExamReviewController extends Controller
     public function index(Index $index, Exam $exam)
     {
         $examUsers = ExamUser::where('exam_id', $exam->id)->whereHas('exam.questions', function ($q) {
-            $q->where('review_type', Question::REVIEW_TYPE_MANUAL)
+            $q->where('review_type', QuestionReview::MANUAL)
                 ->whereHas('answer', function ($aq) {
                     $aq->where('status', Answer::STATUS_PENDING);
                 });
