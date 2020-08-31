@@ -14,6 +14,7 @@ use Exam\Http\Requests\Questions\Show;
 use Exam\Http\Requests\Questions\Store;
 use Exam\Http\Requests\Questions\Update;
 use Exam\Models\Question;
+use Exam\Repositories\QuestionRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,6 +26,21 @@ use Illuminate\Http\Request;
  */
 class QuestionController extends Controller
 {
+    /**
+     * @var \Exam\Repositories\QuestionRepository
+     */
+    protected $questionRepository;
+
+    /**
+     * QuestionController constructor.
+     *
+     * @param \Exam\Repositories\QuestionRepository $questionRepository
+     */
+    public function __construct(QuestionRepository $questionRepository)
+    {
+        $this->questionRepository = $questionRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -88,29 +104,9 @@ class QuestionController extends Controller
      */
     public function store(Store $request): RedirectResponse
     {
-        $model = new Question();
-        $model->fill($request->except(['options']));
-        $options = $request->get('options', []);
-        $model->options = $options['option'];
-        $answerIndex = $options['isCorrect'];
-        $answers = [];
-        foreach ($answerIndex as $index => $value) {
-            $answers[] = $model->options[$index];
-        }
-        $model->answer = implode(',', $answers);
+        $question = $this->questionRepository->create($request->all());
 
-        if (is_array($model->answer)) {
-            $model->answer = json_encode($model->answer);
-        }
-        if ($model->save()) {
-            session()->flash('message', 'Question saved successfully');
-
-            return redirect()->route('exam::questions.index');
-        } else {
-            session()->flash('error', 'Something is wrong while saving Question');
-        }
-
-        return redirect()->back();
+        return redirect()->route('exam::questions.show', $question->id)->with('message', 'Question saved successfully');
     }
 
     /**
@@ -127,8 +123,6 @@ class QuestionController extends Controller
     {
         return view('exam::pages.questions.edit', [
             'model' => $question,
-            'parents' => Question::onlyParent()->get(['id', 'title']),
-            'enableVoice' => true,
         ]);
     }
 
@@ -142,28 +136,10 @@ class QuestionController extends Controller
      */
     public function update(Update $request, Question $question): RedirectResponse
     {
-        $question->fill($request->except(['options']));
-        $options = $request->get('options', []);
-        $question->options = $options['option'];
-        $answerIndex = $options['isCorrect'];
-        $answers = [];
-        foreach ($answerIndex as $index => $value) {
-            $answers[] = $question->options[$index];
-        }
-        $question->answer = implode(',', $answers);
+        $this->questionRepository->update($request->all(), $question);
 
-        if (is_array($question->answer)) {
-            $question->answer = json_encode($question->answer);
-        }
-        if ($question->save()) {
-            session()->flash('message', 'Question successfully updated');
+        return redirect()->route('exam::questions.show', $question->id)->with('message', 'Question successfully updated');
 
-            return redirect()->route('exam::questions.index');
-        } else {
-            session()->flash('error', 'Something is wrong while updating Question');
-        }
-
-        return redirect()->back();
     }
 
     /**

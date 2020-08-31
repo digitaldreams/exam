@@ -80,7 +80,7 @@
                         @if($record->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
                             <img src="{{$record->answer}}" width="100px" class="img-thumbnail img-bordered d-inline"/>
                         @else
-                            {{$record->answer}}
+                            {{implode(",",$record->answer)}}
                         @endif
                     </td>
                 </tr>

@@ -3,8 +3,6 @@
 namespace Exam\Models;
 
 use Blog\Services\FullTextSearch;
-use Exam\Enums\QuestionAnswerType;
-use Exam\Enums\QuestionType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +15,7 @@ use Illuminate\Support\Arr;
  * @property string    $type        type
  * @property string    $title       title
  * @property string    $options     options
- * @property string    $answer      answer
+ * @property array     $answer      answer
  * @property string    $explanation explanation
  * @property array     $data        data
  * @property int       $total_mark  total mark
@@ -65,6 +63,7 @@ class Question extends Model
     protected $casts = [
         'data' => 'array',
         'options' => 'array',
+        'answer' => 'array',
     ];
 
     /**
@@ -159,11 +158,7 @@ class Question extends Model
      */
     public function getAnswers()
     {
-        if (in_array($this->type, QuestionType::toArray()) && QuestionAnswerType::MULTIPLE_CHOICE == $this->answer_type) {
-            return explode(',', $this->answer);
-        }
-
-        return $this->answer;
+        return is_array($this->answer) ? $this->answer : [];
     }
 
     /**
