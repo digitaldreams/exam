@@ -8,12 +8,12 @@
 
 namespace Exam\Services;
 
-use Exam\Models\ExamUser;
-use Exam\Models\Question;
-use Exam\Notifications\ReviewRequestToTeacher;
-use Image;
-use Notification;
 use App\Models\User;
+use Exam\Enums\QuestionReview;
+use Exam\Models\ExamUser;
+use Exam\Notifications\ReviewRequestToTeacher;
+use Illuminate\Support\Facades\Notification;
+use Image;
 
 class CertificateService
 {
@@ -47,9 +47,9 @@ class CertificateService
     {
         $this->image = Image::canvas(450, 235, '#fffff');
         $url = $this->user->getAvatarThumb();
-     //   $photo = Image::make($url);
-     //   $photo->resize(180, 180);
-      //  $this->image = $this->image->insert($photo);
+        //   $photo = Image::make($url);
+        //   $photo->resize(180, 180);
+        //  $this->image = $this->image->insert($photo);
         $this->image = $this->image->text($this->examUser->exam->title, 190, 10,
             function ($font) {
                 $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
@@ -105,7 +105,7 @@ class CertificateService
 
     protected function notify()
     {
-        $totalPendingQuestion = $this->examUser->exam->questions()->where('review_type', Question::REVIEW_TYPE_MANUAL)->count();
+        $totalPendingQuestion = $this->examUser->exam->questions()->where('review_type', QuestionReview::MANUAL)->count();
         if ($totalPendingQuestion > 0) {
             Notification::send(User::getAdmins(), new ReviewRequestToTeacher($this->examUser));
         }

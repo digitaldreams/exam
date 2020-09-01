@@ -95,7 +95,7 @@
             <div class="col-sm-6">
                 <div class="card mb-4">
                     <div class="card-header">
-                        @if($answer->status==\Exam\Models\Question::REVIEW_PENDING)
+                        @if($answer->status==\Exam\Enums\QuestionReview::PENDING)
                             <i class="fa fa-spinner text-warning" data-toggle="tooltip"
                                title="Your answer are in review "></i>
                         @else
@@ -114,7 +114,7 @@
                                                     class="fa fa-arrow-right"></i> {{$value}}</li>
                                         @endforeach
                                     </ol>
-                                @elseif($answer->question->type==\Exam\Models\Question::TYPE_WORD_TO_IMG)
+                                @elseif($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
                                     <img title="Correct answer" src="{{$answer->question->answer}}"
                                          class="img-fluid img-thumbnail"/>
                                 @else
@@ -132,7 +132,7 @@
                                             @endforeach
                                         @endif
                                     </ol>
-                                @elseif($answer->question->type==\Exam\Models\Question::TYPE_WORD_TO_IMG)
+                                @elseif($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
                                     <img title="Your answer" src="{{$answer->answer}}"
                                          class="img-fluid img-thumbnail"/>
 

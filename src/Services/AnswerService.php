@@ -2,6 +2,7 @@
 
 namespace Exam\Services;
 
+use Exam\Enums\QuestionAnswerType;
 use Exam\Enums\QuestionReview;
 use Exam\Models\Answer;
 use Exam\Models\ExamUser;
@@ -40,12 +41,19 @@ class AnswerService
         $this->examUser = $examUser;
     }
 
+    /**
+     *
+     */
     public function check()
     {
         if (is_array($this->answer)) {
             foreach ($this->answer as $key => $value) {
-                $model = QuestionModel::find($key);
-                $correctAns = QuestionReview::MANUAL === $model->review_type ? Answer::STATUS_PENDING : $this->checkSingle($value, $model);
+                $model = QuestionModel::query()->find($key);
+                if (QuestionAnswerType::FILL_IN_THE_BLANK == $model->answer_type) {
+                    $correctAns = $this->checkFillInTheBlankAnswers($value, $model);
+                } else {
+                    $correctAns = QuestionReview::MANUAL === $model->review_type ? Answer::STATUS_PENDING : $this->checkSingle($value, $model);
+                }
                 $this->questionAnswers[] = $this->save($key, $value, $correctAns);
             }
         }
@@ -87,9 +95,27 @@ class AnswerService
                 $correctAns = true;
             }
         } else {
-            if (0 == strcasecmp($userAnswer, $question->answer)) {
+            $correctAnswer = $question->getAnswers()[0] ?? false;
+            if (0 == strcasecmp($userAnswer, $correctAnswer)) {
                 $correctAns = true;
             }
+        }
+
+        return $correctAns;
+    }
+
+    /**
+     * @param array                 $userAnswer
+     * @param \Exam\Models\Question $question
+     *
+     * @return bool
+     */
+    private function checkFillInTheBlankAnswers(array $userAnswer, Question $question)
+    {
+        $correctAns = false;
+        $correctAnswers = array_intersect($question->getAnswers(), $userAnswer);
+        if (count($correctAnswers) == count($question->getAnswers())) {
+            $correctAns = true;
         }
 
         return $correctAns;

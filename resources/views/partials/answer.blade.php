@@ -1,5 +1,5 @@
 @if($answer)
-    @if($answer->status==\Exam\Models\Question::REVIEW_PENDING)
+    @if($answer->status==\Exam\Enums\QuestionReview::PENDING)
         <div class="alert alert-info">Your answer are in review.</div>
     @elseif($answer->isCorrect())
         <div class="alert alert-success">
