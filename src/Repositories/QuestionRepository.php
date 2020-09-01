@@ -53,7 +53,7 @@ class QuestionRepository extends Repository
             $answerIndex = $options['isCorrect'];
             $answers = [];
             foreach ($answerIndex as $index => $value) {
-                $answers[] = $this->model->options[$index];
+                $answers[] = $question->options[$index];
             }
             $question->answer = $answers;
         } elseif ($answers = $data['answers'] ?? []) {

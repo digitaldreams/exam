@@ -63,8 +63,10 @@
             <div class="bg-light p-1">
                 <div class="form-group">
                     <label for="parent_id">Parent Question</label>
-                    <select class="form-control" name="parent_id" id="parent_id">
-                        <option value="">None</option>
+                    <select class="form-control" name="parent_id" id="parentQuestionSearch">
+                        @if($model->parent)
+                            <option value="{{$model->parent->id}}" selected>{{$model->parent->title}}</option>
+                        @endif
 
                     </select>
                 </div>
@@ -76,9 +78,9 @@
                             @foreach(\Exam\Enums\QuestionAnswerType::toArray() as $value => $title)
                                 <option value="{{$value}}"
                                     {{request('answer_type',$model->answer_type)==$value?'selected':''}}>
-                                   {{$title}}
+                                    {{$title}}
                                 </option>
-                                @endforeach
+                            @endforeach
                         </select>
 
                         <select class="form-control" id="type" name="type">

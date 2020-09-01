@@ -65,5 +65,11 @@
     }
 
     @endif
-
+    $("#parentQuestionSearch").select2({
+        placeholder: 'Search questions',
+        ajax: {
+            url: '{{route('exam::questions.select2Ajax')}}',
+            dataType: 'json'
+        }
+    });
 </script>
