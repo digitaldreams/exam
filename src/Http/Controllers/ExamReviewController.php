@@ -10,7 +10,6 @@ use Exam\Http\Requests\Answers\Update;
 use Exam\Models\Answer;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
-use Exam\Models\Question;
 use Exam\Notifications\ReviewCompletedNotification;
 
 class ExamReviewController extends Controller
@@ -21,14 +20,15 @@ class ExamReviewController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Index $index, Exam $exam)
+    public function index(Exam $exam)
     {
-        $examUsers = ExamUser::where('exam_id', $exam->id)->whereHas('exam.questions', function ($q) {
-            $q->where('review_type', QuestionReview::MANUAL)
-                ->whereHas('answer', function ($aq) {
-                    $aq->where('status', Answer::STATUS_PENDING);
-                });
-        })->paginate(6);
+        $examUsers = ExamUser::where('exam_id', $exam->id)
+            ->whereHas('exam.questions', function ($q) {
+                $q->where('review_type', QuestionReview::MANUAL)
+                    ->whereHas('answer', function ($aq) {
+                        $aq->where('status', Answer::STATUS_PENDING);
+                    });
+            })->paginate(6);
 
         return view('exam::pages.reviews.index', [
             'records' => $examUsers,
@@ -42,7 +42,7 @@ class ExamReviewController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Show $show, Answer $answer)
+    public function show(Answer $answer)
     {
         return view('exam::pages.reviews.show', [
             'record' => $answer,

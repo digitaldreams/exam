@@ -88,7 +88,8 @@ class ExamUser extends Model
 
     public function pendingAnswers()
     {
-        return $this->hasMany(Answer::class, 'exam_user_id', 'id')->where('status', Answer::STATUS_PENDING);
+        return $this->hasMany(Answer::class, 'exam_user_id', 'id')
+            ->where('status', Answer::STATUS_PENDING);
     }
 
     /**
