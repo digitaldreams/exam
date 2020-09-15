@@ -11,6 +11,7 @@ namespace Exam\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Exam\Enums\ExamUserStatus;
+use Exam\Enums\ExamVisibility;
 use Exam\Http\Requests\Exams\Answer;
 use Exam\Http\Requests\Exams\Question;
 use Exam\Http\Requests\Exams\Result;
@@ -52,7 +53,7 @@ class ExamUserController extends Controller
         } else {
             $leftQuestions = $exam->questions()->whereNotIn('id', $exam_user->answers()->pluck('question_id')->toArray())->get();
         }
-        if (ExamUser::VISIBILITY_PRIVATE == $exam_user->visibility) {
+        if (ExamVisibility::PRIVATE == $exam_user->visibility) {
             $this->authorize('result', $exam_user);
         }
 
@@ -63,6 +64,8 @@ class ExamUserController extends Controller
             'answers' => $answers,
             'left' => $left,
             'correctionRate' => $exam_user->getCorrectionRate(),
+            'obtainMark' => $exam_user->getTotalObtainMark(),
+            'totalMark' => $exam->questions()->sum('total_mark'),
             'certificate' => new CertificateService($exam_user),
             'leftQuestions' => $leftQuestions,
         ]);

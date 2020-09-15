@@ -2,23 +2,21 @@
 
 namespace Exam\Models;
 
+use Exam\Enums\AnswerStatus;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int       $exam_user_id exam user id
- * @property int       $question_id  question id
- * @property text      $answer       answer
- * @property tinyint   $status       status
- * @property timestamp $created_at   created at
- * @property timestamp $updated_at   updated at
- * @property Question  $question     belongsTo
- * @property ExamUser  $examUser     belongsTo
+ * @property int            $exam_user_id exam user id
+ * @property int            $question_id  question id
+ * @property string         $answer       answer
+ * @property int            $status       status
+ * @property \Carbon\Carbon $created_at   created at
+ * @property \Carbon\Carbon $updated_at   updated at
+ * @property Question       $question     belongsTo
+ * @property ExamUser       $examUser     belongsTo
  */
 class Answer extends Model
 {
-    const STATUS_CORRECT = 1;
-    const STATUS_WRONG = 0;
-    const STATUS_PENDING = 2;
 
     /**
      * Database table name.
@@ -28,12 +26,13 @@ class Answer extends Model
     /**
      * Mass assignable columns.
      */
-    protected $fillable = ['exam_user_id', 'question_id', 'answer', 'status', 'spent_time'];
-
-    /**
-     * Date time columns.
-     */
-    protected $dates = [];
+    protected $fillable = [
+        'exam_user_id',
+        'question_id',
+        'answer',
+        'status',
+        'obtain_mark',
+    ];
 
     public static function boot()
     {
@@ -67,8 +66,11 @@ class Answer extends Model
         return $this->belongsTo(ExamUser::class, 'exam_user_id');
     }
 
+    /**
+     * @return bool
+     */
     public function isCorrect()
     {
-        return $this->status == static::STATUS_CORRECT;
+        return AnswerStatus::CORRECT == $this->status;
     }
 }

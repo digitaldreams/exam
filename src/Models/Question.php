@@ -46,6 +46,7 @@ class Question extends Model
         'review_type',
         'explanation',
         'data',
+        'total_mark',
     ];
 
     /**

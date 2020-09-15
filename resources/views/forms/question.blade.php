@@ -62,6 +62,15 @@
         <div class="col-sm-3">
             <div class="bg-light p-1">
                 <div class="form-group">
+                    <label for="parent_id">Total Mark</label>
+                    <input type="number" class="form-control" name="total_mark"
+                           value="{{old('total_mark',$model->total_mark)}}"
+                           placeholder="Total mark of this question e.g. 5"
+                           required
+                           step="1" min="1"
+                           max="99">
+                </div>
+                <div class="form-group">
                     <label for="parent_id">Parent Question</label>
                     <select class="form-control" name="parent_id" id="parentQuestionSearch">
                         @if($model->parent)

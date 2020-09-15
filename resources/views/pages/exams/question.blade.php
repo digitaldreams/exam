@@ -11,7 +11,11 @@
     {{$exam->title}}
 @endsection
 @section('tools')
-    <p class=" p-2"><span class="badge badge-info">{{$position ?? 0}}/{{$total ?? 0}}</span>
+
+    <p class=" p-2">
+        <label class="badge badge-primary">{{$question->total_mark}} marks</label>
+
+        <span class="badge badge-info">{{$position ?? 0}}/{{$total ?? 0}}</span>
         &nbsp;&nbsp;&nbsp;
         @if($exam->hasTimeLimit())
             <label class="badge badge-secondary"><i class="fa fa-clock-o"></i> {{$examUser->timeLeft()}}</label>

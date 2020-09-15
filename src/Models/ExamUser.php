@@ -2,32 +2,29 @@
 
 namespace Exam\Models;
 
+use App\Models\User;
 use Carbon\Carbon;
+use Exam\Enums\AnswerStatus;
+use Exam\Enums\ExamUserStatus;
 use Exam\Services\CertificateService;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * @property int       $exam_id       exam id
- * @property int       $user_id       user id
- * @property varchar   $status        status
- * @property text      $completed     completed
- * @property float     $total_mark    total mark
- * @property bool      $reminder      Reminder
- * @property float     $achieved_mark achieved mark
- * @property timestamp $created_at    created at
- * @property timestamp $updated_at    updated at
+ * @property int    $exam_id       exam id
+ * @property int    $user_id       user id
+ * @property string $status        status
+ * @property string $completed     completed
+ * @property float  $total_mark    total mark
+ * @property bool   $reminder      Reminder
+ * @property float  $achieved_mark achieved mark
+ * @property Carbon $created_at    created at
+ * @property Carbon $updated_at    updated at
  */
 class ExamUser extends Model
 {
-    const STATUS_COMPLETED = 'completed';
-    const STATUS_PENDING = 'pending';
-    const STATUS_CREATED = 'created';
-    const STATUS_CANCELED = 'canceled';
-
-    const VISIBILITY_PUBLIC = 'public';
-    const VISIBILITY_PRIVATE = 'private';
-
     /**
      * Database table name.
      */
@@ -63,7 +60,10 @@ class ExamUser extends Model
         });
     }
 
-    public function exam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function exam(): BelongsTo
     {
         return $this->belongsTo(Exam::class);
     }
@@ -71,30 +71,39 @@ class ExamUser extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function feedback()
+    public function feedback(): HasOne
     {
         return $this->hasOne(Feedback::class, 'feedbackable_id')->where('feedbackable_type', static::class);
     }
 
-    public function user()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function answers()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function answers(): HasMany
     {
         return $this->hasMany(Answer::class, 'exam_user_id', 'id');
     }
 
-    public function pendingAnswers()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pendingAnswers(): HasMany
     {
         return $this->hasMany(Answer::class, 'exam_user_id', 'id')
-            ->where('status', Answer::STATUS_PENDING);
+            ->where('status', AnswerStatus::PENDING);
     }
 
     /**
-     * @param $query
-     * @param $examId
+     * @param        $query
+     * @param        $examId
      * @param string $userId
      *
      * @return mixed
@@ -107,7 +116,10 @@ class ExamUser extends Model
             ->where('user_id', $userId);
     }
 
-    public function getCompleted()
+    /**
+     * @return array
+     */
+    public function getCompleted(): array
     {
         return $this->answers()->pluck('question_id')->toArray();
     }
@@ -115,7 +127,7 @@ class ExamUser extends Model
     /**
      * @return bool
      */
-    public function isFinished()
+    public function isFinished(): bool
     {
         $total = $this->exam->questions()->count();
         $completed = $this->answers()->count();
@@ -123,6 +135,9 @@ class ExamUser extends Model
         return $total == $completed;
     }
 
+    /**
+     * @return bool|int
+     */
     public function remaining()
     {
         if ($this->isFinished()) {
@@ -135,10 +150,13 @@ class ExamUser extends Model
         return $remaining > 0 ? $remaining : false;
     }
 
+    /**
+     * @return float|string
+     */
     public function getCorrectionRate()
     {
-        $total = $this->answers()->whereIn('status', [Answer::STATUS_WRONG, Answer::STATUS_CORRECT])->count();
-        $correctAns = $this->answers()->where('status', Answer::STATUS_CORRECT)->count();
+        $total = $this->answers()->whereIn('status', [AnswerStatus::WRONG, AnswerStatus::CORRECT, AnswerStatus::PARTIALLY_CORRECT])->count();
+        $correctAns = $this->answers()->where('status', AnswerStatus::CORRECT)->count();
         if ($total > 0) {
             return round(($correctAns / $total) * 100);
         }
@@ -147,19 +165,19 @@ class ExamUser extends Model
     }
 
     /**
-     * Return the title of the model. For example
-     *  John Doe and 30 others likes {Tour to Silliong part one}.
-     *
      * @return mixed
      */
-    public function getNotificationMessage()
+    public function getTotalObtainMark()
     {
-        return $this->exam->title;
+        return $this->answers()->sum('obtain_mark');
     }
 
+    /**
+     * @return bool|string
+     */
     public function getCertificate()
     {
-        if ($this->status == static::STATUS_COMPLETED) {
+        if (ExamUserStatus::COMPLETED == $this->status) {
             $certificate = new CertificateService($this);
 
             return $certificate->getFileName();
@@ -182,6 +200,9 @@ class ExamUser extends Model
         return $default;
     }
 
+    /**
+     * @return string
+     */
     public function timeLeft()
     {
         if (!empty($this->started_at)) {
@@ -193,6 +214,9 @@ class ExamUser extends Model
         return '';
     }
 
+    /**
+     * @return bool
+     */
     public function isTimeOver()
     {
         if ($this->exam->hasTimeLimit()) {

@@ -2,6 +2,7 @@
 
 namespace Exam\Policies;
 
+use Exam\Enums\ExamUserStatus;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -95,7 +96,7 @@ class ExamPolicy
             ->where('user_id', $user->id)
             ->first();
         if ($examUser) {
-            return ExamUser::STATUS_COMPLETED !== $examUser->status;
+            return ExamUserStatus::COMPLETED !== $examUser->status;
         }
 
         return true;

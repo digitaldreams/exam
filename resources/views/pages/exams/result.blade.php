@@ -24,7 +24,7 @@
 @section('tools')
     &nbsp;&nbsp;
     <div class="btn-group-sm">
-        <span class="btn btn-info">{{$correctionRate}}% </span>
+        <span class="btn btn-info">Mark: {{$obtainMark}}/{{$totalMark}} </span>
         @if($left)
             <span class="btn btn-warning">
         <a href="{{route('exam::exams.start',['exam'=>$exam->slug,'user'=>auth()->id()])}}">
@@ -38,7 +38,7 @@
             <btn title=" Your result is {{$exam_user->visibility}}"><label
                     class="btn btn-primary">{{$exam_user->visibility}}</label>
             </btn>
-            <?php $setVisibility = $exam_user->visibility == \Exam\Models\ExamUser::VISIBILITY_PUBLIC ? \Exam\Models\ExamUser::VISIBILITY_PRIVATE : \Exam\Models\ExamUser::VISIBILITY_PUBLIC;?>
+            <?php $setVisibility = $exam_user->visibility == \Exam\Enums\ExamVisibility::PUBLIC ? \Exam\Enums\ExamVisibility::PRIVATE : \Exam\Enums\ExamVisibility::PUBLIC;?>
             <a class="btn btn-warning"
                href="{{route('exam::exams.result.visibility',['exam_user'=>$exam_user,'visibility'=>$setVisibility])}}">Make
                 it {{$setVisibility}}</a>
@@ -55,7 +55,7 @@
                     {{$exam->title}}
                 </div>
                 <div class="col-sm-6">
-                    <span class="badge badge-info">{{$correctionRate}}% correction rate</span>
+                    <span class="btn btn-info">Mark: {{$obtainMark}}/{{$totalMark}} </span>
                     @if($left)
                         <span class="badge badge-warning">
                                 <a href="#">
@@ -102,6 +102,7 @@
                             <i class="fa {{$answer->isCorrect()?'fa-check-circle-o text-success':'fa-remove text-danger'}}"></i>
                         @endif
                         {{$answer->question->title}}
+                        <span class="badge badge-primary badge-pill">{{$answer->obtain_mark}} / {{$answer->question->total_mark}}</span>
                     </div>
                     <div class="card-body">
                         <div class="row">

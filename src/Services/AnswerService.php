@@ -2,6 +2,7 @@
 
 namespace Exam\Services;
 
+use Exam\Enums\AnswerStatus;
 use Exam\Enums\QuestionAnswerType;
 use Exam\Enums\QuestionReview;
 use Exam\Models\Answer;
@@ -42,7 +43,7 @@ class AnswerService
     }
 
     /**
-     *
+     * Check the User answer whether its right or wrong.
      */
     public function check()
     {
@@ -50,31 +51,34 @@ class AnswerService
             foreach ($this->answer as $key => $value) {
                 $model = QuestionModel::query()->find($key);
                 if (QuestionAnswerType::FILL_IN_THE_BLANK == $model->answer_type) {
-                    $correctAns = $this->checkFillInTheBlankAnswers($value, $model);
+                    $this->checkFillInTheBlankAnswers($value, $model);
                 } else {
-                    $correctAns = QuestionReview::MANUAL === $model->review_type ? Answer::STATUS_PENDING : $this->checkSingle($value, $model);
+                    QuestionReview::MANUAL === $model->review_type ? AnswerStatus::PENDING : $this->checkSingle($value, $model);
                 }
-                $this->questionAnswers[] = $this->save($key, $value, $correctAns);
             }
         }
     }
 
     /**
-     * @param $qid
-     * @param $answer
-     * @param $correctAns
+     * @param \Exam\Models\Question $question
+     * @param array                 $answer
+     * @param                       $correctAns
+     *
+     * @param int                   $obtainMark
      *
      * @return mixed
      */
-    protected function save($qid, $answer, $correctAns)
+    protected function save(Question $question, $answer, $correctAns, int $obtainMark = 0)
     {
         $questionAnswer = Answer::firstOrNew([
             'exam_user_id' => $this->examUser->id,
-            'question_id' => $qid,
+            'question_id' => $question->id,
         ]);
         $questionAnswer->answer = $answer;
-        $questionAnswer->question_id = $qid;
+        $questionAnswer->question_id = $question->id;
         $questionAnswer->status = $correctAns;
+        $questionAnswer->obtain_mark = $obtainMark;
+
         $questionAnswer->save();
 
         return $questionAnswer;
@@ -86,18 +90,30 @@ class AnswerService
      *
      * @return bool
      */
-    private function checkSingle($userAnswer, $question)
+    private function checkSingle($userAnswer, Question $question)
     {
         $correctAns = false;
         if (is_array($userAnswer)) {
             $correctAnswers = array_intersect($question->getAnswers(), $userAnswer);
             if (count($correctAnswers) == count($question->getAnswers())) {
                 $correctAns = true;
+                $this->questionAnswers[] = $this->save($question, $userAnswer, $correctAns, $question->total_mark);
+            } else {
+                $obtainMark = ($question->total_mark / count($question->getAnswers())) * count($correctAnswers);
+                if ($obtainMark > 0) {
+                    $this->questionAnswers[] = $this->save($question, $userAnswer, AnswerStatus::PARTIALLY_CORRECT, $obtainMark);
+                } else {
+                    $this->questionAnswers[] = $this->save($question, $userAnswer, AnswerStatus::WRONG, 0);
+                }
             }
+
         } else {
             $correctAnswer = $question->getAnswers()[0] ?? false;
             if (0 == strcasecmp($userAnswer, $correctAnswer)) {
                 $correctAns = true;
+                $this->questionAnswers[] = $this->save($question, $userAnswer, $correctAns, $question->total_mark);
+            } else {
+                $this->questionAnswers[] = $this->save($question, $userAnswer, AnswerStatus::WRONG, 0);
             }
         }
 
@@ -113,9 +129,19 @@ class AnswerService
     private function checkFillInTheBlankAnswers(array $userAnswer, Question $question)
     {
         $correctAns = false;
-        $correctAnswers = array_intersect($question->getAnswers(), $userAnswer);
+
+        $correctAnswers = array_intersect_assoc($question->getAnswers(), $userAnswer);
         if (count($correctAnswers) == count($question->getAnswers())) {
             $correctAns = true;
+            $obtainMark = $question->total_mark;
+            $this->questionAnswers[] = $this->save($question, $userAnswer, $correctAns, $obtainMark);
+        } else {
+            $obtainMark = ($question->total_mark / count($question->getAnswers())) * count($correctAnswers);
+            if ($obtainMark > 0) {
+                $this->questionAnswers[] = $this->save($question, $userAnswer, AnswerStatus::PARTIALLY_CORRECT, $obtainMark);
+            } else {
+                $this->questionAnswers[] = $this->save($question, $userAnswer, AnswerStatus::WRONG, 0);
+            }
         }
 
         return $correctAns;
