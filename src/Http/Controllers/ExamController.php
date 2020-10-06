@@ -9,25 +9,25 @@ use Exam\Enums\ExamVisibility;
 use Exam\Http\Requests\Exams\Store;
 use Exam\Http\Requests\Exams\Update;
 use Exam\Models\Exam;
-use Exam\Repositories\ExamRepository;
+use Exam\Services\ExamSearchService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ExamController extends Controller
 {
     /**
-     * @var \Exam\Repositories\ExamRepository
+     * @var \Exam\Services\ExamSearchService
      */
-    protected ExamRepository $examRepository;
+    protected ExamSearchService $examSearchService;
 
     /**
      * ExamController constructor.
      *
-     * @param \Exam\Repositories\ExamRepository $examRepository
+     * @param \Exam\Services\ExamSearchService $examSearchService
      */
-    public function __construct(ExamRepository $examRepository)
+    public function __construct(ExamSearchService $examSearchService)
     {
-        $this->examRepository = $examRepository;
+        $this->examSearchService = $examSearchService;
     }
 
     /**
@@ -40,7 +40,7 @@ class ExamController extends Controller
         $this->authorize('viewAny', Exam::class);
 
         return view('exam::pages.exams.index', [
-            'records' => $this->examRepository->paginateForUser(auth()->user(), $request->get('search'), 6),
+            'records' => $this->examSearchService->paginateForUser(auth()->user(), $request->get('search'), 6),
         ]);
     }
 

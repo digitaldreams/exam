@@ -63,7 +63,7 @@
                             id="tags"
                             multiple>
                         @foreach ($model->tags as $data)
-                            <option value="{{$data->id}}" selected>{{$data->name}}</option>
+                            <option value="{{$data->name}}" selected>{{$data->name}}</option>
                         @endforeach
                     </select>
                     @if($errors->has('tags.*'))
