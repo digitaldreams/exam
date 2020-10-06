@@ -3,6 +3,7 @@
 namespace Exam\Repositories;
 
 use App\Models\User;
+use Blog\Repositories\TagRepository;
 use Blog\Services\UniqueSlugGeneratorService;
 use Exam\Enums\ExamStatus;
 use Exam\Models\Exam;
@@ -13,13 +14,20 @@ use Illuminate\Database\Eloquent\Model;
 class ExamRepository extends Repository
 {
     /**
+     * @var \Blog\Repositories\TagRepository
+     */
+    protected $tagRepository;
+
+    /**
      * ExamRepository constructor.
      *
-     * @param \Exam\Models\Exam $exam
+     * @param \Exam\Models\Exam                $exam
+     * @param \Blog\Repositories\TagRepository $tagRepository
      */
-    public function __construct(Exam $exam)
+    public function __construct(Exam $exam, TagRepository $tagRepository)
     {
         $this->model = $exam;
+        $this->tagRepository = $tagRepository;
     }
 
     /**
@@ -99,7 +107,28 @@ class ExamRepository extends Repository
         $this->model->fill($data);
         $model = (new UniqueSlugGeneratorService())->createSlug($this->model, $this->model->title);
         $model->save();
-        $model->tags()->sync($data['tags'] ?? []);
+
+        if ($tags = $data['tags'] ?? []) {
+            $model->tags()->sync($this->tagRepository->saveTags($tags));
+        }
+
         return $this->model;
     }
+
+    /**
+     * @param array                               $data
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function update(array $data, Model $model): Model
+    {
+        $model->fill($data)->save();
+        if ($tags = $data['tags'] ?? []) {
+            $model->tags()->sync($this->tagRepository->saveTags($tags));
+        }
+
+        return $model;
+    }
+
 }

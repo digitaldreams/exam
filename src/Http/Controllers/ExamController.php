@@ -103,9 +103,8 @@ class ExamController extends Controller
     public function update(Update $update, Exam $exam): RedirectResponse
     {
         $exam = $this->examRepository->update($update->all(), $exam);
-        $exam->tags()->sync($update->get('tags'));
 
-        return redirect()->route('exam::exams.index')->with('message', 'Exam updated successfully');
+        return redirect()->route('exam::exams.show', $exam->slug)->with('message', 'Exam updated successfully');
     }
 
     /**

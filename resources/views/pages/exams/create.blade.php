@@ -22,27 +22,5 @@
     </div>
 @endSection
 @section('scripts')
-    <script type="text/javascript">
-
-        $('#tags').select2({
-            ajax: {
-                url: '{{route('blog::tags.select2')}}',
-                dataType: 'json'
-            }
-        });
-
-        $('#category_id').select2({
-            ajax: {
-                url: '{{route('blog::categories.select2')}}',
-                dataType: 'json'
-            }
-        });
-
-        $('#must_completed').select2({
-            ajax: {
-                url: '{{route('exam::exams.select2')}}',
-                dataType: 'json'
-            }
-        });
-    </script>
+    @include('exam::pages.exams.scripts')
 @endsection

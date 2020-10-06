@@ -38,7 +38,7 @@
                         <i class="fa fa-clock-o"></i> Min
                     </div>
                 </div>
-                <small class="text-muted">Empty duraton will make exam unlimited</small>
+                <small class="text-muted">Empty duration will make exam unlimited</small>
             </div>
 
             <div class="form-row">
@@ -55,6 +55,7 @@
                             <strong>{{ $errors->first('category_id') }}</strong>
                         </div>
                     @endif
+                    <a href="{{route('blog::categories.create')}}" target="_blank"> <small class="text-muted">Create a new category</small></a>
                 </div>
                 <div class="form-group col">
                     <label for="tags">Tags</label>
@@ -64,13 +65,13 @@
                         @foreach ($model->tags as $data)
                             <option value="{{$data->id}}" selected>{{$data->name}}</option>
                         @endforeach
-
                     </select>
                     @if($errors->has('tags.*'))
                         <div class="invalid-feedback">
                             <strong>{{ $errors->first('tags') }}</strong>
                         </div>
                     @endif
+                    <small>To create new tag. Just type tag name and add comma(,) at the end of your new tag name or select from dropdown.</small>
                 </div>
             </div>
 
