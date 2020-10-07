@@ -5,6 +5,7 @@ namespace Exam\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Exam\Enums\ExamShowAnswer;
 use Exam\Enums\ExamStatus;
+use Exam\Enums\ExamUserStatus;
 use Exam\Enums\ExamVisibility;
 use Exam\Http\Requests\Exams\Store;
 use Exam\Http\Requests\Exams\Update;
@@ -45,9 +46,12 @@ class ExamController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Exam::class);
+        $user = auth()->user();
 
         return view('exam::pages.exams.index', [
-            'records' => $this->examSearchService->paginateForUser(auth()->user(), $request->get('search'), 6),
+            'completedExams' => $user->examUsers()->where('status', ExamUserStatus::COMPLETED)->count(),
+            'pendingExams' => $user->examUsers()->where('status', ExamUserStatus::PENDING)->count(),
+            'records' => $this->examSearchService->paginateForUser($user, $request->get('search'), $request->get('status'), 6),
         ]);
     }
 

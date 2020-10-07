@@ -31,19 +31,24 @@ class ExamSearchService
      * Exam pagination for user.
      *
      * @param \App\Models\User $user
+     * @param string|null      $search
+     * @param string|null      $status
      * @param int              $perPage
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginateForUser(User $user, ?string $search = null, int $perPage = 6)
+    public function paginateForUser(User $user, ?string $search = null, ?string $status = null, int $perPage = 6)
     {
         $builder = $this->model->newQuery();
 
         if (!$user->isAdmin()) {
             $builder = $this->forUser($builder, $user->id);
         }
-
-        $builder = !empty($search) ? $this->search($builder, $search) : $this->preferences($builder, $user->id);
+        if (!empty($status) && array_search($status, ExamUserStatus::toArray())) {
+            $builder = $this->filterByStatus($builder, $status, $user->id);
+        } else {
+            $builder = !empty($search) ? $this->search($builder, $search) : $this->preferences($builder, $user->id);
+        }
 
         return $builder->paginate($perPage);
     }
@@ -103,6 +108,13 @@ class ExamSearchService
             $q->where('user_id', $userId)
                 ->where('status', ExamUserStatus::COMPLETED);
         })->orderByRaw('cscore*2+tscore desc');
+    }
+
+    private function filterByStatus(Builder $builder, string $status)
+    {
+        return $builder->whereHas('examUser', function ($q) use ($status) {
+            $q->where('status', array_search($status, ExamUserStatus::toArray()));
+        });
     }
 
 }

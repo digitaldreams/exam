@@ -9,11 +9,18 @@
     Exams
 @endsection
 @section('tools')
+    @if($pendingExams  >0)
+        <a  class="btn btn-warning" href="?status=pending">Pending <span class="badge badge-danger badge-pill">{{$pendingExams}}</span></a>
+    @endif
+    @if($completedExams  >0)
+        <a class="btn btn-light" href="?status=completed">Completed <span class="badge badge-primary badge-pill">{{$completedExams}}</span></a>
+    @endif
     @can('create',\Exam\Models\Exam::class)
         <a class="btn btn-info  m-l-15" href="{{route('exam::exams.create')}}">
             <span class="fa fa-plus"></span> Exam
         </a>
     @endcan
+
 @endsection
 
 @section('content')
