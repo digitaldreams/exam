@@ -9,6 +9,7 @@ use Exam\Enums\ExamVisibility;
 use Exam\Http\Requests\Exams\Store;
 use Exam\Http\Requests\Exams\Update;
 use Exam\Models\Exam;
+use Exam\Repositories\ExamRepository;
 use Exam\Services\ExamSearchService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,15 +20,21 @@ class ExamController extends Controller
      * @var \Exam\Services\ExamSearchService
      */
     protected ExamSearchService $examSearchService;
+    /**
+     * @var \Exam\Repositories\ExamRepository
+     */
+    protected $examRepository;
 
     /**
      * ExamController constructor.
      *
-     * @param \Exam\Services\ExamSearchService $examSearchService
+     * @param \Exam\Repositories\ExamRepository $examRepository
+     * @param \Exam\Services\ExamSearchService  $examSearchService
      */
-    public function __construct(ExamSearchService $examSearchService)
+    public function __construct(ExamRepository $examRepository, ExamSearchService $examSearchService)
     {
         $this->examSearchService = $examSearchService;
+        $this->examRepository = $examRepository;
     }
 
     /**
@@ -48,6 +55,7 @@ class ExamController extends Controller
      * @param Exam $exam
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(Exam $exam)
@@ -77,6 +85,7 @@ class ExamController extends Controller
      * Show new exam form.
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function create()
@@ -111,6 +120,7 @@ class ExamController extends Controller
      * @param \Exam\Models\Exam $exam
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function edit(Exam $exam)
@@ -126,6 +136,7 @@ class ExamController extends Controller
      * @param \Exam\Models\Exam $exam
      *
      * @return \Illuminate\Http\RedirectResponse
+     *
      * @throws \Exception
      */
     public function destroy(Exam $exam): RedirectResponse
@@ -136,7 +147,6 @@ class ExamController extends Controller
 
         return redirect()->route('exam::exams.index')->with('message', 'Exam successfully deleted');
     }
-
 
     /**
      * @param \Illuminate\Http\Request $request

@@ -79,9 +79,13 @@
 
     <div class="card-footer text-right ">
         @foreach($record->tags as $tag)
-            <label class="badge badge-light">{{$tag->name ?? ''}}</label>
+            <a href="?search={{$tag->name}}">
+                <label class="badge badge-light">{{$tag->name ?? ''}}</label>
+            </a>
         @endforeach
-        <label class="badge badge-secondary">{{$record->category->title ??''}} </label>
+        <a href="?search={{$record->category->title}}">
+            <label class="badge badge-secondary">{{$record->category->title ??''}} </label>
+        </a>
 
 
         @if($record->hasTimeLimit())

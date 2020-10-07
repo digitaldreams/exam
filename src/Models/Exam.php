@@ -175,24 +175,6 @@ class Exam extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int|null                              $user_id
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeForUser(Builder $query, ?int $user_id = null): Builder
-    {
-        $user_id = empty($user_id) && auth()->check() ? auth()->id() : $user_id;
-
-        return $query->where(function ($q) use ($user_id) {
-            $q->orWhere('visibility', ExamVisibility::PUBLIC)
-                ->orWhereHas('invitations', function ($i) use ($user_id) {
-                    $i->where('user_id', $user_id)->where('status', Invitation::STATUS_ACCEPTED);
-                });
-        });
-    }
-
-    /**
      * Whether this exam has a time limit or not?
      *
      * @return bool
