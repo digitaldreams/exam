@@ -44,7 +44,6 @@
                     <span class="badge badge-secondary badge-pill"><b>{{$records->count()}}</b>
                 </span>
                 @endif
-
             </a>
         </li>
         <li class="nav-item">

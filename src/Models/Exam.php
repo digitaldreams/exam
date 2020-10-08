@@ -3,6 +3,7 @@
 namespace Exam\Models;
 
 use App\Models\User;
+use Blog\Models\Activity;
 use Blog\Models\Category;
 use Blog\Models\Tag;
 use Blog\Services\FullTextSearch;
@@ -140,6 +141,24 @@ class Exam extends Model
     public function feedback(): MorphMany
     {
         return $this->morphMany(Feedback::class, 'feedbackable');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function likes()
+    {
+        return $this->morphMany(Activity::class, 'activityable')
+            ->where('type', \Blog\Enums\ActivityType::LIKE);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function favourites()
+    {
+        return $this->morphMany(Activity::class, 'activityable')
+            ->where('type', \Blog\Enums\ActivityType::FAVOURITE);
     }
 
     /**

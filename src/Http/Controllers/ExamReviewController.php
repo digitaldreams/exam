@@ -3,6 +3,7 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Exam\Enums\AnswerStatus;
 use Exam\Enums\QuestionReview;
 use Exam\Http\Requests\Answers\Index;
 use Exam\Http\Requests\Answers\Show;
@@ -26,7 +27,7 @@ class ExamReviewController extends Controller
             ->whereHas('exam.questions', function ($q) {
                 $q->where('review_type', QuestionReview::MANUAL)
                     ->whereHas('answer', function ($aq) {
-                        $aq->where('status', Answer::STATUS_PENDING);
+                        $aq->where('status', AnswerStatus::PENDING);
                     });
             })->paginate(6);
 

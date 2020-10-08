@@ -1,7 +1,13 @@
 @extends(config('exam.layouts.app'))
 @section('breadcrumb')
     <li class="breadcrumb-item">
-        <a href="{{route('exam::exams.invitations.index',$exam->slug)}}">exam_invitations</a>
+        <a href="{{route('exam::exams.index')}}">Exams</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{route('exam::exams.show',$exam->slug)}}">{{$exam->title}}</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{route('exam::exams.invitations.index',$exam->slug)}}">invitations</a>
     </li>
     <li class="breadcrumb-item">
         Create

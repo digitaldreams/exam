@@ -26,7 +26,7 @@
                     <div class="dropdown" id="dropdown-{{$record->id}}">
                         <a href="#" class="fa fa-ellipsis-v" data-toggle="dropdown" role="button" aria-expanded="false">
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu list-group-flush">
                             <form action="{{route('blog::activities.store')}}" method="post">
                                 {{csrf_field()}}
                                 <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
@@ -59,6 +59,37 @@
                                         </button>
                                     </form>
                                 @endcan
+                            </li>
+                            <li class="list-group-item">
+                                @can('update',$record)
+                                    <a class="btn btn-outline-secondary btn-block btn-sm"
+                                       href="{{route('exam::exams.invitations.create',$record->slug)}}">
+                                        <span class="fa fa-envelope"></span> Invite
+                                    </a>
+                                @endif
+                            </li>
+                            <li class="list-group-item">
+                                &nbsp;<form action="{{route('blog::activities.store')}}" method="post" class="d-inline">
+                                    {{csrf_field()}}
+                                    <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
+                                    <input type="hidden" name="activityable_id" value="{{$record->id }}">
+                                    <input type="hidden" name="type" value="like">
+                                    <button class="btn badge badge-light">
+                                        <i class="fa fa-thumbs-up"></i> Like {{$record->likes()->count()}}
+                                    </button>
+                                </form>
+                            </li>
+                            <li class="list-group-item">
+
+                                <form action="{{route('blog::activities.store')}}" method="post" class="d-inline">
+                                    {{csrf_field()}}
+                                    <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
+                                    <input type="hidden" name="activityable_id" value="{{$record->id }}">
+                                    <input type="hidden" name="type" value="favourite">
+                                    <button class="btn badge badge-light">
+                                        <i class="fa fa-star"></i> Favourite {{$record->favourites()->count()}}
+                                    </button>
+                                </form>&nbsp;
                             </li>
                         </ul>
                     </div>
