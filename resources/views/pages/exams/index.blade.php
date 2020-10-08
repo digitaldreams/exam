@@ -9,12 +9,7 @@
     Exams
 @endsection
 @section('tools')
-    @if($pendingExams  >0)
-        <a  class="btn btn-warning" href="?status=pending">Pending <span class="badge badge-danger badge-pill">{{$pendingExams}}</span></a>
-    @endif
-    @if($completedExams  >0)
-        <a class="btn btn-light" href="?status=completed">Completed <span class="badge badge-primary badge-pill">{{$completedExams}}</span></a>
-    @endif
+
     @can('create',\Exam\Models\Exam::class)
         <a class="btn btn-info  m-l-15" href="{{route('exam::exams.create')}}">
             <span class="fa fa-plus"></span> Exam
@@ -28,7 +23,8 @@
         <div class="col-md-6">
             <form>
                 <div class="input-group mb-3">
-                    <input type="search" name="search" value="{{request('search')}}" class="form-control" placeholder="Search Exams"
+                    <input type="search" name="search" value="{{request('search')}}" class="form-control"
+                           placeholder="Search Exams"
                            aria-label="Search Post title" aria-describedby="button-addon2">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
@@ -40,7 +36,31 @@
             {!! $records->render() !!}
         </div>
     </div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link {{empty(request('status'))?'active':''}}" href="?">
+                {{request('search')?'Search Result':'Recommendation'}}
+                @if(request('search') || empty(request('status')))
+                    <span class="badge badge-secondary badge-pill"><b>{{$records->count()}}</b>
+                </span>
+                @endif
+
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{request('status')=='completed'?'active':''}}" href="?status=completed">Completed
+                <span class="badge badge-light badge-pill">{{$completedExams}}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{request('status')=='pending'?'active':''}}" href="?status=pending">Pending
+                <span class="badge badge-light badge-pill">{{$pendingExams}}</span>
+            </a>
+        </li>
+
+    </ul>
     <div class="row exam-card">
+
         @foreach($records as $record)
             <div class="col-sm-6 col-md-4">
                 @include('exam::cards.exam')
