@@ -3,6 +3,7 @@
 namespace Exam\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Blog\Enums\ActivityType;
 use Exam\Enums\ExamShowAnswer;
 use Exam\Enums\ExamStatus;
 use Exam\Enums\ExamUserStatus;
@@ -51,7 +52,9 @@ class ExamController extends Controller
         return view('exam::pages.exams.index', [
             'completedExams' => $user->examUsers()->where('status', ExamUserStatus::COMPLETED)->count(),
             'pendingExams' => $user->examUsers()->where('status', ExamUserStatus::PENDING)->count(),
-            'records' => $this->examSearchService->paginateForUser($user, $request->get('search'), $request->get('status'), 6),
+            'likedExams' => $this->examRepository->countActivity($user, ActivityType::LIKE),
+            'favouriteExams' => $this->examRepository->countActivity($user, ActivityType::FAVOURITE),
+            'records' => $this->examSearchService->paginateForUser($user, $request->get('search'), $request->get('status'), $request->get('activity'), 6),
         ]);
     }
 

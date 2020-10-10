@@ -40,7 +40,7 @@
         <li class="nav-item">
             <a class="nav-link {{empty(request('status'))?'active':''}}" href="?">
                 {{request('search')?'Search Result':'Recommendation'}}
-                @if(request('search') || empty(request('status')))
+                @if(empty(request('activity')) && empty(request('status')))
                     <span class="badge badge-secondary badge-pill"><b>{{$records->count()}}</b>
                 </span>
                 @endif
@@ -54,6 +54,16 @@
         <li class="nav-item">
             <a class="nav-link {{request('status')=='pending'?'active':''}}" href="?status=pending">Pending
                 <span class="badge badge-light badge-pill">{{$pendingExams}}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{request('activity')=='likes'?'active':''}}" href="?activity=likes">Liked
+                <span class="badge badge-light badge-pill">{{$likedExams}}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{request('activity')=='favourite'?'active':''}}" href="?activity=favourite">Favourite
+                <span class="badge badge-light badge-pill">{{$favouriteExams}}</span>
             </a>
         </li>
 

@@ -9,7 +9,6 @@ use Blog\Models\Tag;
 use Blog\Services\FullTextSearch;
 use Exam\Enums\ExamShowAnswer;
 use Exam\Enums\ExamUserStatus;
-use Exam\Enums\ExamVisibility;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -150,6 +149,14 @@ class Exam extends Model
     {
         return $this->morphMany(Activity::class, 'activityable')
             ->where('type', \Blog\Enums\ActivityType::LIKE);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function activities()
+    {
+        return $this->morphMany(Activity::class, 'activityable');
     }
 
     /**

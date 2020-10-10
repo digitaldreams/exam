@@ -3,6 +3,7 @@
 namespace Exam\Repositories;
 
 use App\Models\User;
+use Blog\Models\Activity;
 use Blog\Repositories\TagRepository;
 use Blog\Services\UniqueSlugGeneratorService;
 use Exam\Enums\ExamStatus;
@@ -129,6 +130,21 @@ class ExamRepository extends Repository
         }
 
         return $model;
+    }
+
+    /**
+     * @param \App\Models\User $user
+     * @param                  $type
+     *
+     * @return int
+     */
+    public function countActivity(User $user, $type)
+    {
+        return Activity::query()
+            ->where('user_id', $user->id)
+            ->where('activityable_type', Exam::class)
+            ->where('type', $type)
+            ->count();
     }
 
 }

@@ -3,6 +3,7 @@
 namespace Exam\Services;
 
 use App\Models\User;
+use Blog\Enums\ActivityType;
 use Exam\Enums\ExamStatus;
 use Exam\Enums\ExamUserStatus;
 use Exam\Enums\ExamVisibility;
@@ -37,7 +38,7 @@ class ExamSearchService
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginateForUser(User $user, ?string $search = null, ?string $status = null, int $perPage = 6)
+    public function paginateForUser(User $user, ?string $search = null, ?string $status = null, ?string $activity = null, int $perPage = 6)
     {
         $builder = $this->model->newQuery();
 
@@ -45,7 +46,9 @@ class ExamSearchService
             $builder = $this->forUser($builder, $user->id);
         }
         if (!empty($status) && array_search($status, ExamUserStatus::toArray())) {
-            $builder = $this->filterByStatus($builder, $status, $user->id);
+            $builder = $this->filterByStatus($builder, $status);
+        } elseif (!empty($activity) && array_search($activity, ActivityType::getValues())) {
+            $builder = $this->filterByActivity($builder, $activity);
         } else {
             $builder = !empty($search) ? $this->search($builder, $search) : $this->preferences($builder, $user->id);
         }
@@ -117,4 +120,16 @@ class ExamSearchService
         });
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param string                                $activity
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function filterByActivity(Builder $builder, string $activity)
+    {
+        return $builder->whereHas('activities', function ($q) use ($activity) {
+            $q->where('type', $activity);
+        });
+    }
 }
