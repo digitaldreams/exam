@@ -47,6 +47,7 @@ class QuestionController extends Controller
      * @param Index $request
      *
      * @return \Illuminate\Http\Response
+     *
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function index(Index $request)
@@ -144,7 +145,6 @@ class QuestionController extends Controller
         $this->questionRepository->update($request->all(), $question);
 
         return redirect()->route('exam::questions.show', $question->id)->with('message', 'Question successfully updated');
-
     }
 
     /**
@@ -175,7 +175,8 @@ class QuestionController extends Controller
      */
     public function select2Ajax(Request $request): JsonResponse
     {
-        $questions = Question::query()->search($request->get('term'))->take(10)->get();
+        $questions = $this->questionRepository->search($request->get('term'), 10);
+
         $data = $questions->map(function ($question) {
             return [
                 'id' => $question->id,

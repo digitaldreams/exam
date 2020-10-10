@@ -107,6 +107,7 @@
     <script>
         $("#questionSearch").select2({
             placeholder: 'Search questions',
+            minimumInputLength:2,
             ajax: {
                 url: '{{route('exam::questions.select2Ajax')}}',
                 dataType: 'json'
