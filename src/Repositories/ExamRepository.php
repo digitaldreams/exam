@@ -159,7 +159,7 @@ class ExamRepository extends Repository
      */
     public function keywords()
     {
-        $key = 'exams_catgory_tags_keywords';
+        $key = 'exams_category_tags_keywords';
         if (cache()->has($key)) {
             return cache($key);
         }

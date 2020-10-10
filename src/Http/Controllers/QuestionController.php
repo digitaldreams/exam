@@ -47,6 +47,7 @@ class QuestionController extends Controller
      * @param Index $request
      *
      * @return \Illuminate\Http\Response
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function index(Index $request)
     {
@@ -56,7 +57,10 @@ class QuestionController extends Controller
             $questions = Question::query()->latest()->paginate(8);
         }
 
-        return view('exam::pages.questions.index', ['records' => $questions]);
+        return view('exam::pages.questions.index', [
+            'records' => $questions,
+            'keywords' => $this->questionRepository->keywords(),
+        ]);
     }
 
     /**

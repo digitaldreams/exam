@@ -2,6 +2,8 @@
 
 namespace Exam\Repositories;
 
+use Blog\Models\Category;
+use Blog\Models\Tag;
 use Blog\Repositories\TagRepository;
 use Exam\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
@@ -111,5 +113,37 @@ class QuestionRepository extends Repository
             })
             ->orderByRaw('qscore desc')
             ->paginate(8);
+    }
+
+
+    /**
+     * @return array|\Illuminate\Cache\CacheManager|mixed
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \Exception
+     */
+    public function keywords()
+    {
+        $key = 'questions_category_tags_keywords';
+        if (cache()->has($key)) {
+            return cache($key);
+        }
+
+        $categories = Category::query()
+            ->selectRaw('title as name,(select count(*) from exams where blog_categories.id=category_id ) as total')
+            ->havingRaw('total > 0 ')
+            ->orderByRaw('total desc')->get()->toArray();
+
+        $tags = Tag::query()
+            ->selectRaw('name, (select count(*) from question_tag where question_tag.tag_id=blog_tags.id) as total')
+            ->havingRaw('total > 0 ')
+            ->orderByRaw('total desc')
+            ->get()->toArray();
+
+        $data = array_merge($categories, $tags);
+
+        cache()->put($key, $data, now()->addDay());
+
+        return $data;
     }
 }
