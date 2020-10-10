@@ -43,6 +43,7 @@ class ExamController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function index(Request $request)
     {
@@ -55,6 +56,7 @@ class ExamController extends Controller
             'likedExams' => $this->examRepository->countActivity($user, ActivityType::LIKE),
             'favouriteExams' => $this->examRepository->countActivity($user, ActivityType::FAVOURITE),
             'records' => $this->examSearchService->paginateForUser($user, $request->get('search'), $request->get('status'), $request->get('activity'), 6),
+            'keywords' => $this->examRepository->keywords(),
         ]);
     }
 

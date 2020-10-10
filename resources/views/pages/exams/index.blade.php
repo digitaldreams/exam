@@ -24,12 +24,17 @@
             <form>
                 <div class="input-group mb-3">
                     <input type="search" name="search" value="{{request('search')}}" class="form-control"
-                           placeholder="Search Exams"
+                           placeholder="Search Exams" list="keywords" autocomplete="off"
                            aria-label="Search Post title" aria-describedby="button-addon2">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
                     </div>
                 </div>
+                <datalist id="keywords">
+                    @foreach($keywords as $keyword)
+                        <option value="{{$keyword['name']}}">&nbsp; &nbsp; {{$keyword['total']}}</option>
+                    @endforeach
+                </datalist>
             </form>
         </div>
         <div class="col-md-6">

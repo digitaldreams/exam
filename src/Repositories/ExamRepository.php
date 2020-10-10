@@ -4,6 +4,8 @@ namespace Exam\Repositories;
 
 use App\Models\User;
 use Blog\Models\Activity;
+use Blog\Models\Category;
+use Blog\Models\Tag;
 use Blog\Repositories\TagRepository;
 use Blog\Services\UniqueSlugGeneratorService;
 use Exam\Enums\ExamStatus;
@@ -50,6 +52,7 @@ class ExamRepository extends Repository
         if ($search) {
             $builder = $builder->search($search);
         }
+
         return $builder->paginate($perPage);
     }
 
@@ -148,4 +151,34 @@ class ExamRepository extends Repository
             ->count();
     }
 
+    /**
+     * @return array|\Illuminate\Cache\CacheManager|mixed
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \Exception
+     */
+    public function keywords()
+    {
+        $key = 'exams_catgory_tags_keywords';
+        if (cache()->has($key)) {
+            return cache($key);
+        }
+
+        $categories = Category::query()
+            ->selectRaw('title as name,(select count(*) from exams where exams.category_id=blog_categories.id ) as total')
+            ->havingRaw('total > 0 ')
+            ->orderByRaw('total desc')->get()->toArray();
+
+        $tags = Tag::query()
+            ->selectRaw('name, (select count(*) from exam_tag where exam_tag.tag_id=blog_tags.id) as total')
+            ->havingRaw('total > 0 ')
+            ->orderByRaw('total desc')
+            ->get()->toArray();
+
+        $data = array_merge($categories, $tags);
+
+        cache()->put($key, $data, now()->addDay());
+
+        return $data;
+    }
 }
