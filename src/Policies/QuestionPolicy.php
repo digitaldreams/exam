@@ -10,7 +10,7 @@ class QuestionPolicy
     use HandlesAuthorization;
 
     /**
-     * @param  $user
+     * @param \App\Models\User $user
      *
      * @return bool
      */
@@ -22,7 +22,7 @@ class QuestionPolicy
     }
 
     /**
-     * @param User $user
+     * @param \App\Models\User $user
      *
      * @return bool
      */
@@ -34,8 +34,8 @@ class QuestionPolicy
     /**
      * Determine whether the user can view the Question.
      *
-     * @param  $user
-     * @param Question $question
+     * @param \App\Models\User $user
+     * @param Question         $question
      *
      * @return mixed
      */
@@ -47,7 +47,7 @@ class QuestionPolicy
     /**
      * Determine whether the user can create Question.
      *
-     * @param User $user
+     * @param \App\Models\User $user
      *
      * @return mixed
      */
@@ -59,26 +59,37 @@ class QuestionPolicy
     /**
      * Determine whether the user can update the Question.
      *
-     * @param  $user
-     * @param Question $question
+     * @param \App\Models\User $user
+     * @param Question         $question
      *
      * @return mixed
      */
     public function update($user, Question $question)
     {
-        return false;
+        return $this->isAuthor($user, $question);
     }
 
     /**
      * Determine whether the user can delete the Question.
      *
-     * @param  $user
-     * @param Question $question
+     * @param \App\Models\User $user
+     * @param Question         $question
      *
      * @return mixed
      */
     public function delete($user, Question $question)
     {
-        return false;
+        return $this->isAuthor($user, $question);
+    }
+
+    /**
+     * @param                       $user
+     * @param \Exam\Models\Question $question
+     *
+     * @return bool
+     */
+    public function isAuthor($user, Question $question)
+    {
+        return $user->id === $question->user_id;
     }
 }

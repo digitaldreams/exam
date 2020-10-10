@@ -2,10 +2,9 @@
 
 namespace Exam\Policies;
 
-use Exam\Models\Exam;
+use App\Models\User;
 use Exam\Models\ExamUser;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use App\Models\User;
 
 class ExamUserPolicy
 {
@@ -30,7 +29,7 @@ class ExamUserPolicy
      */
     public function index($user)
     {
-        return true;
+        return false;
     }
 
     /**
@@ -43,7 +42,7 @@ class ExamUserPolicy
      */
     public function view($user, ExamUser $examUser)
     {
-        return true;
+        return $this->isCandidate($user, $examUser);
     }
 
     /**
@@ -68,7 +67,7 @@ class ExamUserPolicy
      */
     public function update($user, ExamUser $examUser)
     {
-        return $user->id == $examUser->user_id;
+        return $this->isCandidate($user, $examUser);
     }
 
     /**
@@ -81,7 +80,7 @@ class ExamUserPolicy
      */
     public function delete($user, ExamUser $examUser)
     {
-        return $user->id == $examUser->user_id;
+        return $this->isCandidate($user, $examUser);
     }
 
     /**
@@ -94,7 +93,7 @@ class ExamUserPolicy
      */
     public function answer($user, ExamUser $examUser)
     {
-        return $user->id == $examUser->user_id;
+        return $this->isCandidate($user, $examUser);
     }
 
     /**
@@ -108,5 +107,16 @@ class ExamUserPolicy
     public function result($user, ExamUser $examUser)
     {
         return $user->id == $examUser->user_id || ExamUser::VISIBILITY_PUBLIC == $examUser->visibility;
+    }
+
+    /**
+     * @param \App\Models\User      $user
+     * @param \Exam\Models\ExamUser $examUser
+     *
+     * @return bool
+     */
+    public function isCandidate($user, ExamUser $examUser)
+    {
+        return $user->id == $examUser->user_id;
     }
 }

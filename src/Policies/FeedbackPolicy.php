@@ -4,7 +4,7 @@ namespace Exam\Policies;
 
 use Exam\Models\Feedback;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Permit\Models\User;
+use App\Models\User;
 
 class FeedbackPolicy
 {
