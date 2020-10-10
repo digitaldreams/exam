@@ -125,6 +125,41 @@
                         </label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="category_id">Category</label>
+                    <select class="form-control {{ $errors->has('category_id') ? ' is-invalid' : '' }}"
+                            name="category_id" id="category_id">
+                        @if($model->category)
+                            <option value="{{$model->category_id}}" selected>{{$model->category->title}}</option>
+                        @endif
+                    </select>
+                    @if($errors->has('category_id'))
+                        <div class="invalid-feedback">
+                            <strong>{{ $errors->first('category_id') }}</strong>
+                        </div>
+                    @endif
+                    <a href="{{route('blog::categories.create')}}" target="_blank">
+                        <small class="text-muted">Create a new category</small>
+                    </a>
+                </div>
+                <div class="form-group">
+                    <label for="tags">Tags</label>
+                    <select class="form-control {{ $errors->has('tag_id') ? ' is-invalid' : '' }}" name="tags[]"
+                            id="tags"
+                            multiple>
+                        @foreach ($model->tags as $data)
+                            <option value="{{$data->name}}" selected>{{$data->name}}</option>
+                        @endforeach
+                    </select>
+                    @if($errors->has('tags.*'))
+                        <div class="invalid-feedback">
+                            <strong>{{ $errors->first('tags') }}</strong>
+                        </div>
+                    @endif
+                    <small>To create new tag. Just type tag name and add comma(,) at the end of your new tag name or
+                        select from dropdown.
+                    </small>
+                </div>
             </div>
         </div>
     </div>

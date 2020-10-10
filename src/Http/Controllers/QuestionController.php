@@ -50,12 +50,13 @@ class QuestionController extends Controller
      */
     public function index(Index $request)
     {
-        $question = new Question();
         if (!empty($request->get('search'))) {
-            $question = $question->search($request->get('search'));
+            $questions = $this->questionRepository->search($request->get('search'));
+        } else {
+            $questions = Question::query()->latest()->paginate(8);
         }
 
-        return view('exam::pages.questions.index', ['records' => $question->paginate(8)]);
+        return view('exam::pages.questions.index', ['records' => $questions]);
     }
 
     /**

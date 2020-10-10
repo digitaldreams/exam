@@ -2,9 +2,12 @@
     <div class="card-header">
         <div class="row">
             <div class="col-11">
-                <a href="{{route('exam::questions.show',$record->id)}}">
-                    <h4> {{$record->title}}</h4>
-                </a>
+
+                <h4>
+
+                    <a href="{{route('exam::questions.show',$record->id)}}">   {{$record->title}}   </a>
+                </h4>
+
             </div>
             <div class="col-1">
                 <div class="btn-group">
@@ -95,6 +98,14 @@
         </table>
     </div>
     <div class="card-footer text-right">
+        @if($record->category)
+            <a class="text-muted" href="?search={{$record->category->title}}">
+                <span class="badge badge-secondary">{{$record->category->title}}</span>
+            </a>
+        @endif
+        @foreach($record->tags as $tag)
+            <a href="?search={{$tag->name}}"><span class="badge badge-light">{{$tag->name}}</span></a>
+        @endforeach
         <label class="badge badge-secondary" title="Question Type" data-toggle="tooltip">
             {{$record->type}}
         </label>

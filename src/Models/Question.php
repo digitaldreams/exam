@@ -2,6 +2,8 @@
 
 namespace Exam\Models;
 
+use Blog\Models\Category;
+use Blog\Models\Tag;
 use Blog\Services\FullTextSearch;
 use Exam\Services\FillInTheBlankFormService;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,6 +40,7 @@ class Question extends Model
     protected $fillable = [
         'type',
         'parent_id',
+        'category_id',
         'title',
         'hints',
         'options',
@@ -98,6 +101,22 @@ class Question extends Model
     public function children(): HasMany
     {
         return $this->hasMany(static::class, 'parent_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'question_tag');
     }
 
     /**

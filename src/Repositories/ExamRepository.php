@@ -7,6 +7,7 @@ use Blog\Models\Activity;
 use Blog\Repositories\TagRepository;
 use Blog\Services\UniqueSlugGeneratorService;
 use Exam\Enums\ExamStatus;
+use Exam\Enums\ExamUserStatus;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Illuminate\Database\Eloquent\Collection;
@@ -92,7 +93,7 @@ class ExamRepository extends Repository
 
         $count = ExamUser::query()->whereIn('exam_id', $mustCompleted)
             ->where('user_id', $user_id)
-            ->where('status', ExamUser::STATUS_COMPLETED)
+            ->where('status', ExamUserStatus::COMPLETED)
             ->count();
 
         return count($mustCompleted) == $count;
