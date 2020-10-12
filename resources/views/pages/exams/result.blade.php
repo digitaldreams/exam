@@ -97,12 +97,19 @@
                     <div class="card-header">
                         @if($answer->status==\Exam\Enums\QuestionReview::PENDING)
                             <i class="fa fa-spinner text-warning" data-toggle="tooltip"
-                               title="Your answer are in review "></i>
+                               title="Your answer are in review "></i> <b class="badge badge-warning">Under Review</b>
                         @else
-                            <i class="fa {{$answer->isCorrect()?'fa-check-circle-o text-success':'fa-remove text-danger'}}"></i>
+                            @if($answer->isCorrect())
+                                <i class="fa fa-check-circle-o text-success"> Correct</i>
+
+                            @else
+                                <i class="fa fa-remove text-danger"> Wrong</i>
+
+                            @endif
                         @endif
                         {{$answer->question->title}}
-                        <span class="badge badge-primary badge-pill">{{$answer->obtain_mark}} / {{$answer->question->total_mark}}</span>
+                        <span
+                            class="badge badge-primary badge-pill">{{$answer->obtain_mark}} / {{$answer->question->total_mark}}</span>
                     </div>
                     <div class="card-body">
                         <div class="row">

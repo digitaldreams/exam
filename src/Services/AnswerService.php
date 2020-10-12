@@ -53,7 +53,11 @@ class AnswerService
                 if (QuestionAnswerType::FILL_IN_THE_BLANK == $model->answer_type) {
                     $this->checkFillInTheBlankAnswers($value, $model);
                 } else {
-                    QuestionReview::MANUAL === $model->review_type ? AnswerStatus::PENDING : $this->checkSingle($value, $model);
+                    if (QuestionReview::MANUAL === $model->review_type) {
+                        $this->save($model, [$value], AnswerStatus::PENDING, 0);
+                    } else {
+                        $this->checkSingle($value, $model);
+                    }
                 }
             }
         }
@@ -70,7 +74,7 @@ class AnswerService
      */
     protected function save(Question $question, $answer, $correctAns, int $obtainMark = 0)
     {
-        $questionAnswer = Answer::firstOrNew([
+        $questionAnswer = Answer::query()->firstOrNew([
             'exam_user_id' => $this->examUser->id,
             'question_id' => $question->id,
         ]);

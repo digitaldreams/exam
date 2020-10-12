@@ -130,9 +130,9 @@ class ExamUserController extends Controller
      */
     public function question(Question $request, Exam $exam, $qid)
     {
-        $question = QuestionModel::findOrFail($qid);
-        $exam_user = ExamUser::forUser($exam->id)->first();
-        $answer = \Exam\Models\Answer::whereIn('id', $request->get('answer', []))->get();
+        $question = QuestionModel::query()->findOrFail($qid);
+        $exam_user = ExamUser::query()->forUser($exam->id)->first();
+        $answer = \Exam\Models\Answer::query()->whereIn('id', $request->get('answer', []))->get();
         if (!$exam_user) {
             return redirect()->route('exam::exams.index')->with('permit_error', 'Please choose a exam first');
         }
@@ -177,7 +177,6 @@ class ExamUserController extends Controller
 
             return redirect()->route('exam::exams.result', ['exam_user' => $exam_user->id])->with('message', 'Time\'s up');
         }
-
         $answerService = new AnswerService($request->get('answer'), $exam_user);
         $answerService->check();
         $answerIds = $answerService->collection()->pluck('id')->toArray();
