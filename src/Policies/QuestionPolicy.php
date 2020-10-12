@@ -26,7 +26,7 @@ class QuestionPolicy
      *
      * @return bool
      */
-    public function index($user)
+    public function viewAny($user)
     {
         return false;
     }
@@ -41,7 +41,7 @@ class QuestionPolicy
      */
     public function view($user, Question $question)
     {
-        return true;
+        return false;
     }
 
     /**

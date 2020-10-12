@@ -6,9 +6,13 @@
         <div class="row">
             <div class="col-sm-9 col-6 left-header">
                 <div class="title">
-                    <a href="{{route('exam::exams.show',$record->slug)}}">
+                    @can('update',$record)
+                        <a href="{{route('exam::exams.show',$record->slug)}}">
+                            {{$record->title}} {!! $record->stars() !!}
+                        </a>
+                    @else
                         {{$record->title}} {!! $record->stars() !!}
-                    </a>
+                    @endcan
                 </div>
                 @if($record->visibility==\Exam\Enums\ExamVisibility::PRIVATE)
                     <div class="status" data-toggle="tooltip" data-placement="bottom" title=""
@@ -38,16 +42,18 @@
                                     </li>
                                 @endforeach
                             </form>
-                            <li class="list-group-item">
-                                @can('update',$record)
+                            @can('update',$record)
+                                <li class="list-group-item">
+
                                     <a class="btn btn-outline-secondary btn-block"
                                        href="{{route('exam::exams.edit',$record->slug)}}">
                                         <i class="fa fa-pencil"></i> Edit
                                     </a>
-                                @endcan
-                            </li>
-                            <li class="list-group-item">
-                                @can('delete',$record)
+
+                                </li>
+                            @endcan
+                            @can('delete',$record)
+                                <li class="list-group-item">
                                     <form onsubmit="return confirm('Are you sure you want to delete?')"
                                           action="{{route('exam::exams.destroy',$record->slug)}}"
                                           method="post"
@@ -58,16 +64,18 @@
                                             <i class="fa fa-remove"></i> Remove
                                         </button>
                                     </form>
-                                @endcan
-                            </li>
+                                </li>
+                            @endcan
+                            @can('update',$record)
                             <li class="list-group-item">
-                                @can('update',$record)
+
                                     <a class="btn btn-outline-secondary btn-block btn-sm"
                                        href="{{route('exam::exams.invitations.create',$record->slug)}}">
                                         <span class="fa fa-envelope"></span> Invite
                                     </a>
-                                @endif
+
                             </li>
+                            @endif
                             <li class="list-group-item">
                                 &nbsp;<form action="{{route('blog::activities.store')}}" method="post" class="d-inline">
                                     {{csrf_field()}}

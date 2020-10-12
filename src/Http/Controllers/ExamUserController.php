@@ -39,12 +39,13 @@ class ExamUserController extends Controller
      */
     public function result(Result $request, ExamUser $exam_user)
     {
-        $feedback = Feedback::where('feedbackable_type', get_class($exam_user->exam))
+        $feedback = Feedback::query()->where('feedbackable_type', get_class($exam_user->exam))
             ->where('feedbackable_id', $exam_user->exam_id)
             ->where('user_id', $exam_user->user_id)
             ->first();
+
         $exam = $exam_user->exam;
-        $answers = \Exam\Models\Answer::whereIn('id', $request->get('answer', []))->get();
+        $answers = \Exam\Models\Answer::query()->whereIn('id', $request->get('answer', []))->get();
         $leftQuestions = [];
         $left = $exam_user->remaining();
         if (false == $left) {

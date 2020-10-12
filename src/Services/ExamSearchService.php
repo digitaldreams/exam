@@ -37,6 +37,7 @@ class ExamSearchService
      * @param int              $perPage
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @throws \ReflectionException
      */
     public function paginateForUser(User $user, ?string $search = null, ?string $status = null, ?string $activity = null, int $perPage = 6)
     {
@@ -45,10 +46,10 @@ class ExamSearchService
         if (!$user->isAdmin()) {
             $builder = $this->forUser($builder, $user->id);
         }
-        if (!empty($status) && array_search($status, ExamUserStatus::toArray())) {
-            $builder = $this->filterByStatus($builder, $status);
-        } elseif (!empty($activity) && array_search($activity, ActivityType::getValues())) {
-            $builder = $this->filterByActivity($builder, $activity);
+        if (!empty($status) && false !== array_search($status, ExamUserStatus::toArray())) {
+            $builder = $this->filterByStatus($builder, $status, $user->id);
+        } elseif (!empty($activity) && false !== array_search($activity, ActivityType::getValues())) {
+            $builder = $this->filterByActivity($builder, $activity, $user->id);
         } else {
             $builder = !empty($search) ? $this->search($builder, $search) : $this->preferences($builder, $user->id);
         }
@@ -113,10 +114,19 @@ class ExamSearchService
         })->orderByRaw('cscore*2+tscore desc');
     }
 
-    private function filterByStatus(Builder $builder, string $status)
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param string                                $status
+     * @param                                       $userId
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function filterByStatus(Builder $builder, string $status, $userId)
     {
-        return $builder->whereHas('examUser', function ($q) use ($status) {
-            $q->where('status', array_search($status, ExamUserStatus::toArray()));
+        return $builder->whereHas('examUser', function ($q) use ($status, $userId) {
+            $statuses = ExamUserStatus::toArray();
+            $q->where('status', $statuses[array_search($status, ExamUserStatus::toArray())])
+                ->where('user_id', $userId);
         });
     }
 
@@ -126,10 +136,11 @@ class ExamSearchService
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    private function filterByActivity(Builder $builder, string $activity)
+    private function filterByActivity(Builder $builder, string $activity, int $userId)
     {
-        return $builder->whereHas('activities', function ($q) use ($activity) {
-            $q->where('type', $activity);
+        return $builder->whereHas('activities', function ($q) use ($activity, $userId) {
+            $q->where('type', $activity)
+                ->where('user_id', $userId);
         });
     }
 }

@@ -97,8 +97,14 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function registerPolicies()
     {
+        $configuredPolicy = config('exam.policies', []);
+
         foreach ($this->policies as $key => $value) {
-            Gate::policy($key, $value);
+            if (isset($configuredPolicy[$key])) {
+                Gate::policy($key, $configuredPolicy[$key]);
+            } else {
+                Gate::policy($key, $value);
+            }
         }
     }
 }

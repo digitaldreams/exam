@@ -62,7 +62,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{request('activity')=='likes'?'active':''}}" href="?activity=likes">Liked
+            <a class="nav-link {{request('activity')=='like'?'active':''}}" href="?activity=like">Liked
                 <span class="badge badge-light badge-pill">{{$likedExams}}</span>
             </a>
         </li>

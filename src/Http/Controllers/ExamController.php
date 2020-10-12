@@ -49,7 +49,6 @@ class ExamController extends Controller
     {
         $this->authorize('viewAny', Exam::class);
         $user = auth()->user();
-
         return view('exam::pages.exams.index', [
             'completedExams' => $user->examUsers()->where('status', ExamUserStatus::COMPLETED)->count(),
             'pendingExams' => $user->examUsers()->where('status', ExamUserStatus::PENDING)->count(),

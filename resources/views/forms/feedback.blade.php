@@ -1,8 +1,8 @@
 <form action="{{$route ?? route('exam::feedbacks.store')}}" method="POST">
     {{csrf_field()}}
     <input type="hidden" name="_method" value="{{$method ?? 'POST'}}"/>
-    <input type="hidden" name="feedbackable_type" value="{{$feedbackable_type or ''}}">
-    <input type="hidden" name="feedbackable_id" value="{{$feedbackable_id or ''}}">
+    <input type="hidden" name="feedbackable_type" value="{{$feedbackable_type ?? ''}}">
+    <input type="hidden" name="feedbackable_id" value="{{$feedbackable_id ?? ''}}">
     <div class="form-group">
         <label for="title">Feedback</label>
         <input type="text" class="form-control {{ $errors->has('feedback') ? ' is-invalid' : '' }}" name="feedback"

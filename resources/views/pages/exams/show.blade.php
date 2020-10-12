@@ -16,8 +16,6 @@
 @endsection
 
 @section('tools')
-
-
     @can('start',$exam)
         <a class="btn btn-outline-primary" href="{{route('exam::exams.start',$exam->slug)}}">Take</a>
     @endcan
