@@ -2,7 +2,9 @@
 
 namespace Exam\Http\Requests\Answers;
 
+use Exam\Enums\AnswerStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class Update extends FormRequest
 {
@@ -24,18 +26,16 @@ class Update extends FormRequest
     public function rules()
     {
         return [
-            'status' => 'required|in:' . \Exam\Models\Answer::STATUS_CORRECT . ',' . \Exam\Models\Answer::STATUS_WRONG,
+            'status' => [
+                'required',
+                Rule::in(AnswerStatus::toArray()),
+            ],
+            'obtain_mark' => [
+                Rule::requiredIf(AnswerStatus::PARTIALLY_CORRECT == $this->get('status')),
+                'min:1',
+                'max:' . $this->route('answer')->question->total_mark,
+            ],
         ];
     }
 
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
-    public function messages()
-    {
-        return [
-        ];
-    }
 }

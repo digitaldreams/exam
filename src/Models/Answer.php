@@ -32,6 +32,7 @@ class Answer extends Model
         'answer',
         'status',
         'obtain_mark',
+        'feedback',
     ];
 
     public static function boot()
@@ -72,5 +73,21 @@ class Answer extends Model
     public function isCorrect()
     {
         return AnswerStatus::CORRECT == $this->status;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getAnswer()
+    {
+        return is_array($this->answer) && !empty($this->answer) ? $this->answer[0] : $this->answer;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getAnswers()
+    {
+        return is_array($this->answer) && !empty($this->answer) ? $this->answer : [$this->answer];
     }
 }

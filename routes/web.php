@@ -36,7 +36,7 @@ Route::group(['middleware' => ['web', 'auth'], 'as' => 'exam::', 'namespace' => 
             'as' => 'exams.reviews.show',
             'uses' => 'ExamReviewController@show',
         ]);
-        Route::get('{exam}/submit/reviews/{answer}', [
+        Route::put('{exam}/submit/reviews/{answer}', [
             'as' => 'exams.reviews.update',
             'uses' => 'ExamReviewController@update',
         ]);

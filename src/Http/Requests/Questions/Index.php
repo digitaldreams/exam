@@ -14,7 +14,7 @@ class Index extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->can('index', Question::class);
+        return auth()->user()->can('viewAny', Question::class);
     }
 
     /**

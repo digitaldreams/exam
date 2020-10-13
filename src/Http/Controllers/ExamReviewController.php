@@ -59,7 +59,8 @@ class ExamReviewController extends Controller
      */
     public function update(Update $request, Exam $exam, Answer $answer)
     {
-        $answer->status = $request->get('status');
+        $answer->fill($request->all());
+
         if ($answer->save()) {
             $answer->examUser->user->notify(new ReviewCompletedNotification($answer, $exam));
             session()->flash('message', 'Answer successfully reviewed');

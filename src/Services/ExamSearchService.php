@@ -124,8 +124,7 @@ class ExamSearchService
     private function filterByStatus(Builder $builder, string $status, $userId)
     {
         return $builder->whereHas('examUser', function ($q) use ($status, $userId) {
-            $statuses = ExamUserStatus::toArray();
-            $q->where('status', $statuses[array_search($status, ExamUserStatus::toArray())])
+            $q->where('status', array_search($status, ExamUserStatus::toArray()))
                 ->where('user_id', $userId);
         });
     }

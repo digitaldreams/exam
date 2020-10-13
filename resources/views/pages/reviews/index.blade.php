@@ -52,31 +52,61 @@
 
     @foreach($records as $record)
 
-            <div class="row bg-light m-3">
 
-                @foreach($record->pendingAnswers as $answer)
-                    <div class="col-sm-6">
-                        <div class="card">
-                            <div class="card-header">
-                                {{$answer->question->title}}
-                            </div>
-                            <div class="card-body">
-                                {!! $answer->answer !!}
-                            </div>
-                            <div class="card-footer text-center">
-                                <a class="btn btn-outline-danger btn-sm"
-                                   href="{{route('exam::exams.reviews.update',['exam'=>$exam->slug,'answer'=>$answer->id,'status'=>\Exam\Models\Answer::STATUS_WRONG])}}">
-                                    <i class="fa fa-remove"></i>Wrong
-                                </a>
-                                <a class="btn btn-outline-primary btn-sm"
-                                   href="{{route('exam::exams.reviews.update',['exam'=>$exam->slug,'answer'=>$answer->id,'status'=>\Exam\Models\Answer::STATUS_CORRECT])}}">
-                                    <i class="fa fa-check-circle-o"></i> Right
-                                </a>
-                            </div>
+        @foreach($record->pendingAnswers as $answer)
+            <form action="{{route('exam::exams.reviews.update',['exam'=>$exam->slug,'answer'=>$answer->id])}}"
+                  method="post">
+                {{csrf_field()}}
+                {{method_field('PUT')}}
+                <div class="card">
+                    <div class="card-header">
+                        {{$answer->question->title}}
+                    </div>
+                    <div class="card-body">
+                        <h4>User Answer</h4>
+                        <p class="alert alert-secondary">{!! $answer->getAnswer() !!}</p>
+
+                        <div class="form-group">
+                            <label>This answer is </label> <br/>
+                            <label class="form-check-inline">
+                                <input type="radio" name="status"  required value="{{\Exam\Enums\AnswerStatus::WRONG}}">
+                                Wrong
+                            </label>
+                            <label class="form-check-inline">
+                                <input type="radio" name="status" required
+                                       value="{{\Exam\Enums\AnswerStatus::PARTIALLY_CORRECT}}">
+                                Partially Correct
+                            </label>
+                            <label class="form-check-inline">
+                                <input type="radio" name="status" required value="{{\Exam\Enums\AnswerStatus::CORRECT}}">
+                                Correct
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Total mark you want to give.</label>
+                            <input class="form-control" type="number" min="0" value="{{$answer->question->total_mark}}"
+                                   max="{{$answer->question->total_mark}}" name="obtain_mark" required>
+                            <small>Please give a mark between 0 to {{$answer->question->total_mark}} when answer is
+                                partially correct. Correct answer will get full mark and wrong answer will get nothing.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Your Feedback</label>
+                            <textarea name="feedback" class="form-control"
+                                      placeholder="Write your feedback here."></textarea>
+                            <small>Your feedback will help user to understand what's went wrong and how could have been
+                                improved.
+                            </small>
                         </div>
                     </div>
-                @endforeach
-            </div>
+                    <div class="card-footer text-center">
+                        <input type="submit" class="btn btn-primary" value="Submit">
+
+                    </div>
+                </div>
+            </form>
+        @endforeach
     @endforeach
 
     {!! $records->render() !!}
