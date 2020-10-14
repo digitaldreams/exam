@@ -1,42 +1,35 @@
 @extends(config('exam.layouts.app'))
 @section('breadcrumb')
     <li class="breadcrumb-item">
-        <a href="{{route('exam::questions.index')}}">questions</a>
+        <a href="{{route('exam::exams.index')}}">Exams</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{route('exam::exams.show',$exam->slug)}}">{{$exam->title}}</a>
+    </li>
+    <li class="breadcrumb-item">
+        questions
     </li>
     <li class="breadcrumb-item">
         {{$record->title}}
     </li>
+    <li>Manual Review</li>
 @endsection
 
 @section('tools')
-    @can('create',\Exam\Models\Question::class)
-        <a href="{{'exam::questions.create'}}">
-            <span class="fa fa-plus"></span>
-        </a>
-    @endcan
-    @can('update',$record)
-        <a href="{{route('exam::questions.edit',$record->id)}}">
-            <span class="fa fa-pencil"></span>
-        </a>
-    @endcan
-    @can('delete',$record)
-        <form onsubmit="return confirm('Are you sure you want to delete?')"
-              action="{{route('exam::questions.destroy',$record->id)}}"
-              method="post"
-              style="display: inline">
-            {{csrf_field()}}
-            {{method_field('DELETE')}}
-            <button type="submit" class="btn btn-default cursor-pointer  btn-sm">
-                <i class="text-danger fa fa-remove"></i>
-            </button>
-        </form>
-    @endcan
+
 @endsection
 
 @section('content')
-    <div class="row">
-        <div class="col-sm-6">
-            @include('exam::cards.question')
-        </div>
-    </div>
+    <h3> Your Answer</h3>
+    <p class="alert alert-secondary">{{$answer->answer}}</p>
+    @if($answer->feedback)
+        <h3>Teacher's Feedback</h3>
+        {{$answer->feedback}}
+    @endif
+    <hr/>
+    <p class="lead">Your answer is {{\Exam\Enums\AnswerStatus::toArray()[$answer->status]}}.
+        @if($answer->status!==\Exam\Enums\AnswerStatus::WRONG)
+            You got <span class="badge badge-primary">{{$answer->obtain_mark}}</span> out of {{$record->total_mark}}
+        @endif
+    </p>
 @endSection

@@ -28,12 +28,12 @@ class Update extends FormRequest
         return [
             'status' => [
                 'required',
-                Rule::in(AnswerStatus::toArray()),
+                Rule::in(array_keys(AnswerStatus::toArray())),
             ],
             'obtain_mark' => [
                 Rule::requiredIf(AnswerStatus::PARTIALLY_CORRECT == $this->get('status')),
                 'min:1',
-                'max:' . $this->route('answer')->question->total_mark,
+                'max:' . $this->route('answer')->question->total_mark ?? 10,
             ],
         ];
     }

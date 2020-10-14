@@ -43,10 +43,12 @@ class ExamReviewController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Answer $answer)
+    public function show(Exam $exam, Answer $answer)
     {
         return view('exam::pages.reviews.show', [
-            'record' => $answer,
+            'record' => $answer->question,
+            'exam' => $exam,
+            'answer' => $answer,
         ]);
     }
 

@@ -13,10 +13,10 @@ class AnswerStatus
     public static function toArray()
     {
         return [
-            static::WRONG,
-            static::CORRECT,
-            static::PENDING,
-            static::PARTIALLY_CORRECT,
+            static::WRONG => 'Wrong',
+            static::CORRECT => 'Correct',
+            static::PENDING => 'Pending',
+            static::PARTIALLY_CORRECT => 'Partially Correct',
         ];
     }
 }

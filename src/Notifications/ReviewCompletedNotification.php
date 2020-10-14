@@ -83,7 +83,7 @@ class ReviewCompletedNotification extends Notification
     {
         return [
             'message' => 'Your exam question ' . $this->answer->question->title . ' answer reviewed. ',
-            'link' => route('exam::exams.show', $this->exam->slug),
+            'link' => route('exam::exams.reviews.show', ['exam' => $this->exam->slug, 'answer' => $this->answer->id]),
         ];
     }
 }
