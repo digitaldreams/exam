@@ -6,6 +6,7 @@ use Exam\Models\ExamUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\WebPush\WebPushMessage;
 
 class ReviewRequestToTeacher extends Notification
 {
@@ -14,6 +15,8 @@ class ReviewRequestToTeacher extends Notification
      * @var ExamUser
      */
     protected $examUser;
+    protected $subject;
+    protected $link;
 
     /**
      * Create a new notification instance.
@@ -23,6 +26,8 @@ class ReviewRequestToTeacher extends Notification
     public function __construct(ExamUser $examUser)
     {
         $this->examUser = $examUser;
+        $this->subject = $this->examUser->user->name . ' completed ' . $this->examUser->exam->title . ' has some question that need manual checking';
+        $this->link = route('exam::exams.reviews.index', $this->examUser->exam->slug);
     }
 
     /**
@@ -58,8 +63,20 @@ class ReviewRequestToTeacher extends Notification
     public function toDatabase()
     {
         return [
-            'message' => $this->examUser->user->name . ' completed ' . $this->examUser->exam->title . ' has some question that need manual checking',
-            'link' => route('exam::exams.reviews.index', $this->examUser->exam->slug),
+            'message' => $this->subject,
+            'link' => $this->link,
         ];
+    }
+
+    /**
+     * @return \NotificationChannels\WebPush\WebPushMessage
+     */
+    public function toWebPush()
+    {
+        return (new WebPushMessage())
+            ->title('Manual checking needed')
+            ->body($this->examUser->exam->title)
+            ->requireInteraction()
+            ->data(['url' => $this->link]);
     }
 }

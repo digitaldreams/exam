@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Channels\DatabaseChannel;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\WebPush\WebPushMessage;
 
 class PendingExamNotification extends Notification
 {
@@ -17,6 +18,16 @@ class PendingExamNotification extends Notification
     protected $examUser;
 
     /**
+     * @var string
+     */
+    protected $subject;
+
+    /**
+     * @var string
+     */
+    protected $link;
+
+    /**
      * Create a new notification instance.
      *
      * @param ExamUser $examUser
@@ -24,6 +35,8 @@ class PendingExamNotification extends Notification
     public function __construct(ExamUser $examUser)
     {
         $this->examUser = $examUser;
+        $this->subject = 'Your exam ' . $this->examUser->exam->title . ' is pending over 24 hours.';
+        $this->link = route('exam::exams.start', $this->examUser->exam->slug);
     }
 
     /**
@@ -77,17 +90,20 @@ class PendingExamNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'message' => 'Your exam ' . $this->examUser->exam->title . ' is pending over 24 hours.',
-            'link' => route('exam::exams.start', $this->examUser->exam->slug),
+            'message' => $this->subject,
+            'link' => $this->link,
         ];
     }
 
-    public function toModel($notifiable)
+    /**
+     * @return \NotificationChannels\WebPush\WebPushMessage
+     */
+    public function toWebPush()
     {
-        return [
-            'model' => $this->examUser,
-            'actor' => $this->examUser->user,
-            'verb' => 'pending ',
-        ];
+        return (new WebPushMessage())
+            ->title('Your exam is pending')
+            ->body($this->examUser->exam->title)
+            ->requireInteraction()
+            ->data(['url' => $this->link]);
     }
 }

@@ -2,11 +2,13 @@
 
 namespace Exam\Notifications;
 
+use App\Models\User;
 use Exam\Models\Invitation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\User;
+use NotificationChannels\WebPush\WebPushChannel;
+use NotificationChannels\WebPush\WebPushMessage;
 
 class InvitationNotification extends Notification
 {
@@ -21,6 +23,16 @@ class InvitationNotification extends Notification
     protected $actor;
 
     /**
+     * @var string
+     */
+    protected $subject;
+
+    /**
+     * @var string
+     */
+    protected $link;
+
+    /**
      * Create a new notification instance.
      *
      * @param Invitation $invitation
@@ -30,6 +42,11 @@ class InvitationNotification extends Notification
     {
         $this->invitation = $invitation;
         $this->actor = $actor;
+        $this->subject = 'You are invited to take ' . $this->invitation->exam->title . ' exam';
+        $this->link = route('exam::exams.invitations.response', [
+            'exam' => $this->invitation->exam->slug,
+            'invitation' => $this->invitation->token,
+        ]);
     }
 
     /**
@@ -41,7 +58,7 @@ class InvitationNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail', 'database', WebPushChannel::class];
     }
 
     /**
@@ -54,10 +71,9 @@ class InvitationNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage())
+            ->subject($this->subject)
             ->line($this->actor->name . ' invites you to take exam ' . $this->invitation->exam->title)
-            ->action('Accept', route('exam::exams.invitations.response', [
-                'exam' => $this->invitation->exam->slug, 'invitation' => $this->invitation->token,
-            ]))
+            ->action('Accept', $this->link)
             ->line('Thank you for using our application!');
     }
 
@@ -81,11 +97,21 @@ class InvitationNotification extends Notification
     public function toDatabase()
     {
         return [
-            'message' => $this->actor->name . ' invites you to take exam ' . $this->invitation->exam->title,
-            'link' => route('exam::exams.invitations.show', [
-                'exam' => $this->invitation->exam->slug,
-                'invitation' => $this->invitation->token,
-            ]),
+            'message' => $this->subject,
+            'link' => $this->link,
         ];
+    }
+
+
+    /**
+     * @return \NotificationChannels\WebPush\WebPushMessage
+     */
+    public function toWebPush()
+    {
+        return (new WebPushMessage())
+            ->title('Invited to take Exam')
+            ->body($this->invitation->exam->title)
+            ->requireInteraction()
+            ->data(['url' => $this->link]);
     }
 }

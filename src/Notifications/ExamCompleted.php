@@ -44,15 +44,6 @@ class ExamCompleted extends Notification
         return ['database'];
     }
 
-    public function toModel($notifiable)
-    {
-        return [
-            'model' => $this->exam,
-            'actor' => $this->user,
-            'verb' => 'completed',
-        ];
-    }
-
     /**
      * Get the array representation of the notification.
      *
