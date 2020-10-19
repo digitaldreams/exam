@@ -6,7 +6,6 @@ use Blog\Models\Category;
 use Blog\Models\Tag;
 use Blog\Repositories\TagRepository;
 use Exam\Models\Question;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -93,15 +92,15 @@ class QuestionRepository extends Repository
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     * @param                                       $search
-     * @param mixed                                 $perPage
+     * @param             $search
+     * @param string|null $type
+     * @param mixed       $perPage
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function search($search, $perPage = 8): LengthAwarePaginator
+    public function search($search, ?string $type, $perPage = 8): LengthAwarePaginator
     {
-        return Question::query()->selectRaw('questions.*,
+        $builder = Question::query()->selectRaw('questions.*,
              match(questions.title) against ("' . $search . '" IN NATURAL LANGUAGE MODE) as qscore')->distinct()
             ->leftJoin('blog_categories', 'questions.category_id', '=', 'blog_categories.id')
             ->leftJoin('question_tag', 'questions.id', '=', 'question_tag.question_id')
@@ -110,11 +109,14 @@ class QuestionRepository extends Repository
                 $q->orWhereRaw('match(questions.title) against (? IN NATURAL LANGUAGE MODE)', $search)
                     ->orWhereRaw('match(blog_categories.title) against (? IN NATURAL LANGUAGE MODE)', $search)
                     ->orWhereRaw('match(blog_tags.name) against (? IN NATURAL LANGUAGE MODE)', $search);
-            })
-            ->orderByRaw('qscore desc')
+            });
+        if (!empty($type)) {
+            $builder = $builder->where('questions.type', $type);
+        }
+
+        return $builder->orderByRaw('qscore desc')
             ->paginate(8);
     }
-
 
     /**
      * @return array|\Illuminate\Cache\CacheManager|mixed
@@ -130,7 +132,7 @@ class QuestionRepository extends Repository
         }
 
         $categories = Category::query()
-            ->selectRaw('title as name,(select count(*) from exams where blog_categories.id=category_id ) as total')
+            ->selectRaw('title as name,(select count(*) from questions where blog_categories.id=category_id ) as total')
             ->havingRaw('total > 0 ')
             ->orderByRaw('total desc')->get()->toArray();
 

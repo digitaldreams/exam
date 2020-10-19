@@ -4,9 +4,9 @@
     <div class="row">
         <div class="col-sm-9">
             <div class="form-group">
-                <label title="What you are going to ask" for="title">Title</label>
+                <label title="What you are going to ask" for="title">Question?</label>
                 <textarea class="form-control {{ $errors->has('title') ? ' is-invalid' : '' }}" name="title"
-                          id="title">{{old('title',$model->title)}}</textarea>
+                          id="title" placeholder="write your question here">{{old('title',$model->title)}}</textarea>
 
                 @if($errors->has('title'))
                     <div class="invalid-feedback">
@@ -20,24 +20,29 @@
                     <input type="text" class="form-control {{ $errors->has('hints') ? ' is-invalid' : '' }}"
                            name="hints"
                            id="hints"
-                           value="{{old('hints',$model->hints)}}" placeholder="" maxlength="191">
+                           value="{{old('hints',$model->hints)}}"
+                           placeholder="Help user by giving some hints about the possible answer." maxlength="191">
                     @if($errors->has('hints'))
                         <div class="invalid-feedback">
                             <strong>{{ $errors->first('hints') }}</strong>
                         </div>
                     @endif
+                    <small class="text-muted">It will helps user to guess the correct answer.</small>
                 </div>
                 <div class="form-group col">
                     <label for="explanation">Explanation</label>
                     <input type="text" class="form-control {{ $errors->has('explanation') ? ' is-invalid' : '' }}"
                            name="explanation" id="explanation" value="{{old('explanation',$model->explanation)}}"
-                           placeholder=""
+                           placeholder="Explain why answer is correct."
                            maxlength="191">
                     @if($errors->has('explanation'))
                         <div class="invalid-feedback">
                             <strong>{{ $errors->first('explanation') }}</strong>
                         </div>
                     @endif
+                    <small class="text-muted">After submitted the answer it will shown to the user why the correct
+                        answer is right.
+                    </small>
                 </div>
             </div>
             <?php $type = request('type', $model->type);?>
@@ -104,7 +109,7 @@
                 </div>
                 <div class="form-group">
                     <label>Question Review Type
-                        <small class="text-muted"> Manual review type will be reviewed by an teacher</small>
+
                     </label> <br/>
                     <div class="form-check-inline">
                         <label>
@@ -123,7 +128,8 @@
                             >
                             Manual
                         </label>
-                    </div>
+                    </div><br/>
+                    <small class="text-muted"> Manual review type will be reviewed by an teacher</small>
                 </div>
                 <div class="form-group">
                     <label for="category_id">Category</label>

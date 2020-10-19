@@ -12,7 +12,8 @@
 @endsection
 @section('tools')
     @can('create',\Exam\Models\Question::class)
-        <a class="btn btn-secondary" href="{{route('exam::questions.create')}}"> <i class="fa fa-plus"></i> Create</a>
+        <a class="btn btn-outline-secondary" href="{{route('exam::questions.create')}}"> <i class="fa fa-plus"></i>
+            Create New Question</a>
     @endcan
 @endsection
 
@@ -21,6 +22,12 @@
         <div class="col-md-6">
             <form>
                 <div class="input-group mb-3">
+                    <select name="type" class="form-control-inline">
+                        <option value="">All</option>
+                        @foreach(\Exam\Enums\QuestionType::toArray() as $key=>$name)
+                            <option value="{{$key}}" {{request('type')==$key?'selected':''}}>{{$name}}</option>
+                        @endforeach
+                    </select>
                     <input type="search" name="search" value="{{request('search')}}" class="form-control"
                            placeholder="Search Questions"
                            autocomplete="off"
@@ -32,17 +39,18 @@
                 </div>
                 <datalist id="keywords">
                     @foreach($keywords as $keyword)
-                        <option value="{{$keyword['name']}}">&nbsp; &nbsp; {{$keyword['total']}}</option>
+                        <option value="{{$keyword['name']}}">&nbsp; {{$keyword['name']}}
+                            &nbsp; {{$keyword['total']}}</option>
                     @endforeach
                 </datalist>
             </form>
         </div>
         <div class="col-md-6">
-            {!! $records->render() !!}
+            {!! $records->appends(['search'=> request('search'),'type'=>request('type')])->render() !!}
         </div>
     </div>
     <div class="row">
-        @foreach($records->chunk(4) as $chunkRecords)
+        @foreach($records->chunk(2) as $chunkRecords)
             <div class="col-sm-6 col-md-6 col-12">
                 <div class="row">
                     @foreach($chunkRecords as $record)
@@ -54,5 +62,5 @@
             </div>
         @endforeach
     </div>
-    {!! $records->render() !!}
+    {!! $records->appends(['search'=> request('search'),'type'=>request('type')])->render() !!}
 @endSection

@@ -12,8 +12,8 @@
 @endsection
 @section('tools')
     @can('create',\Exam\Models\Question::class)
-        <a href="{{'exam::questions.create'}}">
-            <span class="fa fa-plus"></span>
+        <a class="btn btn-outline-secondary" href="{{route('exam::questions.create')}}">
+            <span class="fa fa-plus"></span> Create New Question
         </a>
     @endcan
     @can('update',$record)
