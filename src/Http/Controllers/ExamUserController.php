@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Exam\Enums\ExamUserStatus;
 use Exam\Enums\ExamVisibility;
+use Exam\Enums\QuestionReview;
 use Exam\Http\Requests\Exams\Answer;
 use Exam\Http\Requests\Exams\Question;
 use Exam\Http\Requests\Exams\Result;
@@ -22,6 +23,7 @@ use Exam\Models\ExamUser;
 use Exam\Models\Feedback;
 use Exam\Models\Question as QuestionModel;
 use Exam\Notifications\ExamCompleted;
+use Exam\Notifications\ReviewRequestToTeacher;
 use Exam\Services\AnswerService;
 use Exam\Services\CertificateService;
 use Illuminate\Http\Request;
@@ -193,6 +195,11 @@ class ExamUserController extends Controller
             $certificate->make();
             Notification::send(User::getAdmins(), new ExamCompleted($exam, auth()->user()));
 
+            $totalPendingQuestion = $exam_user->exam->questions()->where('review_type', QuestionReview::MANUAL)->count();
+            if ($totalPendingQuestion > 0) {
+                Notification::send(User::getAdmins(), new ReviewRequestToTeacher($exam_user));
+            }
+
             return redirect()->route('exam::exams.result', ['exam_user' => $exam_user->id, 'answer' => $answerIds]);
         }
     }
@@ -203,6 +210,7 @@ class ExamUserController extends Controller
      * @param            $visibility
      *
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function visibility(Visibility $request, ExamUser $exam_user, $visibility)
     {

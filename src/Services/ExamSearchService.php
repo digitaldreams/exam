@@ -85,6 +85,8 @@ class ExamSearchService
      */
     private function search(Builder $builder, $search): Builder
     {
+        $search = $this->fullTextWildcards($search);
+
         return $builder->selectRaw('exams.*,
              match(exams.title,exams.description) against ("' . $search . '" IN NATURAL LANGUAGE MODE) as bscore')->distinct()
             ->leftJoin('blog_categories', 'exams.category_id', '=', 'blog_categories.id')
@@ -141,5 +143,37 @@ class ExamSearchService
             $q->where('type', $activity)
                 ->where('user_id', $userId);
         });
+    }
+
+    /**
+     * Replaces spaces with full text search wildcards.
+     *
+     * @param string $term
+     * @param string $start
+     * @param string $end
+     *
+     * @return string
+     */
+    protected function fullTextWildcards($term, $start = '+', $end = '*')
+    {
+        // removing symbols used by MySQL
+        $reservedSymbols = ['-', '+', '"', "'", '<', '>', '@', '(', ')', '~', '*'];
+        $term = str_replace($reservedSymbols, '', $term);
+
+        $words = explode(' ', $term);
+
+        foreach ($words as $key => $word) {
+            /*
+             * applying + operator (required word) only big words
+             * because smaller ones are not indexed by mysql
+             */
+            if (strlen($word) >= 3) {
+                $words[$key] = $start . $word . $end;
+            }
+        }
+
+        $searchTerm = implode(' ', $words);
+
+        return $searchTerm;
     }
 }

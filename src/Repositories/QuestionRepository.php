@@ -126,6 +126,8 @@ class QuestionRepository extends Repository
      */
     public function search($search, ?string $type, $perPage = 8): LengthAwarePaginator
     {
+        $search = $this->fullTextWildcards($search);
+
         $builder = Question::query()->selectRaw('questions.*,
              match(questions.title) against ("' . $search . '" IN NATURAL LANGUAGE MODE) as qscore')->distinct()
             ->leftJoin('blog_categories', 'questions.category_id', '=', 'blog_categories.id')
@@ -174,4 +176,37 @@ class QuestionRepository extends Repository
 
         return $data;
     }
+
+    /**
+     * Replaces spaces with full text search wildcards.
+     *
+     * @param string $term
+     * @param string $start
+     * @param string $end
+     *
+     * @return string
+     */
+    protected function fullTextWildcards($term, $start = '+', $end = '*')
+    {
+        // removing symbols used by MySQL
+        $reservedSymbols = ['-', '+', '"', "'", '<', '>', '@', '(', ')', '~', '*'];
+        $term = str_replace($reservedSymbols, '', $term);
+
+        $words = explode(' ', $term);
+
+        foreach ($words as $key => $word) {
+            /*
+             * applying + operator (required word) only big words
+             * because smaller ones are not indexed by mysql
+             */
+            if (strlen($word) >= 3) {
+                $words[$key] = $start . $word . $end;
+            }
+        }
+
+        $searchTerm = implode(' ', $words);
+
+        return $searchTerm;
+    }
+
 }

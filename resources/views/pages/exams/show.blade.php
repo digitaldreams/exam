@@ -8,11 +8,9 @@
     </li>
 @endsection
 @section('header')
-    {{$exam->title}}
+
     <small>{!! $exam->stars() !!}</small>
-    @foreach($exam->tags as $tag)
-        <small><label class="badge badge-secondary">{{$tag->name}}</label></small>
-    @endforeach
+    {{$exam->title}}
 @endsection
 
 @section('tools')
@@ -21,12 +19,12 @@
     @endcan
     @can('create',\Exam\Models\Exam::class)
         <a class="btn btn-outline-secondary" href="{{route('exam::exams.create')}}">
-            <span class="fa fa-plus"></span>  Create
+            <span class="fa fa-plus"></span> Create
         </a>
     @endcan
     @can('update',$exam)
         <a class="btn btn-outline-secondary" href="{{route('exam::exams.edit',$exam->slug)}}">
-            <span class="fa fa-pencil"></span>  Edit
+            <span class="fa fa-pencil"></span> Edit
         </a>
     @endcan
     @can('delete',$exam)
@@ -47,7 +45,8 @@
 @section('content')
     @include('exam::pages.exams.exam_details_tabs')
     <div class="row">
-        <div class="col-sm-6">
+
+        <div class="col-sm-8">
             @can('update',$exam)
                 <form action="{{route('exam::exams.questionAdd',$exam->slug)}}" method="post">
                     {{csrf_field()}}
@@ -87,7 +86,7 @@
                 </ol>
             @endcan
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             {{$exam->description}}
 
             @if($exam->getMustCompletedIds())
@@ -102,6 +101,39 @@
                     @endforeach
                 </ul>
             @endif
+            <hr/>
+            <table class="table table-borderless table-hover table-responsive">
+                <tr>
+                    <th>Visibility</th>
+                    <td>
+                        <label class="btn btn-light">{{$exam->visibility}}</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td><label class="btn btn-light">{{$exam->status}}</label></td>
+                </tr>
+                <tr>
+                    <th>Show Answer</th>
+                    <td>{{$exam->show_answer}}</td>
+                </tr>
+                <tr>
+                    <th>Duration</th>
+                    <td>{{$exam->duration}}</td>
+                </tr>
+                <tr>
+                    <th>Category</th>
+                    <td>{{$exam->category->title??''}}</td>
+                </tr>
+                <tr>
+                    <th>Tags</th>
+                    <td>
+                        @foreach($exam->tags as $tag)
+                            <span class="badge badge-light lead p-1">{{$tag->name}}</span>
+                        @endforeach
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 

@@ -101,18 +101,10 @@ class CertificateService
                 $font->valign('top');
             });
         $this->image->save($this->filePath);
-     //   $this->notify();
 
         return $this->image;
     }
 
-    protected function notify()
-    {
-        $totalPendingQuestion = $this->examUser->exam->questions()->where('review_type', QuestionReview::MANUAL)->count();
-        if ($totalPendingQuestion > 0) {
-            Notification::send(User::getAdmins(), new ReviewRequestToTeacher($this->examUser));
-        }
-    }
 
     public function getFileName()
     {
