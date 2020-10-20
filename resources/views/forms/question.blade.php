@@ -1,4 +1,4 @@
-<form action="{{$route ?? route('exam::questions.store')}}" method="POST">
+<form action="{{$route ?? route('exam::questions.store')}}" method="POST" enctype="multipart/form-data">
     {{csrf_field()}}
     <input type="hidden" name="_method" value="{{$method ?? 'POST'}}"/>
     <div class="row">
@@ -128,7 +128,8 @@
                             >
                             Manual
                         </label>
-                    </div><br/>
+                    </div>
+                    <br/>
                     <small class="text-muted"> Manual review type will be reviewed by an teacher</small>
                 </div>
                 <div class="form-group">

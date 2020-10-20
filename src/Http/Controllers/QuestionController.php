@@ -6,11 +6,6 @@ use App\Http\Controllers\Controller;
 use Exam\Enums\QuestionAnswerType;
 use Exam\Enums\QuestionReview;
 use Exam\Enums\QuestionType;
-use Exam\Http\Requests\Questions\Create;
-use Exam\Http\Requests\Questions\Destroy;
-use Exam\Http\Requests\Questions\Edit;
-use Exam\Http\Requests\Questions\Index;
-use Exam\Http\Requests\Questions\Show;
 use Exam\Http\Requests\Questions\Store;
 use Exam\Http\Requests\Questions\Update;
 use Exam\Models\Question;
@@ -44,14 +39,17 @@ class QuestionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Index $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
      *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function index(Index $request)
+    public function index(Request $request)
     {
+        $this->authorize('viewAny', Question::class);
+
         if (!empty($request->get('search'))) {
             $questions = $this->questionRepository->search($request->get('search'), $request->get('type'));
         } else {
@@ -71,13 +69,15 @@ class QuestionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Show     $request
      * @param Question $question
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show(Show $request, Question $question)
+    public function show(Question $question)
     {
+        $this->authorize('view', $question);
+
         return view('exam::pages.questions.show', [
             'record' => $question,
         ]);
@@ -86,12 +86,15 @@ class QuestionController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param Create $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function create(Create $request)
+    public function create(Request $request)
     {
+        $this->authorize('create', Question::class);
+
         $model = new Question();
 
         if (QuestionType::FREEHAND_WRITING == $request->get('type') || QuestionAnswerType::WRITE == $request->get('answer_type')) {
@@ -114,7 +117,7 @@ class QuestionController extends Controller
      */
     public function store(Store $request): RedirectResponse
     {
-        $question = $this->questionRepository->create($request->all());
+        $question = $this->questionRepository->create($request->all(), $request->file('file'));
 
         return redirect()->route('exam::questions.show', $question->id)->with('message', 'Question saved successfully');
     }
@@ -122,15 +125,16 @@ class QuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Edit     $request
      * @param Question $question
      *
      * @return \Illuminate\Http\Response
      *
      * @throws \Exception
      */
-    public function edit(Edit $request, Question $question)
+    public function edit(Question $question)
     {
+        $this->authorize('update', Question::class);
+
         return view('exam::pages.questions.edit', [
             'model' => $question,
         ]);
@@ -154,15 +158,16 @@ class QuestionController extends Controller
     /**
      * Delete a  resource from  storage.
      *
-     * @param Destroy  $request
      * @param Question $question
      *
      * @return \Illuminate\Http\RedirectResponse
      *
-     * @throws \Exception
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function destroy(Destroy $request, Question $question): RedirectResponse
+    public function destroy(Question $question): RedirectResponse
     {
+        $this->authorize('delete', $question);
+
         if ($question->delete()) {
             session()->flash('message', 'Question successfully deleted');
         } else {
@@ -176,9 +181,12 @@ class QuestionController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function select2Ajax(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', Question::class);
+
         $questions = $this->questionRepository->search($request->get('term'), 10);
 
         $data = $questions->map(function ($question) {

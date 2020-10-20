@@ -27,6 +27,7 @@ class Store extends FormRequest
         return [
             'type' => 'required|max:191',
             'title' => 'nullable|max:191',
+            'file' => 'file|max:8384', //8MB
             'options' => 'nullable|array',
             'answer' => 'nullable',
             'explanation' => 'nullable|max:191',

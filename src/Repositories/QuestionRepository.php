@@ -6,41 +6,67 @@ use Blog\Models\Category;
 use Blog\Models\Tag;
 use Blog\Repositories\TagRepository;
 use Exam\Models\Question;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class QuestionRepository extends Repository
 {
+
     /**
      * @var \Blog\Repositories\TagRepository
      */
     protected $tagRepository;
+    /**
+     * @var \Illuminate\Contracts\Filesystem\Filesystem
+     */
+    protected $filesystem;
 
     /**
      * ExamRepository constructor.
      *
-     * @param \Exam\Models\Question            $question
-     * @param \Blog\Repositories\TagRepository $tagRepository
+     * @param \Exam\Models\Question             $question
+     * @param \Blog\Repositories\TagRepository  $tagRepository
+     * @param \Illuminate\Filesystem\Filesystem $filesystem
      */
-    public function __construct(Question $question, TagRepository $tagRepository)
+    public function __construct(Question $question, TagRepository $tagRepository, Filesystem $filesystem)
     {
         $this->model = $question;
         $this->tagRepository = $tagRepository;
+        $this->filesystem = $filesystem;
     }
 
     /**
-     * @param array $data
+     * @param array                              $data
+     *
+     * @param \Illuminate\Http\UploadedFile|null $file
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create(array $data): Model
+    public function create(array $data, ?UploadedFile $file = null): Model
     {
+        if ($file && $file->isValid()) {
+            $data['data']['media']['url'] = $this->uploadFile($file);
+        }
+
         $question = $this->save($data, new Question());
+
         if ($tags = $data['tags'] ?? []) {
             $question->tags()->sync($this->tagRepository->saveTags($tags));
         }
 
         return $question;
+    }
+
+    /**
+     * @param \Illuminate\Http\UploadedFile $file
+     *
+     * @return string
+     */
+    private function uploadFile(UploadedFile $file)
+    {
+        return $this->filesystem->url($this->filesystem->putFile('questions', $file, 'public'));
     }
 
     /**

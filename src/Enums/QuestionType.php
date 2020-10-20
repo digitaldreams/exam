@@ -4,10 +4,10 @@ namespace Exam\Enums;
 
 class QuestionType
 {
-    public const  IMG_TO_QUESTION = 'img_to_word';
-    public const  AUDIO = 'audio_to_word';
-    public const  VIDEO = 'video_to_word';
-    public const  QUESTION_TO_IMG = 'word_to_img';
+    public const  IMG_TO_QUESTION = 'img';
+    public const  AUDIO = 'audio';
+    public const  VIDEO = 'video';
+    public const  QUESTION_TO_IMG = 'question_to_img';
     public const MCQ = 'mcq';
     public const PRONOUNCE = 'pronounce';
     public const VOICE_TO_SENTENCE = 'voice_to_sentence';
