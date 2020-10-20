@@ -115,6 +115,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-6">
+                                <h5>Correct Answer</h5>
                                 <?php $correctAns = $answer->question->getAnswers() ?>
                                 @if(is_array($correctAns))
                                     <ol class="list-group" title="Correct answer">
@@ -131,15 +132,13 @@
                                 @endif
                             </div>
                             <div class="col-sm-6">
+                                <h5>Your Answer</h5>
                                 @if(is_array($correctAns) && !empty($answer->answer))
                                     <ol class="list-group" title="Your answer">
-                                        <?php $userAns = json_decode($answer->answer, true)?>
-                                        @if(is_array($userAns))
-                                            @foreach($userAns as $word=>$mean)
-                                                <li class="list-group-item">{{$word}} <i
-                                                        class="fa fa-arrow-right"></i> {{$mean}}</li>
-                                            @endforeach
-                                        @endif
+                                        @foreach($answer->getAnswers() as $word=>$mean)
+                                            <li class="list-group-item">{{$word}} <i
+                                                    class="fa fa-arrow-right"></i> {{$mean}}</li>
+                                        @endforeach
                                     </ol>
                                 @elseif($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
                                     <img title="Your answer" src="{{$answer->answer}}"

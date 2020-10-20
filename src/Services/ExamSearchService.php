@@ -110,7 +110,7 @@ class ExamSearchService
         return $builder->selectRaw("*, 
         (select count(*) from preferences where category_id=exams.category_id and user_id='{$userId}') as cscore,
         (select count(*) from preferences where tag_id IN (select tag_id from exam_tag where exam_id=exams.id) and user_id={$userId}) as tscore
-        ")->whereDoesntHave('examUser', function ($q) use ($userId) {
+        ")->whereDoesntHave('examUsers', function ($q) use ($userId) {
             $q->where('user_id', $userId)
                 ->where('status', ExamUserStatus::COMPLETED);
         })->orderByRaw('cscore*2+tscore desc');
@@ -125,7 +125,7 @@ class ExamSearchService
      */
     private function filterByStatus(Builder $builder, string $status, $userId)
     {
-        return $builder->whereHas('examUser', function ($q) use ($status, $userId) {
+        return $builder->whereHas('examUsers', function ($q) use ($status, $userId) {
             $q->where('status', array_search($status, ExamUserStatus::toArray()))
                 ->where('user_id', $userId);
         });

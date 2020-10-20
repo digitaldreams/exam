@@ -1,6 +1,10 @@
 <div class="card">
-
-    <!-- thi is card header -->
+<?php
+if (request('status') == 'completed') {
+    $examUser = $record->examUsers()->where('user_id', auth()->id())->first();
+}
+?>
+<!-- thi is card header -->
 
     <div class="card-header">
         <div class="row">
@@ -8,10 +12,14 @@
                 <div class="title">
                     @can('update',$record)
                         <a href="{{route('exam::exams.show',$record->slug)}}">
-                          #{{$record->id}}  {{$record->title}} {!! $record->stars() !!}
+                            #{{$record->id}}  {{$record->title}} {!! $record->stars() !!}
                         </a>
                     @else
-                        #{{$record->id}} {{$record->title}} {!! $record->stars() !!}
+                        @if(isset($examUser))
+                          <a href="{{route('exam::exams.result',$examUser->id)}}"> #{{$record->id}}  {{$record->title}} {!! $record->stars() !!}    </a>
+                        @else
+                            #{{$record->id}} {{$record->title}} {!! $record->stars() !!}
+                        @endif
                     @endcan
                 </div>
                 @if($record->visibility==\Exam\Enums\ExamVisibility::PRIVATE)
@@ -67,14 +75,14 @@
                                 </li>
                             @endcan
                             @can('update',$record)
-                            <li class="list-group-item">
+                                <li class="list-group-item">
 
                                     <a class="btn btn-outline-secondary btn-block btn-sm"
                                        href="{{route('exam::exams.invitations.create',$record->slug)}}">
                                         <span class="fa fa-envelope"></span> Invite
                                     </a>
 
-                            </li>
+                                </li>
                             @endif
                             <li class="list-group-item">
                                 &nbsp;<form action="{{route('blog::activities.store')}}" method="post" class="d-inline">
@@ -117,6 +125,7 @@
     <!-- this is card footer -->
 
     <div class="card-footer text-right ">
+
         @foreach($record->tags as $tag)
             <a href="?search={{$tag->name}}">
                 <label class="badge badge-light">{{$tag->name ?? ''}}</label>

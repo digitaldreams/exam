@@ -127,7 +127,7 @@ class Question extends Model
      */
     public function scopeForExam(Builder $query, int $examId): Builder
     {
-        return $query->whereHas('exam', function ($q) use ($examId) {
+        return $query->whereHas('exams', function ($q) use ($examId) {
             $q->where('id', $examId);
         });
     }

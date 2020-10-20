@@ -92,7 +92,7 @@ class ExamPolicy
      */
     public function start($user, Exam $exam)
     {
-        return !$exam->examUser()
+        return !$exam->examUsers()
             ->where('user_id', $user->id)
             ->where('status', ExamUserStatus::COMPLETED)
             ->exists();

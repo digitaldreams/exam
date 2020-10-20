@@ -127,7 +127,7 @@ class Exam extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function examUser(): HasMany
+    public function examUsers(): HasMany
     {
         return $this->hasMany(ExamUser::class);
     }

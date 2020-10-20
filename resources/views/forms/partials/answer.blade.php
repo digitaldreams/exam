@@ -11,7 +11,7 @@
     @elseif($question->type==\Exam\Enums\QuestionType::VIDEO)
         @if($video=$question->getData('media.url'))
             <div class="embed-responsive embed-responsive-16by9">
-                <iframe class="embed-responsive-item" src="{{$video}}" allowfullscreen></iframe>
+                <iframe class="embed-responsive-item" src="{{$question->getVideoLink()}}" allowfullscreen></iframe>
             </div>
         @endif
     @endif

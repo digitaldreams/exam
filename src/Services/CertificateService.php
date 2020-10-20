@@ -9,10 +9,8 @@
 namespace Exam\Services;
 
 use App\Models\User;
-use Exam\Enums\QuestionReview;
 use Exam\Models\ExamUser;
-use Exam\Notifications\ReviewRequestToTeacher;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
 use Image;
 
 class CertificateService
@@ -45,64 +43,68 @@ class CertificateService
 
     public function make()
     {
-        $this->image = Image::canvas(450, 235, '#fffff');
-        if ($this->user) {
-            $url = $this->user->getAvatarThumb();
-            $photo = Image::make($url);
-            $photo->resize(180, 180);
-            $this->image = $this->image->insert($photo);
-        }
+        try {
+            $this->image = Image::canvas(450, 235, '#fffff');
+            if ($this->user) {
+                $url = $this->user->getAvatarThumb();
+                $photo = Image::make($url);
+                $photo->resize(180, 180);
+                $this->image = $this->image->insert($photo);
+            }
 
-        $this->image = $this->image->text($this->examUser->exam->title, 190, 10,
-            function ($font) {
-                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
-                $font->size(14);
-                $font->color('#000000');
-                $font->valign('top');
-            });
-        $this->image = $this->image->text($this->examUser->getCorrectionRate() . '% correction rate', 280, 80,
-            function ($font) {
-                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
-                $font->size(24);
-                $font->color('#00ff00');
-                $font->align('center');
-                $font->valign('top');
-            });
-        $this->image = $this->image->text('Date of Exam ' . date('d M Y'), 190, 60,
-            function ($font) {
-                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
-                $font->size(16);
-                $font->color('#000000');
-                $font->valign('top');
-            });
-        $this->image = $this->image->text($this->user->name ?? 'Anonymouse', 50, 190,
-            function ($font) {
-                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
-                $font->size(15);
-                $font->color('#000000');
-                $font->align('center');
-                $font->valign('top');
-            });
-        $tag = $this->examUser->exam->tag;
-        if ($tag) {
-            $this->image = $this->image->text('Difficulty Level:  ' . $tag->name, 190, 120,
+            $this->image = $this->image->text($this->examUser->exam->title, 190, 10,
+                function ($font) {
+                    $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
+                    $font->size(14);
+                    $font->color('#000000');
+                    $font->valign('top');
+                });
+            $this->image = $this->image->text($this->examUser->getCorrectionRate() . '% correction rate', 280, 80,
+                function ($font) {
+                    $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
+                    $font->size(24);
+                    $font->color('#00ff00');
+                    $font->align('center');
+                    $font->valign('top');
+                });
+            $this->image = $this->image->text('Date of Exam ' . date('d M Y'), 190, 60,
+                function ($font) {
+                    $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
+                    $font->size(16);
+                    $font->color('#000000');
+                    $font->valign('top');
+                });
+            $this->image = $this->image->text($this->user->name ?? 'Anonymouse', 50, 190,
+                function ($font) {
+                    $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
+                    $font->size(15);
+                    $font->color('#000000');
+                    $font->align('center');
+                    $font->valign('top');
+                });
+            $tag = $this->examUser->exam->tag;
+            if ($tag) {
+                $this->image = $this->image->text('Difficulty Level:  ' . $tag->name, 190, 120,
+                    function ($font) {
+                        $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
+                        $font->color('#000000');
+                        $font->size(16);
+                        $font->valign('top');
+                    });
+            }
+            $this->image = $this->image->text('All right reserveed ' . config('app.url'), 200, 220,
                 function ($font) {
                     $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
                     $font->color('#000000');
-                    $font->size(16);
+                    $font->align('center');
                     $font->valign('top');
                 });
-        }
-        $this->image = $this->image->text('All right reserveed ' . config('app.url'), 200, 220,
-            function ($font) {
-                $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
-                $font->color('#000000');
-                $font->align('center');
-                $font->valign('top');
-            });
-        $this->image->save($this->filePath);
+            $this->image->save($this->filePath);
 
-        return $this->image;
+            return $this->image;
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 
 

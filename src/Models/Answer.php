@@ -35,6 +35,10 @@ class Answer extends Model
         'feedback',
     ];
 
+    protected $casts = [
+        'answer' => 'array',
+    ];
+
     public static function boot()
     {
         parent::boot();

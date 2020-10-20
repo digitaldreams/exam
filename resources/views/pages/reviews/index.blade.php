@@ -60,6 +60,22 @@
                 {{method_field('PUT')}}
                 <div class="card">
                     <div class="card-header">
+                        @if($answer->question->type==\Exam\Enums\QuestionType::IMG_TO_QUESTION)
+                            <img src="{{asset($answer->question->getData('media.url'))}}" class="img-thumbnail img-fluid"/><br/>
+                        @elseif($answer->question->type==\Exam\Enums\QuestionType::AUDIO)
+                            @if($mp3=$answer->question->getData('media.url'))
+                                <audio controls class="form-control">
+                                    <source src="{{$mp3}}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            @endif
+                        @elseif($answer->question->type==\Exam\Enums\QuestionType::VIDEO)
+                            @if($video=$answer->question->getData('media.url'))
+                                <div class="embed-responsive embed-responsive-16by9">
+                                    <iframe class="embed-responsive-item" src="{{$answer->question->getVideoLink()}}" allowfullscreen></iframe>
+                                </div>
+                            @endif
+                        @endif
                         {{$answer->question->title}}
                     </div>
                     <div class="card-body">
