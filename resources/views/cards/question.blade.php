@@ -70,9 +70,15 @@
                 <tr>
                     <th>Options</th>
                     <td>
-                        @foreach($record->getOptions() as $key=>$option)
-                            <label class="badge badge-secondary p-1">{{$option}}</label>
-                        @endforeach
+                        @if($record->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                            @foreach($record->getOptions() as $img)
+                                <img src="{{$img}}" width="100px" class="img-thumbnail img-bordered d-inline"/>
+                            @endforeach
+                        @else
+                            @foreach($record->getOptions() as $key=>$option)
+                                <label class="badge badge-secondary p-1">{{$option}}</label>
+                            @endforeach
+                        @endif
                     </td>
                 </tr>
             @endif
@@ -81,9 +87,12 @@
                     <th>Answer</th>
                     <td>
                         @if($record->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-                            <img src="{{$record->answer}}" width="100px" class="img-thumbnail img-bordered d-inline"/>
+                            @foreach($record->getAnswers() as $img)
+                                <img src="{{$img}}" width="100px" class="img-thumbnail img-bordered d-inline"/>
+                            @endforeach
+
                         @else
-                            {{implode(",",$record->answer)}}
+                            {{implode(",",$record->getAnswers())}}
                         @endif
                     </td>
                 </tr>

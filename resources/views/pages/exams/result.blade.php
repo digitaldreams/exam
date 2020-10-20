@@ -159,11 +159,16 @@
                                                             @endforeach
                                                         </ol>
                                                     @else
-                                                        {{array_shift($correctAns)}}
+                                                        @if($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                                                            <img title="Correct answer" src="{{array_shift($correctAns)}}"
+                                                                 class="img-fluid img-thumbnail"/>
+                                                        @else
+                                                            {{array_shift($correctAns)}}
+                                                        @endif
+
                                                     @endif
                                                 @elseif($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-                                                    <img title="Correct answer" src="{{$answer->question->answer}}"
-                                                         class="img-fluid img-thumbnail"/>
+
                                                 @else
                                                     <b title="Correct answer"> {{$answer->question->answer ?? ''}}</b>
                                                 @endif
@@ -171,7 +176,8 @@
                                             <div class="col-md-6 col-12">
                                                 <h5>Your Answer</h5>
                                                 @if($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-                                                    <img title="Your answer" src="{{$answer->answer}}"
+                                                    <img title="Your answer"
+                                                         src="{{str_replace(["[","]",'"'],"",$answer->getAnswers()[0]??'')}}"
                                                          class="img-fluid img-thumbnail"/>
                                                 @else
                                                     <ol class="list-group" title="Your answer">

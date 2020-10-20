@@ -9,8 +9,6 @@ class QuestionType
     public const  VIDEO = 'video';
     public const  QUESTION_TO_IMG = 'question_to_img';
     public const MCQ = 'mcq';
-    public const PRONOUNCE = 'pronounce';
-    public const VOICE_TO_SENTENCE = 'voice_to_sentence';
     public const FREEHAND_WRITING = 'freehand_writing';
 
     /**
@@ -22,8 +20,6 @@ class QuestionType
             static::MCQ => 'MCQ',
             static::IMG_TO_QUESTION => 'Image To Question',
             static::QUESTION_TO_IMG => 'Question To Image',
-            static::VOICE_TO_SENTENCE => 'Voice',
-            static::PRONOUNCE => 'Pronounce',
             static::AUDIO => 'Audio',
             static::VIDEO => 'Video',
             static::FREEHAND_WRITING => 'Freehand Writing',
