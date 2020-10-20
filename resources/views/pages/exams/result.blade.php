@@ -155,12 +155,20 @@
                                                         <ol class="list-group" title="Correct answer">
                                                             @foreach($correctAns as $key=>$value)
                                                                 <li class="list-group-item">{{$key}} <i
-                                                                        class="fa fa-arrow-right"></i> {{$value}}</li>
+                                                                        class="fa fa-arrow-right"></i>
+                                                                    @if($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                                                                        <img title="Correct answer" src="{{$value}}"
+                                                                             class="img-fluid img-thumbnail"/>
+                                                                    @else
+                                                                        {{$value}}
+                                                                    @endif
+                                                                </li>
                                                             @endforeach
                                                         </ol>
                                                     @else
                                                         @if($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-                                                            <img title="Correct answer" src="{{array_shift($correctAns)}}"
+                                                            <img title="Correct answer"
+                                                                 src="{{array_shift($correctAns)}}"
                                                                  class="img-fluid img-thumbnail"/>
                                                         @else
                                                             {{array_shift($correctAns)}}
