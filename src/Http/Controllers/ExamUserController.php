@@ -193,7 +193,7 @@ class ExamUserController extends Controller
             $exam_user->save();
             $certificate = new CertificateService($exam_user);
             $certificate->make();
-            Notification::send(User::getAdmins(), new ExamCompleted($exam, auth()->user()));
+            Notification::send(User::getAdmins(), new ExamCompleted($exam, $exam_user->user));
 
             $totalPendingQuestion = $exam_user->exam->questions()->where('review_type', QuestionReview::MANUAL)->count();
             if ($totalPendingQuestion > 0) {
@@ -234,7 +234,7 @@ class ExamUserController extends Controller
 
         return view('exam::pages.exams.completed', [
             'exam' => $exam,
-            'completedExams' => $exam->examUser()->latest()->paginate(10),
+            'completedExams' => $exam->examUsers()->latest()->paginate(10),
         ]);
     }
 }

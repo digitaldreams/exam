@@ -23,8 +23,8 @@ class ExamCompleted extends Notification
     /**
      * Create a new notification instance.
      *
-     * @param Exam  $exam
-     * @param Model $user
+     * @param Exam                                $exam
+     * @param \Illuminate\Database\Eloquent\Model $user
      */
     public function __construct(Exam $exam, Model $user)
     {
@@ -62,7 +62,7 @@ class ExamCompleted extends Notification
     {
         return [
             'message' => $this->user->name . ' completed ' . $this->exam->title,
-            'link' => route('exam::exams.show', $this->exam->slug),
+            'link' => route('exam::exams.completed', $this->exam->slug),
         ];
     }
 }

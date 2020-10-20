@@ -4,7 +4,7 @@
             <div class="col-sm-9">
                 @if(isset($showExamTitle) && is_object($examUser->user))
                     <a href="{{route('exam::exams.result',$examUser->id)}}">
-                        {{$examUser->exam->title ??''}} taken by   {{$examUser->user->first_name ?? ''}}
+                        {{$examUser->exam->title ??''}} taken by  {{$examUser->user->name ??'' }}
                     </a>
                 @else
                     <a href="#">

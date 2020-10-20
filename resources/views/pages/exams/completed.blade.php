@@ -49,10 +49,10 @@
 
 @section('content')
     @include('exam::pages.exams.exam_details_tabs')
-    @if(count($exam->examUser)>0)
+    @if(count($exam->examUsers)>0)
         <h4>Successfully completed</h4>
         <div class="row">
-            @foreach($exam->examUser as $examUser)
+            @foreach($exam->examUsers as $examUser)
                 <div class="col-sm-6 col-md-4">
                     @include('exam::cards.exam_user',['showExamTitle'=>true])
                 </div>
