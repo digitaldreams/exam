@@ -37,6 +37,17 @@
             </tr>
         @endforeach
         </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="3">
+                @if(request('type',$model->type)==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                    <small>Please <a target="_blank" href="{{route('photo::photos.index')}}"> see list of images</a> and
+                        copy image sourc URL into options field.
+                    </small>
+                @endif
+            </td>
+        </tr>
+        </tfoot>
     </table>
     <div class="form-group text-center">
         <a href="javascript:void(0)"

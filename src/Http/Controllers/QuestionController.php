@@ -8,6 +8,7 @@ use Exam\Enums\QuestionReview;
 use Exam\Enums\QuestionType;
 use Exam\Http\Requests\Questions\Store;
 use Exam\Http\Requests\Questions\Update;
+use Exam\Models\Exam;
 use Exam\Models\Question;
 use Exam\Repositories\QuestionRepository;
 use Illuminate\Http\JsonResponse;
@@ -120,6 +121,12 @@ class QuestionController extends Controller
     public function store(Store $request): RedirectResponse
     {
         $question = $this->questionRepository->create($request->all(), $request->file('file'));
+        $examId = $request->get('exam_id');
+
+        if (!empty($examId) && $exam = Exam::query()->find($examId)) {
+            $question->exams()->sync([$examId]);
+            return redirect()->route('exam::exams.show', $exam->slug)->with('message', 'Question created and attached to this exam.');
+        }
 
         return redirect()->route('exam::questions.show', $question->id)->with('message', 'Question saved successfully');
     }

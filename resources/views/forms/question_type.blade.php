@@ -1,6 +1,5 @@
 <form>
-    <input type="hidden" name="q_type" value="{{request('q_type')}}">
-    <input type="hidden" name="q_id" value="{{request('q_id')}}">
+    <input type="hidden" name="exam_id" value="{{request('exam_id')}}">
     <div class="form-group">
         <label>Type of Question you like to create</label>
         <div class="input-group">

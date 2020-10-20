@@ -56,7 +56,9 @@
                                 placeholder="Search question" multiple>
                         </select>
                         <button class="btn btn-secondary input-group-append col-1">Add</button>
-                        <small class="text-muted">Add question to this exam.</small>
+                        <small class="text-muted">Add question to this exam. Don't find a suitable question? <a
+                                href="{{route('exam::questions.create',['exam_id'=>$exam->id])}}">Create a new
+                                Question</a></small>
                     </div>
                 </form>
 

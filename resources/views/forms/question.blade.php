@@ -1,6 +1,7 @@
 <form action="{{$route ?? route('exam::questions.store')}}" method="POST" enctype="multipart/form-data">
     {{csrf_field()}}
     <input type="hidden" name="_method" value="{{$method ?? 'POST'}}"/>
+    <input type="hidden" name="exam_id" value="{{request('exam_id')}}">
     <div class="row">
         <div class="col-sm-9">
             <div class="form-group">
