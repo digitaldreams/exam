@@ -47,7 +47,8 @@
     </div>
 @elseif(request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::FILL_IN_THE_BLANK)
     <h4>Fill In the Blank</h4>
-    <textarea name="data[fill_in_the_blank][summary]" class="form-control" id="fill_in_the_blank_summary" rows="8">{{$model->getData('fill_in_the_blank.summary')}}</textarea>
+    <textarea name="data[fill_in_the_blank][summary]" class="form-control" id="fill_in_the_blank_summary"
+              rows="8">{{$model->getData('fill_in_the_blank.summary')}}</textarea>
     <small class="text-muted">Once upon a time there was a (1)..... She was 12 years (2).....</small>
     <h4>Answers</h4>
     <table class="table table-striped table-hover table-bordered" id="fillInTheBlankAnswerTable">
@@ -62,12 +63,14 @@
         @foreach($model->getAnswers() as $key=> $value)
             <tr class="answerTr" id="{{$key}}">
                 <td>
-                    <input type="text" class="form-control questionKey" name="answers[{{$key}}][key]" value="{{$key}}" required
+                    <input type="text" class="form-control questionKey" name="answers[{{$key}}][key]" value="{{$key}}"
+                           required
                            placeholder="e.g. (1) or (a)">
                     <small class="text-muted">Question Number e.g. <b>(1)</b> or <b>(a)</b></small>
                 </td>
                 <td>
-                    <input type="text" class="form-control option" name="answers[{{$key}}][value]" value="{{$value}}" required
+                    <input type="text" class="form-control option" name="answers[{{$key}}][value]" value="{{$value}}"
+                           required
                            placeholder="e.g. queen">
                     <small class="text-muted">Type the correct answer here.</small>
                 </td>
@@ -105,11 +108,14 @@
     </table>
 
 
-@elseif(request('type')!==\Exam\Enums\QuestionType::FREEHAND_WRITING)
+@elseif(request('answer_type')==\Exam\Enums\QuestionAnswerType::WRITE)
     <div class="form-group">
         <label>Answer</label>
-        <input type="text" name="answer[]" value="{{implode(",",$model->answer)}}" class="form-control"
+        <input type="text" name="answer[]" value="{{$model->answer}}" class="form-control"
                placeholder="Please write the correct answer.">
+        <small class="text-muted">
+            Please provide correct answer if you Question Review Type is <b>Auto</b>. Leave it blank for <b>Manual</b>
+        </small>
     </div>
 @endif
 

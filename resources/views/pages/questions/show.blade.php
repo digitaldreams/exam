@@ -40,5 +40,24 @@
         <div class="col-sm-6">
             @include('exam::cards.question')
         </div>
+        <div class="col-sm-6">
+            <h3>Used in Exams</h3>
+            @if($record->exams()->count()>0)
+                <ul class="list-group">
+                    @foreach($record->exams as $exam)
+                        <li class="list-group-item">
+                            @can('view',$exam)
+                                <a href="{{route('exam::exams.show',$exam->slug)}}">
+                                    #{{$exam->id}} {{$exam->title}}</a>
+                            @else
+                                {{$exam->title}}
+                            @endcan
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="alert alert-success">Its a fresh question. Not used in any exam</p>
+            @endif
+        </div>
     </div>
 @endSection

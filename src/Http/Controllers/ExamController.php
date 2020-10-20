@@ -30,8 +30,9 @@ class ExamController extends Controller
     /**
      * ExamController constructor.
      *
-     * @param \Exam\Repositories\ExamRepository $examRepository
-     * @param \Exam\Services\ExamSearchService  $examSearchService
+     * @param \Exam\Repositories\ExamRepository     $examRepository
+     * @param \Exam\Services\ExamSearchService      $examSearchService
+     * @param \Exam\Repositories\QuestionRepository $questionRepository
      */
     public function __construct(ExamRepository $examRepository, ExamSearchService $examSearchService)
     {
@@ -44,10 +45,12 @@ class ExamController extends Controller
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \ReflectionException
      */
     public function index(Request $request)
     {
         $this->authorize('viewAny', Exam::class);
+
         $user = auth()->user();
         return view('exam::pages.exams.index', [
             'completedExams' => $user->examUsers()->where('status', ExamUserStatus::COMPLETED)->count(),
@@ -65,6 +68,7 @@ class ExamController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function show(Exam $exam)
     {

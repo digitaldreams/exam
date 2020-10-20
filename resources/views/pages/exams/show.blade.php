@@ -52,7 +52,8 @@
                 <form action="{{route('exam::exams.questionAdd',$exam->slug)}}" method="post">
                     {{csrf_field()}}
                     <div class="form-group form-row">
-                        <select name="questions[]" class="form-control col-11" id="questionSearch"
+                        <select name="questions[]" list="questionKeywords" class="form-control col-11"
+                                id="questionSearch"
                                 placeholder="Search question" multiple>
                         </select>
                         <button class="btn btn-secondary input-group-append col-1">Add</button>
@@ -63,8 +64,13 @@
                 <ol class="list-group">
                     <li class="list-group-item bg-light">Questions</li>
                     @foreach($exam->questions as $question)
-                        <li class="list-group-item">{{$question->title}} <label
-                                class="badge badge-light badge-pill">{{$question->type}}</label>
+                        <li class="list-group-item">
+                            <a href="{{route('exam::questions.show',$question->id)}}">
+                                #{{$question->id}} => {{$question->title}}
+                            </a>
+                            <label class="badge badge-secondary badge-pill"><b>{{$question->type}}</b></label>
+                            <label class="badge badge-light badge-pill">{{$question->answer_type}}</label>
+
                             <form
                                 onsubmit="return confirm('Are you sure you want to unlink this question from this exam?')"
                                 action="{{route('exam::exams.questionRemove',$exam->slug)}}" method="post"
@@ -105,7 +111,7 @@
     <script>
         $("#questionSearch").select2({
             placeholder: 'Search questions',
-            minimumInputLength:2,
+            minimumInputLength: 2,
             ajax: {
                 url: '{{route('exam::questions.select2Ajax')}}',
                 dataType: 'json'

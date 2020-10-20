@@ -74,7 +74,7 @@ class Question extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function exam(): BelongsToMany
+    public function exams(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'exam_question');
     }

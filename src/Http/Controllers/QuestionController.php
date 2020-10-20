@@ -72,6 +72,7 @@ class QuestionController extends Controller
      * @param Question $question
      *
      * @return \Illuminate\Http\Response
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(Question $question)
@@ -89,6 +90,7 @@ class QuestionController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function create(Request $request)
@@ -181,18 +183,19 @@ class QuestionController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function select2Ajax(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Question::class);
 
-        $questions = $this->questionRepository->search($request->get('term'), 10);
+        $questions = $this->questionRepository->search($request->get('term'), null, 10);
 
         $data = $questions->map(function ($question) {
             return [
                 'id' => $question->id,
-                'text' => $question->title,
+                'text' => '#' . $question->id . ' ' . $question->title . '(' . $question->type . '-> ' . $question->answer_type . ')',
             ];
         })->all();
 

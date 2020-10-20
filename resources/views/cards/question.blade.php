@@ -5,7 +5,7 @@
 
                 <h4>
 
-                    <a href="{{route('exam::questions.show',$record->id)}}">   {{$record->title}}   </a>
+                    <a href="{{route('exam::questions.show',$record->id)}}">#{{$record->id}} {{$record->title}}   </a>
                 </h4>
 
             </div>

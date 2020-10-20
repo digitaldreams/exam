@@ -8,10 +8,10 @@
                 <div class="title">
                     @can('update',$record)
                         <a href="{{route('exam::exams.show',$record->slug)}}">
-                            {{$record->title}} {!! $record->stars() !!}
+                          #{{$record->id}}  {{$record->title}} {!! $record->stars() !!}
                         </a>
                     @else
-                        {{$record->title}} {!! $record->stars() !!}
+                        #{{$record->id}} {{$record->title}} {!! $record->stars() !!}
                     @endcan
                 </div>
                 @if($record->visibility==\Exam\Enums\ExamVisibility::PRIVATE)
