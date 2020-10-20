@@ -93,11 +93,21 @@
                 <td>{{$record->explanation}}</td>
             </tr>
 
+            <tr>
+                <th>Hints</th>
+                <td>{{$record->hints}}</td>
+            </tr>
 
             </tbody>
         </table>
     </div>
     <div class="card-footer text-right">
+        <label class="badge badge-info" title="Answer Type" data-toggle="tooltip">
+            {{$record->answer_type}}
+        </label>
+        <label class="badge badge-info" title="Review Type" data-toggle="tooltip">
+            {{$record->review_type}}
+        </label>
         @if($record->category)
             <a class="text-muted" href="?search={{$record->category->title}}">
                 <span class="badge badge-secondary">{{$record->category->title}}</span>

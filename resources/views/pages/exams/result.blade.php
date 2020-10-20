@@ -35,9 +35,9 @@
         @endif
         @can('update',$exam_user)
             &nbsp;&nbsp;
-            <btn title=" Your result is {{$exam_user->visibility}}"><label
-                    class="btn btn-primary">{{$exam_user->visibility}}</label>
-            </btn>
+            <span class="btn btn-primary" title=" Your result is {{$exam_user->visibility}}">
+                {{$exam_user->visibility}}
+            </span>
             <?php $setVisibility = $exam_user->visibility == \Exam\Enums\ExamVisibility::PUBLIC ? \Exam\Enums\ExamVisibility::PRIVATE : \Exam\Enums\ExamVisibility::PUBLIC;?>
             <a class="btn btn-warning"
                href="{{route('exam::exams.result.visibility',['exam_user'=>$exam_user->id,'visibility'=>$setVisibility])}}">
@@ -92,67 +92,107 @@
     @endif
 
     <div class="row">
-        @foreach($exam_user->answers as $answer)
-            <div class="col-sm-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        @if($answer->status==\Exam\Enums\QuestionReview::PENDING)
-                            <i class="fa fa-spinner text-warning" data-toggle="tooltip"
-                               title="Your answer are in review "></i> <b class="badge badge-warning">Under Review</b>
-                        @else
-                            @if($answer->isCorrect())
-                                <i class="fa fa-check-circle-o text-success"> Correct</i>
+        @foreach($exam_user->answers->chunk(2) as $answers)
+            <div class="col-md-4 col-12">
+                <div class="row">
+                    @foreach($answers as $answer)
+                        <div class="col-sm-12">
+                            <div class="card mb-4" id="{{$answer->id}}">
+                                <div class="card-header">
+                                    @if($answer->status==\Exam\Enums\QuestionReview::PENDING)
+                                        <i class="fa fa-spinner text-warning" data-toggle="tooltip"
+                                           title="Your answer are in review "></i> <b class="badge badge-warning">Under
+                                            Review</b>
+                                    @else
+                                        @if($answer->isCorrect())
+                                            <i class="fa fa-check-circle-o text-success"> Correct</i>
 
-                            @else
-                                <i class="fa fa-remove text-danger"> Wrong</i>
+                                        @else
+                                            <i class="fa fa-remove text-danger"> Wrong</i>
 
-                            @endif
-                        @endif
-                        {{$answer->question->title}}
-                        <span
-                            class="badge badge-primary badge-pill">{{$answer->obtain_mark}} / {{$answer->question->total_mark}}</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h5>Correct Answer</h5>
-                                <?php $correctAns = $answer->question->getAnswers() ?>
-                                @if(is_array($correctAns))
-                                    <ol class="list-group" title="Correct answer">
-                                        @foreach($correctAns as $key=>$value)
-                                            <li class="list-group-item">{{$key}} <i
-                                                    class="fa fa-arrow-right"></i> {{$value}}</li>
-                                        @endforeach
-                                    </ol>
-                                @elseif($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-                                    <img title="Correct answer" src="{{$answer->question->answer}}"
-                                         class="img-fluid img-thumbnail"/>
-                                @else
-                                    <b title="Correct answer"> {{$answer->question->answer ?? ''}}</b>
-                                @endif
-                            </div>
-                            <div class="col-sm-6">
-                                <h5>Your Answer</h5>
-                                @if(is_array($correctAns) && !empty($answer->answer))
-                                    <ol class="list-group" title="Your answer">
-                                        @foreach($answer->getAnswers() as $word=>$mean)
-                                            <li class="list-group-item">{{$word}} <i
-                                                    class="fa fa-arrow-right"></i> {{$mean}}</li>
-                                        @endforeach
-                                    </ol>
-                                @elseif($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-                                    <img title="Your answer" src="{{$answer->answer}}"
-                                         class="img-fluid img-thumbnail"/>
+                                        @endif
+                                    @endif
+                                    @if($answer->question->type==\Exam\Enums\QuestionType::IMG_TO_QUESTION)
+                                        <img src="{{asset($answer->question->getData('media.url'))}}"
+                                             class="card-img-top"
+                                             style="max-height: 200px">
+                                    @elseif($answer->question->type==\Exam\Enums\QuestionType::AUDIO)
+                                        @if($mp3=$answer->question->getData('media.url'))
+                                            <audio controls class="form-control">
+                                                <source src="{{$mp3}}" type="audio/mpeg">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        @endif
+                                    @elseif($answer->question->type==\Exam\Enums\QuestionType::VIDEO)
+                                        @if($video = $answer->question->getVideoLink())
+                                            <div class="embed-responsive embed-responsive-16by9">
+                                                <iframe class="embed-responsive-item" src="{{$video}}"
+                                                        allowfullscreen></iframe>
+                                            </div>
+                                        @endif
+                                    @endif
+                                    #{{$answer->question->id}} {{$answer->question->title}}
+                                    <span
+                                        class="badge badge-primary badge-pill">{{$answer->obtain_mark}} / {{$answer->question->total_mark}}</span>
+                                </div>
+                                <div class="card-body">
+                                    @if($answer->question->review_type==\Exam\Enums\QuestionReview::MANUAL)
+                                        <h5>Your Answer</h5>
+                                        <p>{{$answer->getAnswer()}}</p>
+                                        @if(!empty($answer->feedback))
+                                            <h5>Teacher Feedback</h5>
+                                            <p class="alert alert-light">{{$answer->feedback}}</p>
+                                        @elseif($answer->status==\Exam\Enums\AnswerStatus::PENDING)
+                                            <span class="lead">Pending</span>
+                                        @endif
+                                    @else
+                                        <div class="row">
+                                            <div class="col-md-6 col-12">
+                                                <h5>Correct Answer</h5>
+                                                <?php $correctAns = $answer->question->getAnswers() ?>
+                                                @if(is_array($correctAns) )
+                                                    @if(count($correctAns)>1)
+                                                        <ol class="list-group" title="Correct answer">
+                                                            @foreach($correctAns as $key=>$value)
+                                                                <li class="list-group-item">{{$key}} <i
+                                                                        class="fa fa-arrow-right"></i> {{$value}}</li>
+                                                            @endforeach
+                                                        </ol>
+                                                    @else
+                                                        {{array_shift($correctAns)}}
+                                                    @endif
+                                                @elseif($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                                                    <img title="Correct answer" src="{{$answer->question->answer}}"
+                                                         class="img-fluid img-thumbnail"/>
+                                                @else
+                                                    <b title="Correct answer"> {{$answer->question->answer ?? ''}}</b>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-6 col-12">
+                                                <h5>Your Answer</h5>
+                                                @if($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                                                    <img title="Your answer" src="{{$answer->answer}}"
+                                                         class="img-fluid img-thumbnail"/>
+                                                @else
+                                                    <ol class="list-group" title="Your answer">
+                                                        @foreach($answer->getAnswers() as $key=>$answer)
+                                                            <li class="list-group-item"> {{$key}} <i
+                                                                    class="fa fa-arrow-right"></i> {{$answer}}</li>
+                                                        @endforeach
+                                                    </ol>
 
-                                @else
-                                    <b title="Your answer"> {{$answer->answer ?? ''}}</b>
-                                @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                </div>
+
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer">
-                    </div>
+                    @endforeach
                 </div>
+
             </div>
         @endforeach
     </div>
