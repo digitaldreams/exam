@@ -3,7 +3,7 @@
     <li class="breadcrumb-item">
         <a href="{{route('exam::exams.index')}}">Exams</a>
     </li>
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item active">
         Create
     </li>
 @endsection

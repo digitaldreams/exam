@@ -9,14 +9,16 @@
     <li class="breadcrumb-item">
         <a href="{{route('exam::exams.show',$model->slug)}}">{{$model->title}}</a>
     </li>
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item active">
         Edit
     </li>
 @endsection
-
+@section('header')
+    <i class="fa fa-pencil"></i> {{$model->title}}
+@endsection
 @section('tools')
-    <a href="{{route('exam::exams.create')}}">
-        <span class="fa fa-plus"></span> exams
+    <a class="btn btn-outline-secondary" href="{{route('exam::exams.create')}}">
+        <span class="fa fa-plus"></span> Create New Exam
     </a>
 @endsection
 

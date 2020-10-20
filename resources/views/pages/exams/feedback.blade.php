@@ -23,13 +23,13 @@
         <a class="btn btn-outline-primary" href="{{route('exam::exams.start',$exam->slug)}}">Take</a>
     @endcan
     @can('create',\Exam\Models\Exam::class)
-        <a class="btn btn-light" href="{{route('exam::exams.create')}}">
-            Create <span class="fa fa-plus"></span>
+        <a class="btn btn-outline-secondary" href="{{route('exam::exams.create')}}">
+            <span class="fa fa-plus"></span>  Create
         </a>
     @endcan
     @can('update',$exam)
-        <a class="btn btn-light" href="{{route('exam::exams.edit',$exam->slug)}}">
-            Edit <span class="fa fa-pencil"></span>
+        <a class="btn btn-outline-secondary" href="{{route('exam::exams.edit',$exam->slug)}}">
+            <span class="fa fa-pencil"></span>  Edit
         </a>
     @endcan
     @can('delete',$exam)
@@ -39,7 +39,7 @@
               style="display: inline">
             {{csrf_field()}}
             {{method_field('DELETE')}}
-            <button type="submit" class="btn btn-light cursor-pointer">
+            <button type="submit" class="btn btn-outline-danger cursor-pointer">
                 Delete <i class="text-danger fa fa-remove"></i>
             </button>
         </form>

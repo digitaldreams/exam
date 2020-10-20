@@ -1,8 +1,8 @@
 @extends(config('exam.layouts.app'))
 @section('styles')
-    <title>{{$exam_user->user->name .'- got '.$correctionRate.'% on '.$exam->title}}</title>
+    <title>{{$exam_user->user->name ?? ''.'- got '.$correctionRate.'% on '.$exam->title}}</title>
     <meta name="description" content="{{$exam->description}}">
-    <meta property="og:title" content="{{$exam_user->user->name .'- got '.$correctionRate.'% on '.$exam->title}}"/>
+    <meta property="og:title" content="{{$exam_user->user->name ??'' .'- got '.$correctionRate.'% on '.$exam->title}}"/>
     <meta property="og:image.url" content="{{asset($certificate->getFileName())}}"/>
     <meta property="og:image.alt" content="{{'Examination certification'}}"/>
 
@@ -40,8 +40,9 @@
             </btn>
             <?php $setVisibility = $exam_user->visibility == \Exam\Enums\ExamVisibility::PUBLIC ? \Exam\Enums\ExamVisibility::PRIVATE : \Exam\Enums\ExamVisibility::PUBLIC;?>
             <a class="btn btn-warning"
-               href="{{route('exam::exams.result.visibility',['exam_user'=>$exam_user,'visibility'=>$setVisibility])}}">Make
-                it {{$setVisibility}}</a>
+               href="{{route('exam::exams.result.visibility',['exam_user'=>$exam_user->id,'visibility'=>$setVisibility])}}">
+                Make it {{$setVisibility}}
+            </a>
 
         @endcan
     </div>

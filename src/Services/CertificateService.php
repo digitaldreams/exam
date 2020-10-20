@@ -46,10 +46,13 @@ class CertificateService
     public function make()
     {
         $this->image = Image::canvas(450, 235, '#fffff');
-        $url = $this->user->getAvatarThumb();
-        //   $photo = Image::make($url);
-        //   $photo->resize(180, 180);
-        //  $this->image = $this->image->insert($photo);
+        if ($this->user) {
+            $url = $this->user->getAvatarThumb();
+            $photo = Image::make($url);
+            $photo->resize(180, 180);
+            $this->image = $this->image->insert($photo);
+        }
+
         $this->image = $this->image->text($this->examUser->exam->title, 190, 10,
             function ($font) {
                 $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
@@ -72,7 +75,7 @@ class CertificateService
                 $font->color('#000000');
                 $font->valign('top');
             });
-        $this->image = $this->image->text($this->user->name, 50, 190,
+        $this->image = $this->image->text($this->user->name ?? 'Anonymouse', 50, 190,
             function ($font) {
                 $font->file(public_path('fonts/exam/BLKCHCRY.TTF'));
                 $font->size(15);
@@ -98,7 +101,7 @@ class CertificateService
                 $font->valign('top');
             });
         $this->image->save($this->filePath);
-        $this->notify();
+     //   $this->notify();
 
         return $this->image;
     }

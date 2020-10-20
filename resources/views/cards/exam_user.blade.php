@@ -2,13 +2,13 @@
     <div class="card-header">
         <div class="row">
             <div class="col-sm-9">
-                @if(isset($showExamTitle))
-                    <a href="{{route('exam::exams.show',$examUser->exam->slug)}}">
-                        {{$examUser->exam->title ??''}}
+                @if(isset($showExamTitle) && is_object($examUser->user))
+                    <a href="{{route('exam::exams.result',$examUser->id)}}">
+                        {{$examUser->exam->title ??''}} taken by   {{$examUser->user->first_name ?? ''}}
                     </a>
                 @else
                     <a href="#">
-                        {{$examUser->user->name ?? ''}}
+                        {{$examUser->user->name ?? 'User Deleted'}}
                     </a>
                 @endif
             </div>
