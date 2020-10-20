@@ -230,6 +230,8 @@ class Question extends Model
                 $path = $parts['path'];
 
                 return 'https://www.youtube.com/embed/' . trim($path, '/');
+            } elseif ('www.vimeo.com' == $parts['host'] || 'vimeo.com' == $parts['host']) {
+                return 'https://player.vimeo.com/video/' . trim($parts['path'], '/');
             }
         }
 
