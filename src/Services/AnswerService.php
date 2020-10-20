@@ -78,7 +78,7 @@ class AnswerService
             'exam_user_id' => $this->examUser->id,
             'question_id' => $question->id,
         ]);
-        $questionAnswer->answer = $answer;
+        $questionAnswer->answer = is_array($answer) ? $answer : [$answer];
         $questionAnswer->question_id = $question->id;
         $questionAnswer->status = $correctAns;
         $questionAnswer->obtain_mark = $obtainMark;

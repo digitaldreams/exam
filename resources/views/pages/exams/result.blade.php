@@ -175,10 +175,16 @@
                                                          class="img-fluid img-thumbnail"/>
                                                 @else
                                                     <ol class="list-group" title="Your answer">
-                                                        @foreach($answer->getAnswers() as $key=>$answer)
-                                                            <li class="list-group-item"> {{$key}} <i
-                                                                    class="fa fa-arrow-right"></i> {{$answer}}</li>
-                                                        @endforeach
+                                                        @if(count($answers=$answer->getAnswers())>1)
+                                                            @foreach($answers as $key=>$answer)
+                                                                <li class="list-group-item"> {{$key}} <i
+                                                                        class="fa fa-arrow-right"></i> {{$answer}}</li>
+                                                            @endforeach
+                                                        @else
+                                                            <?php $yourAnswer = $answer->getAnswers() ?>
+
+                                                            {{array_shift($yourAnswer)}}
+                                                        @endif
                                                     </ol>
 
                                                 @endif
