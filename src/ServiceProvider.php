@@ -22,6 +22,13 @@ class ServiceProvider extends BaseServiceProvider
     protected $defer = false;
 
     /**
+     * The router instance.
+     *
+     * @var \Illuminate\Routing\Router
+     */
+    protected $router;
+
+    /**
      * List of command which will be registered.
      *
      * @var array
@@ -42,6 +49,18 @@ class ServiceProvider extends BaseServiceProvider
         Question::class => QuestionPolicy::class,
         Invitation::class => InvitationPolicy::class,
     ];
+
+    /**
+     * ServiceProvider constructor.
+     *
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     */
+    public function __construct($app)
+    {
+        parent::__construct($app);
+        $this->router = $app->get('router');
+    }
+
 
     /**
      * Perform post-registration booting of services.

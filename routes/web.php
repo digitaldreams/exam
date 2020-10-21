@@ -1,62 +1,32 @@
 <?php
-Route::group(['middleware' => ['web', 'auth'], 'as' => 'exam::', 'namespace' => 'Exam\Http\Controllers', 'prefix' => 'app'], function () {
-    // Route::get('questions/create', 'QuestionController@create')->name('questions.words.create');
-    Route::get('questions/select2-ajax', 'QuestionController@select2Ajax')->name('questions.select2Ajax');
+$this->router->group(['middleware' => ['web', 'auth', 'verified'], 'as' => 'exam::', 'namespace' => 'Exam\Http\Controllers', 'prefix' => 'app'], function () {
+    $this->router->get('questions/select2-ajax', 'QuestionController@select2Ajax')->name('questions.select2Ajax');
 
-    Route::resource('questions', 'QuestionController');
-    Route::get('feedbacks/{exam}', 'FeedbackController@index')->name('exams.feedback.index');
-    Route::resource('feedbacks', 'FeedbackController', ['only' => ['store', 'update']]);
-    Route::get('exams/select2', 'ExamController@select2Ajax')->name('exams.select2');
-    Route::post('exams/{exam}/questions-add', 'ExamQuestionController@add')->name('exams.questionAdd');
-    Route::post('exams/{exam}/questions-remove', 'ExamQuestionController@remove')->name('exams.questionRemove');
-    Route::get('exams/{exam}/completed', 'ExamUserController@completed')->name('exams.completed');
+    $this->router->resource('questions', 'QuestionController');
+    $this->router->get('feedbacks/{exam}', 'FeedbackController@index')->name('exams.feedback.index');
+    $this->router->resource('feedbacks', 'FeedbackController', ['only' => ['store', 'update']]);
+    $this->router->get('exams/select2', 'ExamController@select2Ajax')->name('exams.select2');
+    $this->router->post('exams/{exam}/questions-add', 'ExamQuestionController@add')->name('exams.questionAdd');
+    $this->router->post('exams/{exam}/questions-remove', 'ExamQuestionController@remove')->name('exams.questionRemove');
+    $this->router->get('exams/{exam}/completed', 'ExamUserController@completed')->name('exams.completed');
 
-    Route::group(['prefix' => 'exams'], function () {
-        Route::get('{exam_user}/result', [
-            'as' => 'exams.result',
-            'uses' => 'ExamUserController@result',
-        ]);
+    $this->router->group(['prefix' => 'exams'], function () {
+        $this->router->get('{exam_user}/result', 'ExamUserController@result')->name('exams.result');
+        $this->router->get('{exam}/start', 'ExamUserController@start')->name('exams.start');
 
-        Route::get('{exam}/start', [
-            'as' => 'exams.start',
-            'uses' => 'ExamUserController@start',
-        ]);
-        //
-        Route::get('exams/reviews', [
-            'as' => 'exams.reviews.all',
-            'uses' => 'ExamReviewController@index',
-        ]);
-        //
-        Route::get('{exam}/reviews', [
-            'as' => 'exams.reviews.index',
-            'uses' => 'ExamReviewController@index',
-        ]);
-        //
-        Route::get('{exam}/reviews/{answer}', [
-            'as' => 'exams.reviews.show',
-            'uses' => 'ExamReviewController@show',
-        ]);
-        Route::put('{exam}/submit/reviews/{answer}', [
-            'as' => 'exams.reviews.update',
-            'uses' => 'ExamReviewController@update',
-        ]);
-        Route::get('{exam}/questions/{question}', [
-            'as' => 'exams.question',
-            'uses' => 'ExamUserController@question',
-        ]);
+        $this->router->get('exams/reviews', 'ExamReviewController@index')->name('exams.reviews.all');
+        $this->router->get('{exam}/reviews', 'ExamReviewController@index')->name('exams.reviews.index');        //
+        $this->router->get('{exam}/reviews/{answer}', 'ExamReviewController@show')->name('exams.reviews.show');
+        $this->router->put('{exam}/submit/reviews/{answer}', 'ExamReviewController@update')->name('exams.reviews.update');
 
-        Route::post('{exam}/answer/{question}', [
-            'as' => 'exams.answer',
-            'uses' => 'ExamUserController@answer',
-        ]);
+        $this->router->get('{exam}/questions/{question}', 'ExamUserController@question')->name('exams.question');
+        $this->router->post('{exam}/answer/{question}', 'ExamUserController@answer')->name('exams.answer');
 
-        Route::get('{exam_user}/visibility/{visibility}', [
-            'as' => 'exams.result.visibility',
-            'uses' => 'ExamUserController@visibility',
-        ]);
+        $this->router->get('{exam_user}/visibility/{visibility}', 'ExamUserController@visibility')->name('exams.result.visibility');
     });
-    Route::resource('exams', 'ExamController');
-    Route::get('exams/{exam}/invitations/{invitation}/response', 'InvitationController@response')->name('exams.invitations.response');
-    Route::resource('exams.invitations', 'InvitationController');
+
+    $this->router->resource('exams', 'ExamController');
+    $this->router->get('exams/{exam}/invitations/{invitation}/response', 'InvitationController@response')->name('exams.invitations.response');
+    $this->router->resource('exams.invitations', 'InvitationController');
 
 });
