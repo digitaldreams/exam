@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card mb-3">
 <?php
 if (request('status') == 'completed') {
     $examUser = $record->examUsers()->where('user_id', auth()->id())->first();
@@ -10,13 +10,17 @@ if (request('status') == 'completed') {
         <div class="row">
             <div class="col-sm-9 col-6 left-header">
                 <div class="title">
+                    @if($record->visibility===\Exam\Enums\ExamVisibility::PRIVATE)
+                        <i title="this is a private exam." data-toggle="tooltip" class="fa fa-lock text-danger"></i>
+                    @endif
                     @can('update',$record)
                         <a href="{{route('exam::exams.show',$record->slug)}}">
                             #{{$record->id}}  {{$record->title}} {!! $record->stars() !!}
                         </a>
                     @else
                         @if(isset($examUser))
-                          <a href="{{route('exam::exams.result',$examUser->id)}}"> #{{$record->id}}  {{$record->title}} {!! $record->stars() !!}    </a>
+                            <a href="{{route('exam::exams.result',$examUser->id)}}">
+                                #{{$record->id}}  {{$record->title}} {!! $record->stars() !!}    </a>
                         @else
                             #{{$record->id}} {{$record->title}} {!! $record->stars() !!}
                         @endif
@@ -74,39 +78,7 @@ if (request('status') == 'completed') {
                                     </form>
                                 </li>
                             @endcan
-                            @can('update',$record)
-                                <li class="list-group-item">
 
-                                    <a class="btn btn-outline-secondary btn-block btn-sm"
-                                       href="{{route('exam::exams.invitations.create',$record->slug)}}">
-                                        <span class="fa fa-envelope"></span> Invite
-                                    </a>
-
-                                </li>
-                            @endif
-                            <li class="list-group-item">
-                                &nbsp;<form action="{{route('blog::activities.store')}}" method="post" class="d-inline">
-                                    {{csrf_field()}}
-                                    <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
-                                    <input type="hidden" name="activityable_id" value="{{$record->id }}">
-                                    <input type="hidden" name="type" value="like">
-                                    <button class="btn badge badge-light">
-                                        <i class="fa fa-thumbs-up"></i> Like {{$record->likes()->count()}}
-                                    </button>
-                                </form>
-                            </li>
-                            <li class="list-group-item">
-
-                                <form action="{{route('blog::activities.store')}}" method="post" class="d-inline">
-                                    {{csrf_field()}}
-                                    <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
-                                    <input type="hidden" name="activityable_id" value="{{$record->id }}">
-                                    <input type="hidden" name="type" value="favourite">
-                                    <button class="btn badge badge-light">
-                                        <i class="fa fa-star"></i> Favourite {{$record->favourites()->count()}}
-                                    </button>
-                                </form>&nbsp;
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -120,28 +92,61 @@ if (request('status') == 'completed') {
         <p class="card-text">
             {{$record->description}}
         </p>
+        <p class="text-right m-0 p-0">
+        <a class="badge badge-secondary" title="Exam Category" href="?search={{$record->category->title}}">
+            {{$record->category->title ??''}}
+        </a>
+
+        @foreach($record->tags as $tag)
+            <a  class="badge badge-light" href="?search={{$tag->name}}">
+                {{$tag->name ?? ''}}
+            </a>
+        @endforeach
+        </p>
+
     </div>
 
     <!-- this is card footer -->
 
     <div class="card-footer text-right ">
 
-        @foreach($record->tags as $tag)
-            <a href="?search={{$tag->name}}">
-                <label class="badge badge-light">{{$tag->name ?? ''}}</label>
-            </a>
-        @endforeach
-        <a href="?search={{$record->category->title}}">
-            <label class="badge badge-secondary">{{$record->category->title ??''}} </label>
-        </a>
+        &nbsp;<form title="Click here to like this exam"  action="{{route('blog::activities.store')}}" method="post" class="d-inline">
+            {{csrf_field()}}
+            <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
+            <input type="hidden" name="activityable_id" value="{{$record->id }}">
+            <input type="hidden" name="type" value="like">
+            <button class="btn badge badge-light">
+                <i class="fa fa-thumbs-up"></i> Like {{$record->likes()->count()}}
+            </button>
+        </form>
+
+        <form title="click here to mark this as favourite" action="{{route('blog::activities.store')}}" method="post" class="d-inline">
+            {{csrf_field()}}
+            <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
+            <input type="hidden" name="activityable_id" value="{{$record->id }}">
+            <input type="hidden" name="type" value="favourite">
+            <button  class="btn badge badge-light">
+                <i class="fa fa-star"></i> Favourite {{$record->favourites()->count()}}
+            </button>
+        </form>&nbsp;
 
 
         @if($record->hasTimeLimit())
-            <label class="badge badge-secondary"><i class="fa fa-clock-o"></i> {{$record->duration}} min
+            <label title="Exam duration. Must be completed within this time frame. Once exam started can't be paused" data-toggle="tooltip" class="badge badge-secondary">
+                <i class="fa fa-clock-o"></i> {{$record->duration}} min
             </label>
         @endif
-        @can('start',$record)
-            <a class="btn btn-outline-primary btn-sm" href="{{route('exam::exams.start',$record->slug)}}">Take</a>
+        @can('update',$record)
+
+            <a title="Invite your friends to take this exam." data-toggle="tooltip" class="btn btn-light btn-sm"
+               href="{{route('exam::exams.invitations.create',$record->slug)}}">
+                <span class="fa fa-envelope"></span> Invite
+            </a>
         @endcan
+        @can('start',$record)
+            <a title="Ready to give this exam?. Lets do it" data-toggle="tooltip" class="btn btn-outline-primary btn-sm"
+               href="{{route('exam::exams.start',$record->slug)}}">Take</a>
+        @endcan
+
     </div>
 </div>
