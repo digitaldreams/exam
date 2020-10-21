@@ -11,25 +11,23 @@
     </li>
 @endsection
 @section('header')
+
+    <small class="d-none d-sm-inline">{!! $exam->stars() !!}</small>
     {{$exam->title}}
-    <small>{!! $exam->stars() !!}</small>
-    @foreach($exam->tags as $tag)
-        <small><label class="badge badge-secondary">{{$tag->name}}</label></small>
-    @endforeach
 @endsection
 
 @section('tools')
     @can('start',$exam)
-        <a class="btn btn-outline-primary" href="{{route('exam::exams.start',$exam->slug)}}">Take</a>
+        <a class="btn btn-primary " href="{{route('exam::exams.start',$exam->slug)}}">Take</a>
     @endcan
     @can('create',\Exam\Models\Exam::class)
         <a class="btn btn-outline-secondary" href="{{route('exam::exams.create')}}">
-            <span class="fa fa-plus"></span>  Create
+            <span class="fa fa-plus"></span> <span class="d-none d-sm-inline">Create</span>
         </a>
     @endcan
     @can('update',$exam)
         <a class="btn btn-outline-secondary" href="{{route('exam::exams.edit',$exam->slug)}}">
-            <span class="fa fa-pencil"></span>  Edit
+            <span class="fa fa-pencil"></span> <span class="d-none d-sm-inline">Edit</span>
         </a>
     @endcan
     @can('delete',$exam)
@@ -40,7 +38,7 @@
             {{csrf_field()}}
             {{method_field('DELETE')}}
             <button type="submit" class="btn btn-outline-danger cursor-pointer">
-                Delete <i class="text-danger fa fa-remove"></i>
+                <span class="d-none d-sm-inline"> Delete</span> <i class="text-danger fa fa-remove"></i>
             </button>
         </form>
     @endcan

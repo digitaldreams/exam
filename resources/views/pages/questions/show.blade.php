@@ -13,11 +13,11 @@
 @section('tools')
     @can('create',\Exam\Models\Question::class)
         <a class="btn btn-outline-secondary" href="{{route('exam::questions.create')}}">
-            <span class="fa fa-plus"></span> Create New Question
+            <span class="fa fa-plus"></span> <span class="d-none d-sm-inline">Create New Question</span>
         </a>
     @endcan
     @can('update',$record)
-        <a href="{{route('exam::questions.edit',$record->id)}}">
+        <a class="btn btn-outline-secondary" href="{{route('exam::questions.edit',$record->id)}}">
             <span class="fa fa-pencil"></span>
         </a>
     @endcan
@@ -28,7 +28,7 @@
               style="display: inline">
             {{csrf_field()}}
             {{method_field('DELETE')}}
-            <button type="submit" class="btn btn-default cursor-pointer  btn-sm">
+            <button type="submit" class="btn btn-outline-danger cursor-pointer">
                 <i class="text-danger fa fa-remove"></i>
             </button>
         </form>

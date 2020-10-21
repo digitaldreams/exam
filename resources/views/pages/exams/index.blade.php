@@ -37,7 +37,7 @@
                 </datalist>
             </form>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 d-none d-sm-block">
             {!! $records->render() !!}
         </div>
     </div>

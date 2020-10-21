@@ -45,7 +45,7 @@
                 </datalist>
             </form>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 d-none d-sm-block">
             {!! $records->appends(['search'=> request('search'),'type'=>request('type')])->render() !!}
         </div>
     </div>

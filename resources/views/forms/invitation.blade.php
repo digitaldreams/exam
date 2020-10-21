@@ -6,13 +6,10 @@
     <div class="form-group">
         <label for="user_id">Email</label>
 
-        <select name="user_id" id="user_id" class="form-control">
-            @foreach($users as $user)
-                <option value="{{$user->id}}" {{old('email',$model->user_id)==$user->id?'selected':''}}>{{$user->name}}
-                    [{{$user->email}}]
-                </option>
-            @endforeach
+        <select name="user_id" id="user_id" class="form-control" placeholder="Search">
+
         </select>
+        <small class="text-muted">Search from existing users or type a new Email</small>
         @if($errors->has('user_id'))
             <div class="invalid-feedback">
                 <strong>{{ $errors->first('user_id') }}</strong>
@@ -22,8 +19,7 @@
 
 
     <div class="form-group text-right ">
-        <input type="reset" class="btn btn-default" value="Clear"/>
-        <input type="submit" class="btn btn-primary" value="Save"/>
+        <input type="submit" class="btn btn-primary" value="Send Invitation"/>
 
     </div>
 </form>

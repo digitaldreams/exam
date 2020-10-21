@@ -8,7 +8,7 @@ if (request('status') == 'completed') {
 
     <div class="card-header">
         <div class="row">
-            <div class="col-sm-9 col-6 left-header">
+            <div class="col-sm-10 col-11 left-header">
                 <div class="title">
                     @if($record->visibility===\Exam\Enums\ExamVisibility::PRIVATE)
                         <i title="this is a private exam." data-toggle="tooltip" class="fa fa-lock text-danger"></i>
@@ -37,7 +37,7 @@ if (request('status') == 'completed') {
                     </div>
                 @endif
             </div>
-            <div class="col-sm-3 col-6 text-right right-header">
+            <div class="col-sm-2 col-1 text-right right-header">
                 <div class="btn-group">
                     <div class="dropdown" id="dropdown-{{$record->id}}">
                         <a href="#" class="fa fa-ellipsis-v" data-toggle="dropdown" role="button" aria-expanded="false">
