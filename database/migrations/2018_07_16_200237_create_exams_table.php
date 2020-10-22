@@ -20,7 +20,7 @@ class CreateExamsTable extends Migration
             $table->id('id');
             $table->unsignedBigInteger('category_id')->nullable()->constrained('blog_categories', 'id')->onDelete('set null');
             $table->foreignId('user_id')->nullable()->constrained('users', 'id')->onDelete('set null');
-            $table->string('status', 20)->default(ExamStatus::PENDING);
+            $table->string('status', 20)->default(ExamStatus::INACTIVE);
             $table->enum('visibility', [ExamVisibility::PUBLIC, ExamVisibility::PRIVATE])->default('public');
             $table->string('title');
             $table->string('slug')->unique()->nullable();
