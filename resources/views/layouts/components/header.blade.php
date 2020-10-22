@@ -7,8 +7,8 @@
 
     <!-- Bootstrap core CSS -->
 
-    <link rel="stylesheet" href="{{asset('css/app.css')}}" type="text/css"/>
-    <link rel="stylesheet" href="{{asset('css/dashboard.css')}}" type="text/css"/>
+    <link rel="stylesheet" href="{{secure_asset('css/app.css')}}" type="text/css"/>
+    <link rel="stylesheet" href="{{secure_asset('css/dashboard.css')}}" type="text/css"/>
     @yield('css')
     <script src="https://kit.fontawesome.com/9e00ab1460.js" crossorigin="anonymous"></script>
 </head>
