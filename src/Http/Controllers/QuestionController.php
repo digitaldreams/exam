@@ -159,7 +159,7 @@ class QuestionController extends Controller
      */
     public function update(Update $request, Question $question): RedirectResponse
     {
-        $this->questionRepository->update($request->all(), $question);
+        $this->questionRepository->update($request->all(), $question, $request->file('file'));
 
         return redirect()->route('exam::questions.show', $question->id)->with('message', 'Question successfully updated');
     }
@@ -197,7 +197,7 @@ class QuestionController extends Controller
     {
         $this->authorize('viewAny', Question::class);
 
-        $questions = $this->questionRepository->search($request->get('term'), null, 10);
+        $questions = $this->questionRepository->onlyParent()->search($request->get('term'), null, 10);
 
         $data = $questions->map(function ($question) {
             return [

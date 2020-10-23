@@ -41,9 +41,10 @@
             @include('exam::cards.question')
         </div>
         <div class="col-sm-6">
-            <h3>Used in Exams</h3>
+
             @if($record->exams()->count()>0)
                 <ul class="list-group">
+                    <li class="list-group-item-light"><h3>Used in Exams</h3></li>
                     @foreach($record->exams as $exam)
                         <li class="list-group-item">
                             @can('view',$exam)
@@ -57,6 +58,35 @@
                 </ul>
             @else
                 <p class="alert alert-success">Its a fresh question. Not used in any exam</p>
+            @endif
+            @if($record->children->count() >0)
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-light">
+                        <h4>Child Questions</h4>
+                    </li>
+                    @foreach($record->children as $child)
+                        <li class="list-group-item">
+                            <a href="{{route('exam::questions.show',$child->id)}}">
+                                #{{$child->id}} {{$child->title}}
+                                <span class="badge badge-secondary">{{$child->type}}</span> <span
+                                    class="badge badge-secondary">{{$child->answer_type}}</span>
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            @elseif($record->parent)
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-light">
+                        <h4>Parent Question</h4>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{{route('exam::questions.show',$record->parent_id)}}">
+                            #{{$record->parent->id}} {{$record->parent->title}}
+                            <span class="badge badge-secondary">{{$record->parent->type}}</span> <span
+                                class="badge badge-secondary">{{$record->parent->answer_type}}</span>
+                        </a>
+                    </li>
+                </ul>
             @endif
         </div>
     </div>

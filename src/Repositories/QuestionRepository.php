@@ -23,6 +23,8 @@ class QuestionRepository extends Repository
      */
     protected $filesystem;
 
+    protected $onlyParent = false;
+
     /**
      * ExamRepository constructor.
      *
@@ -39,7 +41,6 @@ class QuestionRepository extends Repository
 
     /**
      * @param array                              $data
-     *
      * @param \Illuminate\Http\UploadedFile|null $file
      *
      * @return \Illuminate\Database\Eloquent\Model
@@ -70,13 +71,17 @@ class QuestionRepository extends Repository
     }
 
     /**
-     * @param array                               $data
-     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param array                              $data
+     * @param \Exam\Models\Question              $model
+     * @param \Illuminate\Http\UploadedFile|null $file
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function update(array $data, Model $model): Model
+    public function update(array $data, Model $model, ?UploadedFile $file = null): Model
     {
+        if ($file && $file->isValid()) {
+            $data['data']['media']['url'] = $this->uploadFile($file);
+        }
         $question = $this->save($data, $model);
 
         if ($tags = $data['tags'] ?? []) {
@@ -142,6 +147,10 @@ class QuestionRepository extends Repository
             $builder = $builder->where('questions.type', $type);
         }
 
+        if ($this->onlyParent) {
+            $builder = $builder->whereNull('questions.parent_id');
+        }
+
         return $builder->orderByRaw('qscore desc')
             ->paginate(8);
     }
@@ -178,6 +187,16 @@ class QuestionRepository extends Repository
     }
 
     /**
+     * @return $this
+     */
+    public function onlyParent()
+    {
+        $this->onlyParent = true;
+
+        return $this;
+    }
+
+    /**
      * Replaces spaces with full text search wildcards.
      *
      * @param string $term
@@ -208,5 +227,4 @@ class QuestionRepository extends Repository
 
         return $searchTerm;
     }
-
 }

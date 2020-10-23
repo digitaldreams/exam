@@ -83,6 +83,23 @@
                                 </button>
 
                             </form>
+
+                            @if($question->children->count()>0)
+                                <ol class="list-group p-0">
+                                    <li class="list-group-item bg-light py-0">Child Questions</li>
+                                    @foreach($question->children as $child)
+                                        <li class="list-group-item ">
+                                            <a href="{{route('exam::questions.show',$child->id)}}">
+                                                #{{$child->id}} {{$child->title}}
+                                            </a>
+                                            <label
+                                                class="badge badge-secondary badge-pill"><b>{{$child->type}}</b></label>
+                                            <label
+                                                class="badge badge-light badge-pill">{{$child->answer_type}}</label>
+                                        </li>
+                                    @endforeach
+                                </ol>
+                            @endif
                         </li>
                     @endforeach
                 </ol>

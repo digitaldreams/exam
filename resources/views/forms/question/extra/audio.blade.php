@@ -2,11 +2,12 @@
 
     <div class="col-sm-6">
         <label for="upload-audio-file">Upload Your Audio file.</label>
-        <input type="file" name="file" id="upload-audio-file" class="form-control-file" accept="audio/*" required>
+        <input type="file" name="file" id="upload-audio-file" class="form-control-file"
+               accept="audio/*" {{empty($model->id)?'required':''}}>
     </div>
 
 </div>
-<small>Either give a audio source url or Upload a audio file.</small>
+<small>Upload a audio file. Maximum Upload Size 8MB</small>
 <div class="">
     @if($mp3=$model->getData('media.url'))
         <audio controls class="">
