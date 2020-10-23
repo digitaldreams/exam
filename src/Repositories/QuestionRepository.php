@@ -134,14 +134,14 @@ class QuestionRepository extends Repository
         $search = $this->fullTextWildcards($search);
 
         $builder = Question::query()->selectRaw('questions.*,
-             match(questions.title) against ("' . $search . '" IN NATURAL LANGUAGE MODE) as qscore')->distinct()
+             match(questions.title) against ("' . $search . '" IN BOOLEAN MODE) as qscore')->distinct()
             ->leftJoin('blog_categories', 'questions.category_id', '=', 'blog_categories.id')
             ->leftJoin('question_tag', 'questions.id', '=', 'question_tag.question_id')
             ->leftJoin('blog_tags', 'question_tag.tag_id', '=', 'blog_tags.id')
             ->where(function ($q) use ($search) {
-                $q->orWhereRaw('match(questions.title) against (? IN NATURAL LANGUAGE MODE)', $search)
-                    ->orWhereRaw('match(blog_categories.title) against (? IN NATURAL LANGUAGE MODE)', $search)
-                    ->orWhereRaw('match(blog_tags.name) against (? IN NATURAL LANGUAGE MODE)', $search);
+                $q->orWhereRaw('match(questions.title) against (? IN BOOLEAN MODE)', $search)
+                    ->orWhereRaw('match(blog_categories.title) against (? IN BOOLEAN MODE)', $search)
+                    ->orWhereRaw('match(blog_tags.name) against (? IN BOOLEAN MODE)', $search);
             });
         if (!empty($type)) {
             $builder = $builder->where('questions.type', $type);
@@ -219,7 +219,8 @@ class QuestionRepository extends Repository
              * because smaller ones are not indexed by mysql
              */
             if (strlen($word) >= 3) {
-                $words[$key] = $start . $word . $end;
+                $words[$key] = $key + 1 == count($words) ? $word . $end : $start . $word . $end;
+
             }
         }
 

@@ -88,14 +88,14 @@ class ExamSearchService
         $search = $this->fullTextWildcards($search);
 
         return $builder->selectRaw('exams.*,
-             match(exams.title,exams.description) against ("' . $search . '" IN NATURAL LANGUAGE MODE) as bscore')->distinct()
+             match(exams.title,exams.description) against ("' . $search . '" IN BOOLEAN MODE) as bscore')->distinct()
             ->leftJoin('blog_categories', 'exams.category_id', '=', 'blog_categories.id')
             ->leftJoin('exam_tag', 'exams.id', '=', 'exam_tag.exam_id')
             ->leftJoin('blog_tags', 'exam_tag.tag_id', '=', 'blog_tags.id')
             ->where(function ($q) use ($search) {
-                $q->orWhereRaw('match(exams.title,exams.description) against (? IN NATURAL LANGUAGE MODE)', $search)
-                    ->orWhereRaw('match(blog_categories.title) against (? IN NATURAL LANGUAGE MODE)', $search)
-                    ->orWhereRaw('match(blog_tags.name) against (? IN NATURAL LANGUAGE MODE)', $search);
+                $q->orWhereRaw('match(exams.title,exams.description) against (? IN BOOLEAN MODE)', $search)
+                    ->orWhereRaw('match(blog_categories.title) against (? IN BOOLEAN MODE)', $search)
+                    ->orWhereRaw('match(blog_tags.name) against (? IN BOOLEAN MODE)', $search);
             })
             ->orderByRaw('bscore desc');
     }
@@ -168,7 +168,7 @@ class ExamSearchService
              * because smaller ones are not indexed by mysql
              */
             if (strlen($word) >= 3) {
-                $words[$key] = $start . $word . $end;
+                $words[$key] = $key + 1 == count($words) ? $word . $end : $start . $word . $end;
             }
         }
 
