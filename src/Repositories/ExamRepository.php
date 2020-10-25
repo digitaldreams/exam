@@ -111,6 +111,7 @@ class ExamRepository extends Repository
     {
         $this->model->fill($data);
         $model = (new UniqueSlugGeneratorService())->createSlug($this->model, $this->model->title);
+        $model->user_id = auth()->id();
         $model->save();
 
         if ($tags = $data['tags'] ?? []) {

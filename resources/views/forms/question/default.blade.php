@@ -12,7 +12,7 @@
             <tr>
                 <td>
                     <input type="hidden" name="optionNumber" value="{{$index}}">
-                    <input type="text" class="form-control option" name="options[option][{{$index}}]" value="{{$value}}"
+                    <input type="text" class="form-control option" name="options[option][{{$index}}]" value="{{$value}}" required
                            placeholder="Type your option here">
                 </td>
                 <td>
@@ -20,7 +20,7 @@
                         <label class="form-check-label">
                             <input class="form-check-input isCorrect" name="options[isCorrect][{{$index}}]"
                                    type="checkbox"
-                                   value="yes" {{$model->isCorrectAnswer($value)?'checked':''}}>
+                                   value="yes" {{$model->isCorrectAnswer($value)?'checked':''}} >
                             Yes
                         </label>
                     </div>
