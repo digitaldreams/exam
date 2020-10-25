@@ -2,20 +2,14 @@
 
 namespace Exam\Http\Requests\Questions;
 
-use Exam\Models\Question;
+use Exam\Enums\QuestionAnswerType;
+use Exam\Enums\QuestionReview;
+use Exam\Enums\QuestionType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class Store extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return auth()->user()->can('create', Question::class);
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -24,14 +18,41 @@ class Store extends FormRequest
      */
     public function rules()
     {
-        return [
-            'type' => 'required|max:191',
-            'title' => 'nullable|max:191',
-            'file' => 'file|max:8384', //8MB
-            'options' => 'nullable|array',
-            'answer' => 'nullable',
-            'explanation' => 'nullable|max:191',
+        $rules = [
+            'title' => ['required', 'max:191'],
+            'type' => ['required', 'max:191', Rule::in(QuestionType::generic())],
+            'answer_type' => ['required', Rule::in(array_keys(QuestionAnswerType::toArray()))],
+            'total_mark' => ['required', 'digits_between:1,99'],
+            'parent_id' => ['nullable', Rule::exists('questions', 'id')],
+            'review_type' => ['required', Rule::in(QuestionReview::types())],
+            'category_id' => ['required', Rule::exists('blog_categories', 'id')],
         ];
+
+        if (QuestionType::AUDIO == $this->get('type')) {
+            $rules['file'] = ['file', 'max:8384', 'mimes:mp3,ogg,wav'];
+        } elseif (QuestionType::IMG_TO_QUESTION == $this->get('type')) {
+            $rules['file'] = ['file', 'max:8384', 'image'];
+        }
+
+        if (in_array($this->get('answer_type'), [QuestionAnswerType::SINGLE_CHOICE, QuestionAnswerType::MULTIPLE_CHOICE])) {
+            $rules['options'] = ['required', 'array'];
+            $rules['options.option'] = ['required', 'array'];
+            $rules['options.isCorrect'] = ['required', 'array'];
+        }
+
+        if (QuestionAnswerType::FILL_IN_THE_BLANK == $this->get('answer_type')) {
+            $rules['data.fill_in_the_blank.summary'] = ['required'];
+            $rules['answers'] = ['required', 'array'];
+        }
+
+        if (QuestionAnswerType::WRITE == $this->get('answer_type') && QuestionReview::AUTO == $this->get('review_type')) {
+            $rules['answer'] = ['required', 'max:190'];
+        }
+
+        $rules['hints'] = ['nullable', 'max:191'];
+        $rules['explanation'] = ['nullable', 'max:191'];
+
+        return $rules;
     }
 
     /**

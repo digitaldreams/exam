@@ -34,6 +34,7 @@ class QuestionType
         return [
             static::MCQ,
             static::IMG_TO_QUESTION,
+            static::QUESTION_TO_IMG,
             static::AUDIO,
             static::VIDEO,
             static::FREEHAND_WRITING,

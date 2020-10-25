@@ -89,7 +89,7 @@
                 <div class="form-group">
                     <label>Type of Question you like to create</label>
                     <div class="input-group">
-                        <select name="answer_type" id="answer_type">
+                        <select name="answer_type" id="answer_type" required>
                             @foreach(\Exam\Enums\QuestionAnswerType::toArray() as $value => $title)
                                 <option value="{{$value}}"
                                     {{request('answer_type',$model->answer_type)==$value?'selected':''}}>
@@ -98,7 +98,7 @@
                             @endforeach
                         </select>
 
-                        <select class="form-control" id="type" name="type">
+                        <select class="form-control" id="type" name="type" required>
                             @foreach(\Exam\Enums\QuestionType::toArray() as $key=>$name)
                                 <option
                                     value="{{$key}}" {{request('type',$model->type)==$key?'selected':''}}>{{$name}}</option>
@@ -114,7 +114,7 @@
                     </label> <br/>
                     <div class="form-check-inline">
                         <label>
-                            <input type="radio" name="review_type"
+                            <input type="radio" name="review_type" required
                                    value="{{\Exam\Enums\QuestionReview::AUTO}}"
                                 {{old('review_type',$model->review_type)==\Exam\Enums\QuestionReview::AUTO?'checked':''}}
                             >
@@ -123,7 +123,7 @@
                     </div>
                     <div class="form-check-inline">
                         <label>
-                            <input type="radio" name="review_type"
+                            <input type="radio" name="review_type" required
                                    value="{{\Exam\Enums\QuestionReview::MANUAL}}"
                                 {{old('review_type',$model->review_type)==\Exam\Enums\QuestionReview::MANUAL?'checked':''}}
                             >
@@ -136,7 +136,7 @@
                 <div class="form-group">
                     <label for="category_id">Category</label>
                     <select class="form-control {{ $errors->has('category_id') ? ' is-invalid' : '' }}"
-                            name="category_id" id="category_id">
+                            name="category_id" id="category_id" required>
                         @if($model->category)
                             <option value="{{$model->category_id}}" selected>{{$model->category->title}}</option>
                         @endif

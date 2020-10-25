@@ -2,8 +2,12 @@
     <table class="table table-striped table-hover table-bordered" id="tblOptions">
         <thead>
         <tr>
-            <th>Option</th>
-            <th>Is Correct Answer?</th>
+            <th>Options<br/>
+            <small class="text-muted"> All of the below are required. Delete any options just clicking <i class="fa fa-remove btn btn-outline-danger btn-sm"></i></small>
+            </th>
+            <th>Is Correct Answer?<br/>
+                <small class="text-muted">Must be check at least one</small>
+            </th>
             <th>&nbsp;</th>
         </tr>
         </thead>
@@ -38,6 +42,7 @@
         @endforeach
         </tbody>
     </table>
+
     @if(request('type',$model->type)==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
         <small>Please <a target="_blank" href="{{route('photo::photos.index')}}"> see list of images</a> and
             copy image sourc URL into options field.
@@ -53,7 +58,7 @@
 @elseif(request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::FILL_IN_THE_BLANK)
     <h4>Fill In the Blank</h4>
     <textarea name="data[fill_in_the_blank][summary]" class="form-control" id="fill_in_the_blank_summary"
-              rows="8">{{$model->getData('fill_in_the_blank.summary')}}</textarea>
+              rows="8" required>{{$model->getData('fill_in_the_blank.summary')}}</textarea>
     <small class="text-muted">Once upon a time there was a (1)..... She was 12 years (2).....</small>
     <h4>Answers</h4>
     <table class="table table-striped table-hover table-bordered" id="fillInTheBlankAnswerTable">
