@@ -3,6 +3,7 @@
     <div class="col-sm-6">
         <label for="upload-audio-file">Upload Your Audio file.</label>
         <input type="file" name="file" id="upload-audio-file" class="form-control-file"
+               onchange="checkSize(8388608,'upload-audio-file','audio')"
                accept="audio/*" {{empty($model->id)?'required':''}}>
     </div>
 

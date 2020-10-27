@@ -1,7 +1,9 @@
 <div class="form-row">
     <div class="form-group col-sm-4">
         <label>Upload Image</label>
-        <input type="file" name="file" id="question_image" onchange="checkSize(8388608,'question_image')" class="form-control-file" accept="image/*" {{empty($model->id)?'required':''}}>
+        <input type="file" name="file" id="question_image"
+               onchange="checkSize(8388608,'question_image','image')"
+               class="form-control-file" accept="image/*" {{empty($model->id)?'required':''}}>
     </div>
     <div class="col-sm-2">
         @if($src=$model->getData('media.url'))

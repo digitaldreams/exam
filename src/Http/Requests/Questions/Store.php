@@ -29,7 +29,7 @@ class Store extends FormRequest
         ];
 
         if (QuestionType::AUDIO == $this->get('type')) {
-            $rules['file'] = ['file', 'max:8384', 'mimes:mp3,ogg,wav'];
+            $rules['file'] = ['file', 'max:8384', 'mimes:mp3,ogg,wav,m4a,m4b'];
         } elseif (QuestionType::IMG_TO_QUESTION == $this->get('type')) {
             $rules['file'] = ['file', 'max:8384', 'image'];
         }
