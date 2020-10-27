@@ -102,7 +102,7 @@ class ExamUserController extends Controller
             $examUser->completed_at = date('Y-m-d H:i:s');
             $examUser->save();
 
-            return redirect()->back()->with('permit_error', 'Time over ');
+            return redirect()->back()->with('error', 'Time over ');
         }
         $examUser->save();
 
