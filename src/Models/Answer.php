@@ -39,18 +39,6 @@ class Answer extends Model
         'answer' => 'array',
     ];
 
-    public static function boot()
-    {
-        parent::boot();
-        static::saving(function ($model) {
-            if (is_array($model->answer)) {
-                $model->answer = json_encode($model->answer);
-            }
-
-            return true;
-        });
-    }
-
     /**
      * question.
      *

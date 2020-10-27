@@ -72,11 +72,7 @@
         </div>
 
     @endif
-    @if($answers && config('exam.showAnswer',false))
-        @foreach($answers as $answer)
-            @include('exam::partials.answer')
-        @endforeach
-    @endif
+
     @if(!$feedback)
         @can('update',$exam_user)
             <div class="alert alert-secondary">
