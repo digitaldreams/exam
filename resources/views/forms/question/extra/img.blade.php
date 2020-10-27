@@ -3,7 +3,12 @@
         <label>Upload Image</label>
         <input type="file" name="file" id="question_image"
                onchange="checkSize(8388608,'question_image','image')"
-               class="form-control-file" accept="image/*" {{empty($model->id)?'required':''}}>
+               class="form-control-file @error('file') is-invalid  @enderror" accept="image/*" {{empty($model->id)?'required':''}}>
+        @error('file')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+        @enderror
     </div>
     <div class="col-sm-2">
         @if($src=$model->getData('media.url'))

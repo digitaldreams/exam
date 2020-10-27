@@ -41,7 +41,7 @@ class FillInTheBlankFormService
         $text = str_replace('_', '', $text);
         $inputArr = [];
         foreach (array_keys($this->question->getAnswers()) as $key) {
-            $inputArr[$key] = $key . '<input type="text" name="answer[' . $this->question->id . '][' . $key . ']" class="from-control-inline" id="' . $key . '" datalist="availableOptions" placeholder="Write down the answer for ' . $key . ' ">';
+            $inputArr[$key] = $key . '<input type="text" name="answer[' . $this->question->id . '][' . $key . ']" class="from-control-inline" id="' . $key . '" datalist="availableOptions" placeholder="Answer for ' . $key . ' ">';
         }
 
         return strtr($text, $inputArr);

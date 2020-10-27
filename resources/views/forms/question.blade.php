@@ -2,12 +2,14 @@
     {{csrf_field()}}
     <input type="hidden" name="_method" value="{{$method ?? 'POST'}}"/>
     <input type="hidden" name="exam_id" value="{{request('exam_id')}}">
+
     <div class="row">
         <div class="col-sm-9">
             <div class="form-group">
                 <label title="What you are going to ask" for="title">Question?</label>
                 <textarea class="form-control {{ $errors->has('title') ? ' is-invalid' : '' }}" name="title"
-                          id="title" placeholder="write your question here">{{old('title',$model->title)}}</textarea>
+                          id="title" placeholder="write your question here"
+                          required>{{old('title',$model->title)}}</textarea>
 
                 @if($errors->has('title'))
                     <div class="invalid-feedback">

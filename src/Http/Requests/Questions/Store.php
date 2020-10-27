@@ -29,9 +29,9 @@ class Store extends FormRequest
         ];
 
         if (QuestionType::AUDIO == $this->get('type')) {
-            $rules['file'] = ['file', 'max:8384', 'mimes:mp3,ogg,wav,m4a,m4b'];
+            $rules['file'] = ['required', 'file', 'max:8384', 'mimes:mp3,ogg,wav,m4a,m4b'];
         } elseif (QuestionType::IMG_TO_QUESTION == $this->get('type')) {
-            $rules['file'] = ['file', 'max:8384', 'image'];
+            $rules['file'] = ['required', 'file', 'max:8384', 'image'];
         }
 
         if (in_array($this->get('answer_type'), [QuestionAnswerType::SINGLE_CHOICE, QuestionAnswerType::MULTIPLE_CHOICE])) {
@@ -43,10 +43,12 @@ class Store extends FormRequest
         if (QuestionAnswerType::FILL_IN_THE_BLANK == $this->get('answer_type')) {
             $rules['data.fill_in_the_blank.summary'] = ['required'];
             $rules['answers'] = ['required', 'array'];
+            $rules['answers.*.key'] = ['required', 'max:150'];
+            $rules['answers.*.value'] = ['required', 'max:150'];
         }
 
         if (QuestionAnswerType::WRITE == $this->get('answer_type') && QuestionReview::AUTO == $this->get('review_type')) {
-            $rules['answer'] = ['required', 'max:190'];
+            $rules['answer.*'] = ['required', 'max:190'];
         }
 
         $rules['hints'] = ['nullable', 'max:191'];

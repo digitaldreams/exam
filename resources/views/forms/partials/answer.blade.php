@@ -62,26 +62,5 @@
                 </div>
             @endforeach
         </div>
-
-    @elseif($question->type==\Exam\Enums\QuestionType::PRONOUNCE)
-        <p>
-            <span id="voiceCommandInstruction">Click mic icon to start</span>
-            <b id="showSaidAnswer" class="bg-secondary"></b>
-            <i id="startListening" class="fa fa-microphone"></i>
-            &nbsp;&nbsp;
-            <i id="cleanAnswer" class="fa fa-remove"></i>
-        </p>
-        <input type="hidden" id="hiddenAnswer" name="answer[{{$question->id}}]" value="{{old('answer')}}"
-               class="form-control form-control-sm"
-               placeholder="e.g. I do">
-    @elseif($question->type==\Exam\Enums\QuestionType::VOICE_TO_SENTENCE)
-        <p>
-                    <span id="textToSpeakCommand"
-                          onclick="speakWord('{{$question->answer}}')">Click here to listen</span>
-            &nbsp;&nbsp;
-        </p>
-        <input type="text" id="speak2TextAnswer" name="answer[{{$question->id}}]" value="{{old('answer')}}"
-               class="form-control form-control-sm"
-               placeholder="e.g. I do">
     @endif
 </div>
