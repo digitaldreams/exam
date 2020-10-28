@@ -1,6 +1,6 @@
 <div class="alert alert-secondary">
     @if($question->type==\Exam\Enums\QuestionType::IMG_TO_QUESTION)
-        <img src="{{asset($question->getData('media.url'))}}" class="img-thumbnail img-fluid"/><br/>
+        <img src="{{secure_asset($question->getData('media.url'))}}" class="img-thumbnail img-fluid"/><br/>
     @elseif($question->type==\Exam\Enums\QuestionType::AUDIO)
         @if($mp3=$question->getData('media.url'))
             <audio controls class="form-control">
@@ -19,7 +19,7 @@
 </div>
 
 <div class="form-group">
-    @if(in_array($question->type,\Exam\Enums\QuestionType::generic()))
+    @if(in_array($question->type,\Exam\Enums\QuestionType::generic()) && $question->type!==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
 
         @if(in_array($question->answer_type,[\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE,\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE]))
 
@@ -52,7 +52,7 @@
             @foreach($question->getOptions() as $key=>$value)
                 <div class="col-6 col-sm-3">
                     <label>
-                        <img src="{{asset($value)}}" class="img-thumbnail img-fluid">
+                        <img src="{{$value}}" class="img-thumbnail img-fluid">
                         @if($question->answer_type==\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE)
                             <input type="radio" name="answer[{{$question->id}}]" value="{{$value}}">
                         @else
