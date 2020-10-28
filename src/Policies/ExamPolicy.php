@@ -2,7 +2,9 @@
 
 namespace Exam\Policies;
 
+use App\Models\User;
 use Exam\Enums\ExamUserStatus;
+use Exam\Enums\ExamVisibility;
 use Exam\Models\Exam;
 use Exam\Models\Invitation;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -85,17 +87,26 @@ class ExamPolicy
     }
 
     /**
-     * @param                   $user
+     * @param \App\Models\User  $user
      * @param \Exam\Models\Exam $exam
      *
      * @return bool
      */
-    public function start($user, Exam $exam)
+    public function start(?User $user, Exam $exam)
     {
-        return !$exam->examUsers()
-            ->where('user_id', $user->id)
-            ->where('status', ExamUserStatus::COMPLETED)
-            ->exists();
+        if ($this->isPublic($exam)) {
+            return true;
+        }
+        // A guest can not able to take Private Exam.
+        if (empty($user)) {
+            return false;
+        }
+
+        if (!$this->isNotCompletedYet($user, $exam)) {
+            return true;
+        }
+
+        return $this->isInvited($user, $exam);
     }
 
     /**
@@ -130,6 +141,32 @@ class ExamPolicy
      */
     public function isInvited($user, Exam $exam)
     {
-        return $exam->invitations()->where('user_id', $user->id)->where('status', Invitation::STATUS_ACCEPTED)->exists();
+        return $exam->invitations()->where('user_id', $user->id)
+            ->where('status', Invitation::STATUS_ACCEPTED)
+            ->exists();
+    }
+
+    /**
+     * @param \Exam\Models\Exam $exam
+     *
+     * @return bool
+     */
+    public function isPublic(Exam $exam): bool
+    {
+        return ExamVisibility::PUBLIC === $exam->visibility;
+    }
+
+    /**
+     * @param                   $user
+     * @param \Exam\Models\Exam $exam
+     *
+     * @return bool
+     */
+    protected function isNotCompletedYet($user, Exam $exam)
+    {
+        return !$exam->examUsers()
+            ->where('user_id', $user->id)
+            ->where('status', ExamUserStatus::COMPLETED)
+            ->exists();
     }
 }

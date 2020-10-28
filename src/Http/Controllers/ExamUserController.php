@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Tuhin
- * Date: 8/12/2018
- * Time: 3:46 PM.
- */
 
 namespace Exam\Http\Controllers;
 
@@ -14,23 +8,58 @@ use Exam\Enums\ExamUserStatus;
 use Exam\Enums\ExamVisibility;
 use Exam\Enums\QuestionReview;
 use Exam\Http\Requests\Exams\Answer;
-use Exam\Http\Requests\Exams\Question;
 use Exam\Http\Requests\Exams\Result;
-use Exam\Http\Requests\Exams\Start;
 use Exam\Http\Requests\Exams\Visibility;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
-use Exam\Models\Feedback;
-use Exam\Models\Question as QuestionModel;
+use Exam\Models\Question;
 use Exam\Notifications\ExamCompleted;
 use Exam\Notifications\ReviewRequestToTeacher;
+use Exam\Repositories\AnswerRepository;
+use Exam\Repositories\ExamUserRepository;
+use Exam\Repositories\FeedbackRepository;
 use Exam\Services\AnswerService;
 use Exam\Services\CertificateService;
+use Exam\Services\TakeExamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class ExamUserController extends Controller
 {
+    /**
+     * @var \Exam\Repositories\ExamUserRepository
+     */
+    protected $examUserRepository;
+    /**
+     * @var \Exam\Repositories\FeedbackRepository
+     */
+    protected $feedbackRepository;
+    /**
+     * @var \Exam\Repositories\AnswerRepository
+     */
+    protected $answerRepository;
+    /**
+     * @var \Exam\Services\TakeExamService
+     */
+    protected $takeExamService;
+
+    /**
+     * ExamUserController constructor.
+     *
+     * @param \Exam\Services\TakeExamService        $takeExamService
+     * @param \Exam\Repositories\ExamUserRepository $examUserRepository
+     * @param \Exam\Repositories\FeedbackRepository $feedbackRepository
+     * @param \Exam\Repositories\AnswerRepository   $answerRepository
+     */
+    public function __construct(TakeExamService $takeExamService, ExamUserRepository $examUserRepository, FeedbackRepository $feedbackRepository, AnswerRepository $answerRepository)
+    {
+        $this->examUserRepository = $examUserRepository;
+        $this->feedbackRepository = $feedbackRepository;
+        $this->answerRepository = $answerRepository;
+        $this->takeExamService = $takeExamService;
+    }
+
     /**
      * @param Result $request
      * @param Exam   $exam
@@ -39,37 +68,34 @@ class ExamUserController extends Controller
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function result(Result $request, ExamUser $exam_user)
+    public function result(Result $request, ExamUser $examUser)
     {
-        $feedback = Feedback::query()->where('feedbackable_type', get_class($exam_user->exam))
-            ->where('feedbackable_id', $exam_user->exam_id)
-            ->where('user_id', $exam_user->user_id)
-            ->first();
+        $feedback = $this->feedbackRepository->userExamFeedback($examUser->exam_id, $examUser->user_id);
 
-        $exam = $exam_user->exam;
-        $answers = \Exam\Models\Answer::query()->whereIn('id', $request->get('answer', []))->get();
+        $exam = $examUser->exam;
+        $answers = $this->answerRepository->getByIds($request->get('answer', []));
         $leftQuestions = [];
-        $left = $exam_user->remaining();
+        $left = $examUser->remaining();
         if (false == $left) {
-            $exam_user->status = ExamUserStatus::COMPLETED;
-            $exam_user->save();
+            $examUser->status = ExamUserStatus::COMPLETED;
+            $examUser->save();
         } else {
-            $leftQuestions = $exam->questions()->whereNotIn('id', $exam_user->answers()->pluck('question_id')->toArray())->get();
+            $leftQuestions = $exam->questions()->whereNotIn('id', $examUser->answers()->pluck('question_id')->toArray())->get();
         }
-        if (ExamVisibility::PRIVATE == $exam_user->visibility) {
-            $this->authorize('result', $exam_user);
+        if (ExamVisibility::PRIVATE == $examUser->visibility) {
+            $this->authorize('result', $examUser);
         }
 
         return view('exam::pages.exams.result', [
             'exam' => $exam,
             'feedback' => $feedback,
-            'exam_user' => $exam_user,
+            'exam_user' => $examUser,
             'answers' => $answers,
             'left' => $left,
-            'correctionRate' => $exam_user->getCorrectionRate(),
-            'obtainMark' => $exam_user->getTotalObtainMark(),
+            'correctionRate' => $examUser->getCorrectionRate(),
+            'obtainMark' => $examUser->getTotalObtainMark(),
             'totalMark' => $exam->questions()->sum('total_mark'),
-            'certificate' => new CertificateService($exam_user),
+            'certificate' => new CertificateService($examUser),
             'leftQuestions' => $leftQuestions,
         ]);
     }
@@ -79,41 +105,34 @@ class ExamUserController extends Controller
      * @param Exam    $exam
      *
      * @return \Illuminate\Http\RedirectResponse
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
      */
-    public function start(Start $request, Exam $exam)
+    public function start(Request $request, Exam $exam)
     {
-        $user = auth()->user();
-        $examUser = ExamUser::firstOrNew([
-            'exam_id' => $exam->id,
-            'user_id' => $user->id,
-        ]);
-        if (ExamUserStatus::COMPLETED == $examUser->status) {
-            return redirect()->back()->with('message', 'You already completed this exam');
-        }
-        if (!$exam->doesCompleteExams()) {
-            return redirect()->back()->with('message', 'Please complete all the required exams first');
-        }
-        $examUser->status = ExamUserStatus::PENDING;
-        if (empty($examUser->started_at)) {
-            $examUser->started_at = date('Y-m-d H:i:s');
-        }
-        if ($exam->hasTimeLimit() && $examUser->isTimeOver()) {
-            $examUser->status = ExamUserStatus::COMPLETED;
-            $examUser->completed_at = date('Y-m-d H:i:s');
-            $examUser->save();
+        $this->authorize('start', $exam);
 
+        $this->takeExamService->setExam($exam);
+
+        if (auth()->check()) {
+            $this->takeExamService->asUser(auth()->user());
+            if (!$this->takeExamService->isRequiredExamCompleted()) {
+                return redirect()->back()->with('message', 'Please complete all the required exams first');
+            }
+        } else {
+            $token = Str::random(32);
+            $this->takeExamService->asGuest($token, $request->ip());
+            $request->session()->put('exam_token', $token);
+        }
+        $this->takeExamService->start();
+        if ($this->takeExamService->isTimeOver()) {
             return redirect()->back()->with('error', 'Time over ');
         }
-        $examUser->save();
 
-        $question = QuestionModel::forExam($exam->id)
-            ->whereNotIn('id', $examUser->getCompleted())
-            ->first();
+        $question = $this->takeExamService->getQuestions()->first();
 
         if (!$question) {
-            $examUser->status = ExamUserStatus::COMPLETED;
-            $examUser->save();
-
             return redirect()->back()->with('message', 'You completed all the questions already');
         }
 
@@ -124,23 +143,33 @@ class ExamUserController extends Controller
     }
 
     /**
-     * @param Question $request
-     * @param Exam     $exam
-     * @param          $qid
+     * @param \Illuminate\Http\Request $request
+     * @param Exam                     $exam
+     * @param \Exam\Models\Question    $question
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
      */
-    public function question(Question $request, Exam $exam, $qid)
+    public function question(Request $request, Exam $exam, Question $question)
     {
-        $question = QuestionModel::query()->findOrFail($qid);
-        $exam_user = ExamUser::query()->forUser($exam->id)->first();
-        $answer = \Exam\Models\Answer::query()->whereIn('id', $request->get('answer', []))->get();
-        if (!$exam_user) {
-            return redirect()->route('exam::exams.index')->with('permit_error', 'Please choose a exam first');
+        $this->authorize('start', $exam);
+        $this->takeExamService->setExam($exam);
+
+        if (auth()->check()) {
+            $this->takeExamService->asUser(auth()->user());
+        } else {
+            $this->takeExamService->asGuest($request->session()->get('exam_token'), $request->ip());
         }
-        $questions = QuestionModel::forExam($exam->id)
-            ->whereNotIn('id', $exam_user->getCompleted())
-            ->get(['id'])
+
+        $examUser = $this->takeExamService->start();
+
+        if (!$examUser) {
+            return redirect()->route('exam::exams.index')->with('error', 'Please choose a exam first');
+        }
+
+        $questions = $this->takeExamService->getQuestions()
             ->pluck('id')
             ->toArray();
         $currentQuestionIndex = array_search($question->id, $questions) + 1;
@@ -151,56 +180,76 @@ class ExamUserController extends Controller
             'position' => $currentQuestionIndex,
             'nextId' => isset($questions[$currentQuestionIndex]) ? $questions[$currentQuestionIndex] : false,
             'previousId' => isset($questions[$currentQuestionIndex - 2]) ? $questions[$currentQuestionIndex - 2] : false,
-            'question' => QuestionModel::findOrFail($qid),
-            'answers' => $answer,
+            'question' => $question,
+            'answers' => $this->takeExamService->getAnswers($request->get('answer', [])),
             'timestamp' => time(),
-            'examUser' => $exam_user,
+            'examUser' => $examUser,
+            'takeExamService' => $this->takeExamService,
         ]);
     }
 
     /**
-     * @param Answer $request
-     * @param Exam   $exam
-     * @param        $qid
+     * @param Answer                $request
+     * @param Exam                  $exam
+     * @param \Exam\Models\Question $question
      *
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function answer(Answer $request, Exam $exam, $qid)
+    public function answer(Answer $request, Exam $exam, Question $question)
     {
+        $this->authorize('start', $exam);
+        $this->takeExamService->setExam($exam);
+
         $nextId = $request->get('nextId', false);
-        $exam_user = ExamUser::forUser($exam->id)->first();
-        if (!$exam_user) {
+
+        if (auth()->check()) {
+            $this->takeExamService->asUser(auth()->user());
+        } else {
+            $this->takeExamService->asGuest($request->session()->get('exam_token'), $request->ip());
+        }
+        $examUser = $this->takeExamService->start();
+
+        if (!$examUser) {
             return redirect()->route('exam::exams.index')->with('error', 'Please choose a exam first');
         }
-        if ($exam->hasTimeLimit() && $exam_user->isTimeOver()) {
-            $exam_user->completed_at = date('Y-m-d H:i:s');
-            $exam_user->status = ExamUserStatus::COMPLETED;
-            $exam_user->save();
 
-            return redirect()->route('exam::exams.result', ['exam_user' => $exam_user->id])->with('message', 'Time\'s up');
+        if ($this->takeExamService->isTimeOver()) {
+            return redirect()->route('exam::exams.result', ['exam_user' => $examUser->id])->with('message', 'Time\'s up');
         }
-        $answerService = new AnswerService($request->get('answer'), $exam_user);
+
+        $answerService = new AnswerService($request->get('answer'), $examUser);
         $answerService->check();
         $answerIds = $answerService->collection()->pluck('id')->toArray();
+
+        $questions = $this->takeExamService->getQuestions();
+
         if (!empty($nextId)) {
             return redirect()->route('exam::exams.question', [
                 'exam' => $exam->slug,
                 'question' => $nextId,
                 'answer' => $answerIds,
             ]);
+        } elseif (count($questions) > 0) {
+            return redirect()->route('exam::exams.question', [
+                'exam' => $exam->slug,
+                'question' => $questions->shift()->id ?? null,
+                'answer' => $answerIds,
+            ]);
         } else {
-            $exam_user->completed_at = date('Y-m-d H:i:s');
-            $exam_user->save();
-            $certificate = new CertificateService($exam_user);
-            $certificate->make();
-            Notification::send(User::getAdmins(), new ExamCompleted($exam, $exam_user->user));
+            $this->takeExamService->markAsCompleted();
+            if (auth()->check()) {
+                $certificate = new CertificateService($examUser);
+                $certificate->make();
+                Notification::send(User::getAdmins(), new ExamCompleted($exam, $examUser->user));
 
-            $totalPendingQuestion = $exam_user->exam->questions()->where('review_type', QuestionReview::MANUAL)->count();
-            if ($totalPendingQuestion > 0) {
-                Notification::send(User::getAdmins(), new ReviewRequestToTeacher($exam_user));
+                $totalPendingQuestion = $examUser->exam->questions()->where('review_type', QuestionReview::MANUAL)->count();
+                if ($totalPendingQuestion > 0) {
+                    Notification::send(User::getAdmins(), new ReviewRequestToTeacher($examUser));
+                }
             }
 
-            return redirect()->route('exam::exams.result', ['exam_user' => $exam_user->id, 'answer' => $answerIds]);
+            return redirect()->route('exam::exams.result', ['exam_user' => $examUser->id, 'answer' => $answerIds]);
         }
     }
 
@@ -210,6 +259,7 @@ class ExamUserController extends Controller
      * @param            $visibility
      *
      * @return \Illuminate\Http\RedirectResponse
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function visibility(Visibility $request, ExamUser $exam_user, $visibility)
@@ -226,6 +276,7 @@ class ExamUserController extends Controller
      * @param \Exam\Models\Exam        $exam
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function completed(Request $request, Exam $exam)

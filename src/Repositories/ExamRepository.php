@@ -84,14 +84,12 @@ class ExamRepository extends Repository
      * Does user complete all the exams they have to complete before starting this exam.
      *
      * @param \Exam\Models\Exam $exam
-     * @param int|null          $user_id
+     * @param int               $user_id
      *
      * @return bool
      */
-    public function doesCompleteExams(Exam $exam, ?int $user_id = null): bool
+    public function isRequiredExamCompleted(Exam $exam, int $user_id): bool
     {
-        $user_id = empty($user_id) && auth()->check() ? auth()->id() : $user_id;
-
         $mustCompleted = $this->getMustCompletedIds($exam);
 
         $count = ExamUser::query()->whereIn('exam_id', $mustCompleted)

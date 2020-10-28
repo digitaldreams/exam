@@ -16,7 +16,7 @@ class CreateExamUserTable extends Migration
         Schema::create('exam_user', function (Blueprint $table) {
             $table->id('id');
             $table->bigInteger('exam_id')->unsigned();
-            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned()->nullable();
             $table->tinyInteger('status')->nullable();
             $table->string('visibility', 20)->default('private')->nullable();
             $table->string('completed')->nullable();

@@ -276,19 +276,4 @@ class Exam extends Model
         return $yellow . $black;
     }
 
-    /**
-     * @param string $user_id
-     *
-     * @return bool
-     */
-    public function doesCompleteExams($user_id = '')
-    {
-        $user_id = empty($user_id) && auth()->check() ? auth()->id() : $user_id;
-        $mustCompleted = $this->getMustCompletedIds();
-        $count = ExamUser::whereIn('exam_id', $mustCompleted)->where('user_id', $user_id)
-            ->where('status', ExamUserStatus::COMPLETED)
-            ->count();
-
-        return count($mustCompleted) == $count;
-    }
 }

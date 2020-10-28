@@ -5,6 +5,7 @@ namespace Exam\Repositories;
 use Blog\Models\Category;
 use Blog\Models\Tag;
 use Blog\Repositories\TagRepository;
+use Exam\Models\ExamUser;
 use Exam\Models\Question;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
@@ -220,12 +221,25 @@ class QuestionRepository extends Repository
              */
             if (strlen($word) >= 3) {
                 $words[$key] = $key + 1 == count($words) ? $word . $end : $start . $word . $end;
-
             }
         }
 
         $searchTerm = implode(' ', $words);
 
         return $searchTerm;
+    }
+
+    /**
+     * @param \Exam\Models\ExamUser $examUser
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getRemainingQuestions(ExamUser $examUser)
+    {
+        return $this->model->newQuery()
+            ->whereHas('exams', function ($q) use ($examUser) {
+                $q->where('id', $examUser->exam_id);
+            })->whereNotIn('id', $examUser->getCompleted())
+            ->get();
     }
 }

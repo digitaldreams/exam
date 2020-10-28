@@ -43,6 +43,10 @@ class ExamUser extends Model
         'exam_id',
         'user_id',
         'status',
+        'started_at',
+        'completed_at',
+        'token',
+        'ip',
     ];
 
     /**
@@ -200,31 +204,4 @@ class ExamUser extends Model
         return $default;
     }
 
-    /**
-     * @return string
-     */
-    public function timeLeft()
-    {
-        if (!empty($this->started_at)) {
-            $lastTime = Carbon::parse($this->started_at)->addMinutes($this->exam->duration);
-
-            return $lastTime->diff(Carbon::now())->format('%H:%I:%S');
-        }
-
-        return '';
-    }
-
-    /**
-     * @return bool
-     */
-    public function isTimeOver()
-    {
-        if ($this->exam->hasTimeLimit()) {
-            $lastTime = Carbon::parse($this->started_at)->addMinutes($this->exam->duration);
-
-            return $lastTime->lt(Carbon::now());
-        }
-
-        return false;
-    }
 }
