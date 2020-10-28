@@ -68,7 +68,7 @@ class ExamUserController extends Controller
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function result(Result $request, ExamUser $examUser)
+    public function result(Request $request, ExamUser $examUser)
     {
         $feedback = $this->feedbackRepository->userExamFeedback($examUser->exam_id, $examUser->user_id);
 
@@ -194,6 +194,7 @@ class ExamUserController extends Controller
      * @param \Exam\Models\Question $question
      *
      * @return \Illuminate\Http\RedirectResponse
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function answer(Answer $request, Exam $exam, Question $question)
@@ -248,8 +249,13 @@ class ExamUserController extends Controller
                     Notification::send(User::getAdmins(), new ReviewRequestToTeacher($examUser));
                 }
             }
-
-            return redirect()->route('exam::exams.result', ['exam_user' => $examUser->id, 'answer' => $answerIds]);
+            if (auth()->check()) {
+                return redirect()->route('exam::exams.result', ['exam_user' => $examUser->id, 'answer' => $answerIds]);
+            } else {
+                return redirect()->route('register', [
+                    'returnUrl' => route('exam::exams.assignUser', ['examUser' => $examUser->id, 'token' => $this->takeExamService->getToken()]),
+                ])->with('message', 'Please sign up to view your result.');
+            }
         }
     }
 
@@ -269,6 +275,27 @@ class ExamUserController extends Controller
         $exam_user->save();
 
         return redirect()->back()->with('message', 'Your exam result visibility set to ' . $visibility);
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \Exam\Models\ExamUser    $examUser
+     * @param string                   $token
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function assignUser(Request $request, ExamUser $examUser, string $token)
+    {
+        if ($request->session()->has('exam_token') && $request->session()->pull('exam_token') == $token) {
+            $this->examUserRepository->update([
+                'user_id' => auth()->id(),
+                'token' => null,
+            ], $examUser);
+
+            return redirect()->route('exam::exams.result', ['exam_user' => $examUser->id, 'answer' => []]);
+        } else {
+            return redirect()->route('exam::exams.index')->with('error', 'Your token does not seems to be valid');
+        }
     }
 
     /**

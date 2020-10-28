@@ -106,6 +106,23 @@
             @endcan
         </div>
         <div class="col-sm-4">
+            @if($exam->visibility===\Exam\Enums\ExamVisibility::PUBLIC)
+                <div class="card">
+                    <div class="card-header">Share Exam to Others</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="url" class="form-control" id="exam-public-url"
+                                       value="{{route('exam::frontend.exams.show',$exam->slug)}}">
+                                <button class="btn btn-secondary" id="copy-url" type="button"
+                                        onclick="copyToClipboard(this,'exam-public-url')">Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            @endif
             {{$exam->description}}
 
             @if($exam->getMustCompletedIds())
@@ -168,5 +185,12 @@
                 dataType: 'json'
             }
         });
+
+        function copyToClipboard(btn, inputId) {
+            var copyText = document.getElementById(inputId);
+            copyText.select();
+            document.execCommand("copy");
+            btn.innerText = "Copied";
+        }
     </script>
 @endsection

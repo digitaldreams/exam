@@ -251,4 +251,12 @@ class TakeExamService
             'completed_at' => date('Y-m-d H:i:s'),
         ], $this->examUser);
     }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
 }

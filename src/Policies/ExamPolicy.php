@@ -147,11 +147,22 @@ class ExamPolicy
     }
 
     /**
+     * @param \App\Models\User|null $user
+     * @param \Exam\Models\Exam     $exam
+     *
+     * @return bool
+     */
+    public function open(?User $user, Exam $exam)
+    {
+        return $this->isPublic($exam);
+    }
+
+    /**
      * @param \Exam\Models\Exam $exam
      *
      * @return bool
      */
-    public function isPublic(Exam $exam): bool
+    protected function isPublic(Exam $exam): bool
     {
         return ExamVisibility::PUBLIC === $exam->visibility;
     }

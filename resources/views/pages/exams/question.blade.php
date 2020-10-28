@@ -1,4 +1,6 @@
-@extends(config('exam.layouts.app'))
+
+@extends(auth()->check()?config('exam.layouts.app'):config('exam.layouts.frontend'))
+
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{route('exam::exams.index')}}">Exams</a>
