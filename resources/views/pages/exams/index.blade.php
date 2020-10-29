@@ -9,13 +9,14 @@
     Exams
 @endsection
 @section('tools')
+    <div class="btn-group">
 
-    @can('create',\Exam\Models\Exam::class)
-        <a class="btn btn-info  m-l-15" href="{{route('exam::exams.create')}}">
-            <span class="fa fa-plus"></span> Exam
-        </a>
-    @endcan
-
+        @can('create',\Exam\Models\Exam::class)
+            <a class="btn btn-outline-secondary  m-l-15" href="{{route('exam::exams.create')}}">
+                <span class="fa fa-plus"></span> Exam
+            </a>
+        @endcan
+    </div>
 @endsection
 
 @section('content')
@@ -23,6 +24,24 @@
         <div class="col-md-6">
             <form>
                 <div class="input-group mb-3">
+                    <div class="dropdown">
+                        <a class="btn btn-outline-secondary dropdown-toggle" href="#" role="button"
+                           id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Topics
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            @foreach($keywords as $keyword)
+                                <li class="dropdown-item">
+                                    <a class="btn btn-outline-secondary" href="?search={{$keyword['name']}}">
+                                        {{$keyword['name']}} <span
+                                            class="badge badge-secondary">{{$keyword['total']}}</span>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </div>
+                    </div>
                     <input type="search" name="search" value="{{request('search')}}" class="form-control"
                            placeholder="Search Exams" list="keywords" autocomplete="off"
                            aria-label="Search Post title" aria-describedby="button-addon2">
@@ -32,7 +51,7 @@
                 </div>
                 <datalist id="keywords">
                     @foreach($keywords as $keyword)
-                        <option value="{{$keyword['name']}}">&nbsp; &nbsp; {{$keyword['total']}}</option>
+                        <option value="{{$keyword['name']}}"/>
                     @endforeach
                 </datalist>
             </form>

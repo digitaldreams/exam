@@ -11,10 +11,28 @@
     Question <i class="fa fa-question-mark"></i>
 @endsection
 @section('tools')
-    @can('create',\Exam\Models\Question::class)
-        <a class="btn btn-outline-secondary" href="{{route('exam::questions.create')}}"> <i class="fa fa-plus"></i>
-            Create New Question</a>
-    @endcan
+    <div class="btn-group">
+
+        <div class="dropdown dropleft">
+            <a class="btn btn-outline-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Topics
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                @foreach($keywords as $keyword)
+                    <li class="dropdown-item">
+                        <a class="btn btn-outline-secondary" href="?search={{$keyword['name']}}">
+                            {{$keyword['name']}}  <span class="badge badge-secondary">{{$keyword['total']}}</span>
+                        </a>
+                    </li>
+                @endforeach
+            </div>
+        </div>
+        @can('create',\Exam\Models\Question::class)
+            <a class="btn btn-outline-secondary" href="{{route('exam::questions.create')}}"> <i class="fa fa-plus"></i></a>
+        @endcan
+    </div>
 @endsection
 
 @section('content')
@@ -22,7 +40,7 @@
         <div class="col-md-6">
             <form>
                 <div class="input-group mb-3">
-                    <select name="type" class="form-control-inline">
+                    <select name="type" class="form-control">
                         <option value="">All</option>
                         @foreach(\Exam\Enums\QuestionType::toArray() as $key=>$name)
                             <option value="{{$key}}" {{request('type')==$key?'selected':''}}>{{$name}}</option>
@@ -39,8 +57,7 @@
                 </div>
                 <datalist id="keywords">
                     @foreach($keywords as $keyword)
-                        <option value="{{$keyword['name']}}">&nbsp; {{$keyword['name']}}
-                            &nbsp; {{$keyword['total']}}</option>
+                        <option value="{{$keyword['name']}}" />
                     @endforeach
                 </datalist>
             </form>

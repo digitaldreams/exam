@@ -39,7 +39,7 @@ if (request('status') == 'completed') {
             </div>
             <div class="col-sm-2 col-1 text-right right-header">
                 <div class="btn-group">
-                    <div class="dropdown" id="dropdown-{{$record->id}}">
+                    <div class="dropdown dropleft" id="dropdown-{{$record->id}}">
                         <a href="#" class="fa fa-ellipsis-v" data-toggle="dropdown" role="button" aria-expanded="false">
                         </a>
                         <ul class="dropdown-menu list-group-flush">
