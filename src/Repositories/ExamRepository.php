@@ -10,6 +10,7 @@ use Blog\Repositories\TagRepository;
 use Blog\Services\UniqueSlugGeneratorService;
 use Exam\Enums\ExamStatus;
 use Exam\Enums\ExamUserStatus;
+use Exam\Enums\ExamVisibility;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Illuminate\Database\Eloquent\Collection;
@@ -179,5 +180,43 @@ class ExamRepository extends Repository
         cache()->put($key, $data, now()->addDay());
 
         return $data;
+    }
+
+    /**
+     * @param string $start
+     * @param string $end
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     * @throws \Exception
+     */
+    public function createdBetween(string $start = '-24 hours', string $end = 'now'): Collection
+    {
+        return $this->model->newQuery()
+            ->where('status', ExamStatus::ACTIVE)
+            ->where('visibility', ExamVisibility::PUBLIC)
+            ->whereBetween('created_at', [
+                (new \DateTime($start))->format('Y-m-d H:i:s'),
+                (new \DateTime($end))->format('Y-m-d H:i:s'),
+            ])->get();
+    }
+
+
+    /**
+     * @param \Exam\Models\Exam $exam
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function findPreferredUsersForExam(Exam $exam): Collection
+    {
+        $category = $exam->category_id;
+        $tags = $exam->tags()->allRelatedIds();
+
+        return User::query()->where(function ($q) use ($category, $tags) {
+            $q->orWhereHas('preferredCategories', function ($sq) use ($category) {
+                $sq->where('category_id', $category);
+            })->orWhereHas('preferredTags', function ($tg) use ($tags) {
+                $tg->whereIn('tag_id', $tags);
+            });
+        })->get();
     }
 }

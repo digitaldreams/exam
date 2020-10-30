@@ -3,6 +3,7 @@
 namespace Exam\Console\Commands;
 
 use Carbon\Carbon;
+use Exam\Enums\ExamUserStatus;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Exam\Notifications\PendingExamNotification;
@@ -41,7 +42,7 @@ class ExamReminderCommand extends Command
      */
     public function handle()
     {
-        $pendingExams = ExamUser::where('status', Exam::STATUS_PENDING)
+        $pendingExams = ExamUser::query()->where('status', ExamUserStatus::PENDING)
             ->where('started_at', '<=', Carbon::now()->subHours(24)->toDateTimeString())
             ->whereNull('reminder')->get();
         foreach ($pendingExams as $pendingExam) {
