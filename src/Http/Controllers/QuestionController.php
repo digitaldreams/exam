@@ -14,6 +14,7 @@ use Exam\Repositories\QuestionRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Translation\Translator;
 
 /**
  * Description of QuestionController.
@@ -26,15 +27,21 @@ class QuestionController extends Controller
      * @var \Exam\Repositories\QuestionRepository
      */
     protected $questionRepository;
+    /**
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
 
     /**
      * QuestionController constructor.
      *
      * @param \Exam\Repositories\QuestionRepository $questionRepository
+     * @param \Illuminate\Translation\Translator    $translator
      */
-    public function __construct(QuestionRepository $questionRepository)
+    public function __construct(QuestionRepository $questionRepository, Translator $translator)
     {
         $this->questionRepository = $questionRepository;
+        $this->translator = $translator;
     }
 
     /**
@@ -125,10 +132,15 @@ class QuestionController extends Controller
 
         if (!empty($examId) && $exam = Exam::query()->find($examId)) {
             $question->exams()->sync([$examId]);
-            return redirect()->route('exam::exams.show', $exam->slug)->with('message', 'Question created and attached to this exam.');
+
+            return redirect()
+                ->route('exam::exams.show', $exam->slug)
+                ->with('message', $this->translator->get('exam::flash.question.createdAndAttached'));
         }
 
-        return redirect()->route('exam::questions.show', $question->id)->with('message', 'Question saved successfully');
+        return redirect()
+            ->route('exam::questions.show', $question->id)
+            ->with('message', $this->translator->get('exam::flash.saved', ['model' => 'Question']));
     }
 
     /**
@@ -161,7 +173,9 @@ class QuestionController extends Controller
     {
         $this->questionRepository->update($request->all(), $question, $request->file('file'));
 
-        return redirect()->route('exam::questions.show', $question->id)->with('message', 'Question successfully updated');
+        return redirect()
+            ->route('exam::questions.show', $question->id)
+            ->with('message', $this->translator->get('exam::flash.updated', ['model' => 'Question']));
     }
 
     /**
@@ -172,18 +186,17 @@ class QuestionController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
      */
     public function destroy(Question $question): RedirectResponse
     {
         $this->authorize('delete', $question);
 
-        if ($question->delete()) {
-            session()->flash('message', 'Question successfully deleted');
-        } else {
-            session()->flash('error', 'Error occurred while deleting Question');
-        }
+        $question->delete();
 
-        return redirect()->route('exam::questions.index');
+        return redirect()
+            ->route('exam::questions.index')
+            ->with('message', $this->translator->get('exam::flash.deleted', ['model' => 'Question']));
     }
 
     /**

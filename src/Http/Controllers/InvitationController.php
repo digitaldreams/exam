@@ -15,6 +15,7 @@ use Exam\Notifications\InvitationNotification;
 use Exam\Notifications\InvitationResponseNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Translation\Translator;
 
 /**
  * Description of InvitationController.
@@ -23,6 +24,21 @@ use Illuminate\Support\Facades\Notification;
  */
 class InvitationController extends Controller
 {
+    /**
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
+
+    /**
+     * InvitationController constructor.
+     *
+     * @param \Illuminate\Translation\Translator $translator
+     */
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -70,7 +86,7 @@ class InvitationController extends Controller
         return view('exam::pages.invitations.create', [
             'model' => new Invitation(),
             'exam' => $exam,
-            'users' =>User::get()
+            'users' => User::get(),
         ]);
     }
 
@@ -87,18 +103,14 @@ class InvitationController extends Controller
         $model = new Invitation();
         $model->fill($request->all());
         $model->exam_id = $exam->id;
-        if ($model->save()) {
-            if ($user = $model->user) {
-                $user->notify(new InvitationNotification($model, auth()->user()));
-            }
-            session()->flash('message', 'Invitation send successfully');
-
-            return redirect()->route('exam::exams.show', $exam->slug);
-        } else {
-            session()->flash('message', 'Something is wrong while sending Invitation');
+        $model->save();
+        if ($user = $model->user) {
+            $user->notify(new InvitationNotification($model, auth()->user()));
         }
 
-        return redirect()->back();
+        return redirect()
+            ->route('exam::exams.show', $exam->slug)
+            ->with('message', $this->translator->get('exam::flash.invitation.send'));
     }
 
     /**
@@ -109,22 +121,19 @@ class InvitationController extends Controller
      * @param Invitation $invitation
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function response(Request $request, Exam $exam, Invitation $invitation)
     {
+        $this->authorize('update', $invitation);
+
         $invitation->status = Invitation::STATUS_REJECTED == $request->get('status') ? Invitation::STATUS_REJECTED : Invitation::STATUS_ACCEPTED;
+        $invitation->save();
+        Notification::send(User::getAdmins(), new InvitationResponseNotification($invitation));
 
-        if ($invitation->save()) {
-            $admins = User::getAdmins();
-            Notification::send($admins, new InvitationResponseNotification($invitation));
-            session()->flash('message', 'Invitation successfully ' . $invitation->status);
-
-            return redirect()->route('exam::exams.show', $exam->slug);
-        } else {
-            session()->flash('error', 'Something is wrong while updating Invitation');
-        }
-
-        return redirect()->back();
+        return redirect()
+            ->route('exam::exams.show', $exam->slug)
+            ->with('message', $this->translator->get('exam::flash.invitation.statusChanged'));
     }
 
     /**
@@ -140,12 +149,9 @@ class InvitationController extends Controller
      */
     public function destroy(Destroy $request, Exam $exam, Invitation $invitation)
     {
-        if ($invitation->delete()) {
-            session()->flash('message', 'Invitation successfully deleted');
-        } else {
-            session()->flash('error', 'Error occurred while deleting Invitation');
-        }
+        $invitation->delete();
 
-        return redirect()->back();
+        return redirect()->back()
+            ->with('message', $this->translator->get('exam::flash.deleted', ['model' => 'Invitation']));
     }
 }

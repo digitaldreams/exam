@@ -8,7 +8,6 @@ use Exam\Enums\ExamUserStatus;
 use Exam\Enums\ExamVisibility;
 use Exam\Enums\QuestionReview;
 use Exam\Http\Requests\Exams\Answer;
-use Exam\Http\Requests\Exams\Result;
 use Exam\Http\Requests\Exams\Visibility;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
@@ -24,6 +23,7 @@ use Exam\Services\TakeExamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
+use Illuminate\Translation\Translator;
 
 class ExamUserController extends Controller
 {
@@ -43,6 +43,10 @@ class ExamUserController extends Controller
      * @var \Exam\Services\TakeExamService
      */
     protected $takeExamService;
+    /**
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
 
     /**
      * ExamUserController constructor.
@@ -51,18 +55,20 @@ class ExamUserController extends Controller
      * @param \Exam\Repositories\ExamUserRepository $examUserRepository
      * @param \Exam\Repositories\FeedbackRepository $feedbackRepository
      * @param \Exam\Repositories\AnswerRepository   $answerRepository
+     * @param \Illuminate\Translation\Translator    $translator
      */
-    public function __construct(TakeExamService $takeExamService, ExamUserRepository $examUserRepository, FeedbackRepository $feedbackRepository, AnswerRepository $answerRepository)
+    public function __construct(TakeExamService $takeExamService, ExamUserRepository $examUserRepository, FeedbackRepository $feedbackRepository, AnswerRepository $answerRepository, Translator $translator)
     {
         $this->examUserRepository = $examUserRepository;
         $this->feedbackRepository = $feedbackRepository;
         $this->answerRepository = $answerRepository;
         $this->takeExamService = $takeExamService;
+        $this->translator = $translator;
     }
 
     /**
-     * @param Result $request
-     * @param Exam   $exam
+     * @param \Illuminate\Http\Request $request
+     * @param \Exam\Models\ExamUser    $examUser
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      *
@@ -118,7 +124,7 @@ class ExamUserController extends Controller
         if (auth()->check()) {
             $this->takeExamService->asUser(auth()->user());
             if (!$this->takeExamService->isRequiredExamCompleted()) {
-                return redirect()->back()->with('message', 'Please complete all the required exams first');
+                return redirect()->back()->with('message', $this->translator->get('exam::flash.exam.completeRequired'));
             }
         } else {
             $token = Str::random(32);
@@ -127,13 +133,13 @@ class ExamUserController extends Controller
         }
         $this->takeExamService->start();
         if ($this->takeExamService->isTimeOver()) {
-            return redirect()->back()->with('error', 'Time over ');
+            return redirect()->back()->with('error', $this->translator->get('exam::flash.exam.timeOver'));
         }
 
         $question = $this->takeExamService->getQuestions()->first();
 
         if (!$question) {
-            return redirect()->back()->with('message', 'You completed all the questions already');
+            return redirect()->back()->with('message', $this->translator->get('exam::flash.exam.alreadyCompleted'));
         }
 
         return redirect()->route('exam::exams.question', [
@@ -166,7 +172,7 @@ class ExamUserController extends Controller
         $examUser = $this->takeExamService->start();
 
         if (!$examUser) {
-            return redirect()->route('exam::exams.index')->with('error', 'Please choose a exam first');
+            return redirect()->route('exam::exams.index')->with('error', $this->translator->get('exam::flash.exam.choose'));
         }
 
         $questions = $this->takeExamService->getQuestions()
@@ -212,11 +218,13 @@ class ExamUserController extends Controller
         $examUser = $this->takeExamService->start();
 
         if (!$examUser) {
-            return redirect()->route('exam::exams.index')->with('error', 'Please choose a exam first');
+            return redirect()->route('exam::exams.index')->with('error', $this->translator->get('exam::flash.exam.choose'));
         }
 
         if ($this->takeExamService->isTimeOver()) {
-            return redirect()->route('exam::exams.result', ['exam_user' => $examUser->id])->with('message', 'Time\'s up');
+            return redirect()
+                ->route('exam::exams.result', ['exam_user' => $examUser->id])
+                ->with('message', $this->translator->get('exam::flash.exam.timeOver'));
         }
 
         $answerService = new AnswerService($request->get('answer'), $examUser);
@@ -252,29 +260,35 @@ class ExamUserController extends Controller
             if (auth()->check()) {
                 return redirect()->route('exam::exams.result', ['exam_user' => $examUser->id, 'answer' => $answerIds]);
             } else {
-                return redirect()->route('register', [
-                    'returnUrl' => route('exam::exams.assignUser', ['examUser' => $examUser->id, 'token' => $this->takeExamService->getToken()]),
-                ])->with('message', 'Please sign up to view your result.');
+                return redirect()
+                    ->route('register', [
+                        'returnUrl' => route('exam::exams.assignUser', [
+                            'examUser' => $examUser->id,
+                            'token' => $this->takeExamService->getToken(),
+                        ]),
+                    ])->with('message', $this->translator->get('exam::flash.signup'));
             }
         }
     }
 
     /**
-     * @param Visibility $request
-     * @param ExamUser   $exam_user
-     * @param            $visibility
+     * @param Visibility            $request
+     * @param \Exam\Models\ExamUser $examUser
+     * @param                       $visibility
      *
      * @return \Illuminate\Http\RedirectResponse
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function visibility(Visibility $request, ExamUser $exam_user, $visibility)
+    public function visibility(Visibility $request, ExamUser $examUser, $visibility)
     {
-        $this->authorize('update', $exam_user->exam);
-        $exam_user->visibility = $visibility;
-        $exam_user->save();
+        $this->authorize('update', $examUser->exam);
+        $examUser->visibility = $visibility;
+        $examUser->save();
 
-        return redirect()->back()->with('message', 'Your exam result visibility set to ' . $visibility);
+        return redirect()
+            ->back()
+            ->with('message', $this->translator->get('exam::flash.exam.visibility', ['visibility' => $visibility]));
     }
 
     /**
@@ -294,7 +308,7 @@ class ExamUserController extends Controller
 
             return redirect()->route('exam::exams.result', ['exam_user' => $examUser->id, 'answer' => []]);
         } else {
-            return redirect()->route('exam::exams.index')->with('error', 'Your token does not seems to be valid');
+            return redirect()->route('exam::exams.index')->with('error', $this->translator->get('exam::flash.invalidToken'));
         }
     }
 

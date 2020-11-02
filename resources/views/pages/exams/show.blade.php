@@ -73,7 +73,7 @@
                             <label class="badge badge-light badge-pill">{{$question->answer_type}}</label>
 
                             <form
-                                onsubmit="return confirm('Are you sure you want to unlink this question from this exam?')"
+                                onsubmit="return confirm('{{trans('exam::flash.question.detachConfirmationAlert')}}')"
                                 action="{{route('exam::exams.questionRemove',$exam->slug)}}" method="post"
                                 class="d-inline">
                                 {{csrf_field()}}

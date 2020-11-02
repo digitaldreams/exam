@@ -5,9 +5,25 @@ namespace Exam\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Exam\Models\Exam;
 use Illuminate\Http\Request;
+use Illuminate\Translation\Translator;
 
 class ExamQuestionController extends controller
 {
+    /**
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
+
+    /**
+     * ExamQuestionController constructor.
+     *
+     * @param \Illuminate\Translation\Translator $translator
+     */
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @param \Illuminate\Http\Request $request
      * @param \Exam\Models\Exam        $exam
@@ -21,7 +37,7 @@ class ExamQuestionController extends controller
         $this->authorize('update', $exam);
         $exam->questions()->syncWithoutDetaching($request->get('questions', []));
 
-        return redirect()->back()->with('message', 'Questions successfully added');
+        return redirect()->back()->with('message', $this->translator->get('exam::flash.question.attach'));
     }
 
     /**
@@ -36,6 +52,6 @@ class ExamQuestionController extends controller
         $this->authorize('update', $exam);
         $exam->questions()->detach($request->get('questions', []));
 
-        return redirect()->back()->with('message', 'Questions removed successfully');
+        return redirect()->back()->with('message', $this->translator->get('exam::flash.question.detach'));
     }
 }

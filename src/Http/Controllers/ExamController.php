@@ -15,6 +15,7 @@ use Exam\Repositories\ExamRepository;
 use Exam\Services\ExamSearchService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Translation\Translator;
 
 class ExamController extends Controller
 {
@@ -26,18 +27,23 @@ class ExamController extends Controller
      * @var \Exam\Repositories\ExamRepository
      */
     protected $examRepository;
+    /**
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
 
     /**
      * ExamController constructor.
      *
-     * @param \Exam\Repositories\ExamRepository     $examRepository
-     * @param \Exam\Services\ExamSearchService      $examSearchService
-     * @param \Exam\Repositories\QuestionRepository $questionRepository
+     * @param \Exam\Repositories\ExamRepository  $examRepository
+     * @param \Exam\Services\ExamSearchService   $examSearchService
+     * @param \Illuminate\Translation\Translator $translator
      */
-    public function __construct(ExamRepository $examRepository, ExamSearchService $examSearchService)
+    public function __construct(ExamRepository $examRepository, ExamSearchService $examSearchService, Translator $translator)
     {
         $this->examSearchService = $examSearchService;
         $this->examRepository = $examRepository;
+        $this->translator = $translator;
     }
 
     /**
@@ -52,6 +58,7 @@ class ExamController extends Controller
         $this->authorize('viewAny', Exam::class);
 
         $user = auth()->user();
+
         return view('exam::pages.exams.index', [
             'completedExams' => $user->examUsers()->where('status', ExamUserStatus::COMPLETED)->count(),
             'pendingExams' => $user->examUsers()->where('status', ExamUserStatus::PENDING)->count(),
@@ -90,7 +97,9 @@ class ExamController extends Controller
     {
         $exam = $this->examRepository->create($store->all());
 
-        return redirect()->route('exam::exams.show', $exam->slug)->with('message', 'Exam successfully created');
+        return redirect()
+            ->route('exam::exams.show', $exam->slug)
+            ->with('message', $this->translator->get('exam::flash.created', ['model' => $exam->title]));
     }
 
     /**
@@ -125,7 +134,9 @@ class ExamController extends Controller
     {
         $exam = $this->examRepository->update($update->all(), $exam);
 
-        return redirect()->route('exam::exams.show', $exam->slug)->with('message', 'Exam updated successfully');
+        return redirect()
+            ->route('exam::exams.show', $exam->slug)
+            ->with('message', $this->translator->get('exam::flash.updated', ['model' => 'Exam']));
     }
 
     /**
@@ -157,7 +168,9 @@ class ExamController extends Controller
 
         $this->examRepository->delete($exam);
 
-        return redirect()->route('exam::exams.index')->with('message', 'Exam successfully deleted');
+        return redirect()
+            ->route('exam::exams.index')
+            ->with('message', $this->translator->get('exam::flash.deleted', ['model' => 'Exam']));
     }
 
     /**

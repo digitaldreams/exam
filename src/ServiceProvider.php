@@ -81,6 +81,8 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'exam');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'exam');
+
         $this->mergeConfigFrom(
             __DIR__ . '/../config/exam.php', 'exam'
         );

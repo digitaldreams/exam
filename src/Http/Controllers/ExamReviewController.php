@@ -12,9 +12,25 @@ use Exam\Models\Answer;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
 use Exam\Notifications\ReviewCompletedNotification;
+use Illuminate\Translation\Translator;
 
 class ExamReviewController extends Controller
 {
+    /**
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
+
+    /**
+     * ExamReviewController constructor.
+     *
+     * @param \Illuminate\Translation\Translator $translator
+     */
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @param Index $index
      * @param Exam  $exam
@@ -23,7 +39,7 @@ class ExamReviewController extends Controller
      */
     public function index(Exam $exam)
     {
-        $examUsers = ExamUser::where('exam_id', $exam->id)
+        $examUsers = ExamUser::query()->where('exam_id', $exam->id)
             ->whereHas('exam.questions', function ($q) {
                 $q->where('review_type', QuestionReview::MANUAL)
                     ->whereHas('answer', function ($aq) {
@@ -61,17 +77,12 @@ class ExamReviewController extends Controller
      */
     public function update(Update $request, Exam $exam, Answer $answer)
     {
-        $answer->fill($request->all());
+        $answer->fill($request->all())->save();
 
-        if ($answer->save()) {
-            $answer->examUser->user->notify(new ReviewCompletedNotification($answer, $exam));
-            session()->flash('message', 'Answer successfully reviewed');
+        $answer->examUser->user->notify(new ReviewCompletedNotification($answer, $exam));
 
-            return redirect()->route('exam::exams.reviews.index', $exam->slug);
-        } else {
-            session()->flash('error', 'Something is wrong while reviewing answer');
-        }
-
-        return redirect()->back();
+        return redirect()
+            ->route('exam::exams.reviews.index', $exam->slug)
+            ->with('message', $this->translator->get('exam::flash.answer.reviewed'));
     }
 }

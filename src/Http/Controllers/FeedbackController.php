@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Exam\Models\Exam;
 use Exam\Models\Feedback;
 use Illuminate\Http\Request;
+use Illuminate\Translation\Translator;
 
 /**
  * Description of FeedbackController.
@@ -14,6 +15,20 @@ use Illuminate\Http\Request;
  */
 class FeedbackController extends Controller
 {
+    /**
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
+
+    /**
+     * FeedbackController constructor.
+     *
+     * @param \Illuminate\Translation\Translator $translator
+     */
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
 
     public function index(Exam $exam)
     {
@@ -29,18 +44,16 @@ class FeedbackController extends Controller
      * @param Request $request
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request)
     {
-        $model = new Feedback();
-        $model->fill($request->all());
-        if ($model->save()) {
-            session()->flash('message', 'Feedback saved successfully');
-        } else {
-            session()->flash('error', 'Something is wrong while saving Feedback');
-        }
+        $this->authorize('create', Feedback::class);
 
-        return redirect()->back();
+        $model = new Feedback();
+        $model->fill($request->all())->save();
+
+        return redirect()->back()->with('message', $this->translator->get('exam::flash.saved', ['model' => 'Feedback']));
     }
 
     /**
@@ -50,17 +63,15 @@ class FeedbackController extends Controller
      * @param Feedback $feedback
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, Feedback $feedback)
     {
-        $feedback->fill($request->all());
-        if ($feedback->save()) {
-            session()->flash('message', 'Feedback successfully updated');
-        } else {
-            session()->flash('error', 'Something is wrong while updating Feedback');
-        }
+        $this->authorize('update', $feedback);
 
-        return redirect()->back();
+        $feedback->fill($request->all())->save();
+
+        return redirect()->back()->with('message', $this->translator->get('exam::flash.updated', ['model' => 'Feedback']));
     }
 
     /**
@@ -73,14 +84,12 @@ class FeedbackController extends Controller
      *
      * @throws \Exception
      */
-    public function destroy(Request $request, Feedback $feedback)
+    public function destroy(Feedback $feedback)
     {
-        if ($feedback->delete()) {
-            session()->flash('message', 'Feedback successfully deleted');
-        } else {
-            session()->flash('error', 'Error occurred while deleting Feedback');
-        }
+        $this->authorize('delete', $feedback);
 
-        return redirect()->back();
+        $feedback->delete();
+
+        return redirect()->back()->with('message', $this->translator->get('exam::flash.deleted', ['model' => 'Feedback']));
     }
 }
