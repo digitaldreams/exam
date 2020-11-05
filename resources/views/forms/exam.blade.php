@@ -17,7 +17,10 @@
                 @endif
             </div>
             <div class="form-group">
-                <label for="description">Description</label>
+                <label for="description">Description
+                    <i data-toggle="tooltip" class="fa fa-info-circle"
+                       title="{{trans('exam::info.exam.description')}}"></i>
+                </label>
                 <textarea class="form-control {{ $errors->has('description') ? ' is-invalid' : '' }}"
                           placeholder="Describe what topics will be covered in this exam."
                           name="description" id="description">{{old('description',$model->description)}}</textarea>
@@ -29,7 +32,11 @@
                 @endif
             </div>
             <div class="form-group ">
-                <label>Duration</label>
+                <label>Duration in Minutes
+                    <i class="fa fa-info-circle" data-toggle="tooltip"
+                       title="{{trans('exam::info.exam.duration')}}">
+                    </i>
+                </label>
                 <div class="input-group">
                     <input type="number" name="duration" class="form-control" value="{{$model->duration}}" min="1"
                            max="180"
@@ -38,12 +45,14 @@
                         <i class="fa fa-clock-o"></i> Min
                     </div>
                 </div>
-                <small class="text-muted">Empty duration will make exam unlimited</small>
             </div>
 
             <div class="form-row">
-                <div class="form-group col">
-                    <label for="category_id">Category</label>
+                <div class="form-group col-sm">
+                    <label for="category_id">Category
+                        <i class="fa fa-info-circle" data-toggle="tooltip"
+                           title="{{trans('exam::info.exam.category')}}"></i>
+                    </label>
                     <select class="form-control {{ $errors->has('category_id') ? ' is-invalid' : '' }}"
                             name="category_id" id="category_id">
                         @if($model->category)
@@ -55,10 +64,15 @@
                             <strong>{{ $errors->first('category_id') }}</strong>
                         </div>
                     @endif
-                    <a href="{{route('blog::categories.create')}}" target="_blank"> <small class="text-muted">Create a new category</small></a>
+                    <a href="{{route('blog::categories.create')}}" target="_blank">
+                        <small class="text-muted">Create a new category</small>
+                    </a>
                 </div>
-                <div class="form-group col">
-                    <label for="tags">Tags</label>
+                <div class="form-group col-sm">
+                    <label for="tags">Tags
+                        <i class="fa fa-info-circle" data-toggle="tooltip"
+                           title="{{trans('exam::info.exam.tags')}}"></i>
+                    </label>
                     <select class="form-control {{ $errors->has('tag_id') ? ' is-invalid' : '' }}" name="tags[]"
                             id="tags"
                             multiple>
@@ -71,7 +85,7 @@
                             <strong>{{ $errors->first('tags') }}</strong>
                         </div>
                     @endif
-                    <small>To create new tag. Just type tag name and add comma(,) at the end of your new tag name or select from dropdown.</small>
+                    <small> {{trans('exam::info.exam.tagCreate')}}</small>
                 </div>
             </div>
 
@@ -82,50 +96,48 @@
                         <option value="{{$parentExam->id}}" selected>{{$parentExam->title}}</option>
                     @endforeach
                 </select>
-                <small class="text-muted">User must completed this exams. Otherwise he is not allowed to participate in
-                    this
-                    exam
-                </small>
+                <small class="text-muted">{{trans('exam::info.exam.mustCompleteExams')}} </small>
             </div>
         </div>
         <div class="col-sm-3 bg-light pt-3">
             <h3>Settings</h3>
             <div class="form-group">
-                <label>Visibility</label> <br/>
-                <div class="form-check-inline">
-                    <label>
-                        <input type="radio" name="visibility" value="{{\Exam\Enums\ExamVisibility::PUBLIC}}"
-                            {{old('visibility',$model->visibility)==\Exam\Enums\ExamVisibility::PUBLIC?'checked':''}}>
-                        Public
-                        <small class="text-muted"> (Open for everyone)</small>
-                    </label>
-                    <label>
-                        <input type="radio" name="visibility" value="{{\Exam\Enums\ExamVisibility::PRIVATE}}"
-                            {{old('visibility',$model->visibility)==\Exam\Enums\ExamVisibility::PRIVATE?'checked':''}}>
-                        Private
-                        <small class="text-muted"> Protected and Invitation only</small>
-                    </label>
-                </div>
+                <label>Visibility
+                    <i class="fa fa-info-circle" data-toggle="tooltip"
+                       title="{{trans('exam::info.exam.visibility')}}"></i>
+                </label> <br/>
+                <label class="form-check-inline">
+                    <input type="radio" name="visibility" value="{{\Exam\Enums\ExamVisibility::PUBLIC}}"
+                        {{old('visibility',$model->visibility)==\Exam\Enums\ExamVisibility::PUBLIC?'checked':''}}>
+                    Public
+                </label>
+                <label class="form-check-inline">
+                    <input type="radio" name="visibility" value="{{\Exam\Enums\ExamVisibility::PRIVATE}}"
+                        {{old('visibility',$model->visibility)==\Exam\Enums\ExamVisibility::PRIVATE?'checked':''}}>
+                    Private
+                </label>
             </div>
             <div class="form-group">
-                <label>Status</label> <br/>
-                <div class="form-check-inline">
-                    <label>
+                <label>Status <i class="fa fa-info-circle" title="{{trans('exam::info.exam.status')}}"
+                                 data-toggle="tooltip"></i></label> <br/>
+                <div>
+                    <label class="form-check-inline">
                         <input type="radio" name="status" value="{{\Exam\Enums\ExamStatus::ACTIVE}}"
                             {{old('status',$model->status)==\Exam\Enums\ExamStatus::ACTIVE?'checked':''}}>
                         Active
-                        <small class="text-muted"> (Ready to take exam)</small>
                     </label>
-                    <label>
+                    <label class="form-check-inline">
                         <input type="radio" name="status" value="{{\Exam\Enums\ExamStatus::INACTIVE}}"
                             {{old('status',$model->status)==\Exam\Enums\ExamStatus::INACTIVE?'checked':''}}>
                         Inactive
-                        <small class="text-muted"> Only you can see this</small>
                     </label>
                 </div>
             </div>
             <div class="form-group">
-                <label>Show Answer </label>
+                <label>Show Answer
+                    <i class="fa fa-info-circle" data-toggle="tooltip"
+                       title="{{trans('exam::info.exam.showAnswer')}}"></i>
+                </label>
                 <br/>
                 <label class="form-check-inline">
                     <input type="radio" name="show_answer" value="{{\Exam\Enums\ExamShowAnswer::INSTANTLY}}"
@@ -140,7 +152,7 @@
                     When Exam Completed
                 </label>
                 <p>
-                    <small class="text-muted">When instantly selected then answer will be shown on top of next question
+                    <small class="text-muted">
                     </small>
                 </p>
             </div>

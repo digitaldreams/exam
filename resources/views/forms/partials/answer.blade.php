@@ -1,5 +1,5 @@
 <div class="alert alert-secondary">
-    @if($question->type==\Exam\Enums\QuestionType::IMG_TO_QUESTION)
+    @if($question->type==\Exam\Enums\QuestionType::IMAGE)
         <img src="{{secure_asset($question->getData('media.url'))}}" class="img-thumbnail img-fluid"/><br/>
     @elseif($question->type==\Exam\Enums\QuestionType::AUDIO)
         @if($mp3=$question->getData('media.url'))
@@ -19,48 +19,34 @@
 </div>
 
 <div class="form-group">
-    @if(in_array($question->type,\Exam\Enums\QuestionType::generic()) && $question->type!==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+    @if(in_array($question->answer_type,[\Exam\Enums\QuestionAnswerType::CHOICE,\Exam\Enums\QuestionAnswerType::IMAGE]))
 
-        @if(in_array($question->answer_type,[\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE,\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE]))
+        @foreach(array_chunk($question->getOptions(),2) as $chucks)
+            <div class="row">
 
-            @foreach(array_chunk($question->getOptions(),2) as $chucks)
-                <div class="row">
-
-                    @foreach($chucks as $key=>$value)
-                        <div class="col-6">
-                            <label>
-                                @if($question->answer_type==\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE)
-                                    <input type="radio" value="{{$value}}" name="answer[{{$question->id}}]">
-                                @else
-                                    <input type="checkbox" value="{{$value}}" name="answer[{{$question->id}}][]">
-                                @endif
+                @foreach($chucks as $key=>$value)
+                    <div class="col-6">
+                        <label>
+                            @if(count($question->getAnswers())>1)
+                                <input type="checkbox" value="{{$value}}" name="answer[{{$question->id}}][]">
+                            @else
+                                <input type="radio" value="{{$value}}" name="answer[{{$question->id}}]">
+                            @endif
+                            @if($question->answer_type==\Exam\Enums\QuestionAnswerType::IMAGE)
+                                <img src="{{$value}}" width="150" class="img-thumbnail img-fluid">
+                            @else
                                 {{$value}}
-                            </label>
-                        </div>
-                    @endforeach
-                </div>
-            @endforeach
-        @elseif($question->answer_type == \Exam\Enums\QuestionAnswerType::FILL_IN_THE_BLANK)
-            <p>
+                            @endif
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+        @endforeach
+    @elseif($question->answer_type == \Exam\Enums\QuestionAnswerType::FILL_IN_THE_BLANK)
+        <p>
             {!! $question->renderSummaryForm() !!}
-            </p>
-        @else
-            <textarea name="answer[{{$question->id}}]" class="form-control" required></textarea>
-        @endif
-    @elseif($question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-        <div class="row">
-            @foreach($question->getOptions() as $key=>$value)
-                <div class="col-6 col-sm-3">
-                    <label>
-                        <img src="{{$value}}" class="img-thumbnail img-fluid">
-                        @if($question->answer_type==\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE)
-                            <input type="radio" name="answer[{{$question->id}}]" value="{{$value}}">
-                        @else
-                            <input type="checkbox" value="{{$value}}" name="answer[{{$question->id}}][]">
-                        @endif
-                    </label>
-                </div>
-            @endforeach
-        </div>
+        </p>
+    @else
+        <textarea name="answer[{{$question->id}}]" placeholder="Write Your answer here." class="form-control" required></textarea>
     @endif
 </div>

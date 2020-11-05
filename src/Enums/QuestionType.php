@@ -4,12 +4,10 @@ namespace Exam\Enums;
 
 class QuestionType
 {
-    public const  IMG_TO_QUESTION = 'img';
+    public const  IMAGE = 'img';
     public const  AUDIO = 'audio';
     public const  VIDEO = 'video';
-    public const  QUESTION_TO_IMG = 'question_to_img';
-    public const MCQ = 'mcq';
-    public const FREEHAND_WRITING = 'freehand_writing';
+    public const TEXT = 'text';
 
     /**
      * @return array
@@ -17,12 +15,10 @@ class QuestionType
     public static function toArray(): array
     {
         return [
-            static::MCQ => 'MCQ',
-            static::IMG_TO_QUESTION => 'Image To Question',
-            static::QUESTION_TO_IMG => 'Question To Image',
+            static::TEXT => 'Text',
+            static::IMAGE => 'Image',
             static::AUDIO => 'Audio',
             static::VIDEO => 'Video',
-            static::FREEHAND_WRITING => 'Freehand Writing',
         ];
     }
 
@@ -32,12 +28,10 @@ class QuestionType
     public static function generic()
     {
         return [
-            static::MCQ,
-            static::IMG_TO_QUESTION,
-            static::QUESTION_TO_IMG,
+            static::TEXT,
+            static::IMAGE,
             static::AUDIO,
             static::VIDEO,
-            static::FREEHAND_WRITING,
         ];
     }
 
@@ -50,7 +44,7 @@ class QuestionType
     public function isMediaInTitle($type)
     {
         return in_array($type, [
-            static::IMG_TO_QUESTION,
+            static::IMAGE,
             static::AUDIO,
             static::VIDEO,
         ]);

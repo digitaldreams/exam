@@ -30,11 +30,11 @@ class Store extends FormRequest
 
         if (QuestionType::AUDIO == $this->get('type')) {
             $rules['file'] = ['required', 'file', 'max:8384', 'mimes:mp3,ogg,wav,m4a,m4b'];
-        } elseif (QuestionType::IMG_TO_QUESTION == $this->get('type')) {
+        } elseif (QuestionType::IMAGE == $this->get('type')) {
             $rules['file'] = ['required', 'file', 'max:8384', 'image'];
         }
 
-        if (in_array($this->get('answer_type'), [QuestionAnswerType::SINGLE_CHOICE, QuestionAnswerType::MULTIPLE_CHOICE])) {
+        if (in_array($this->get('answer_type'), [QuestionAnswerType::CHOICE, QuestionAnswerType::IMAGE])) {
             $rules['options'] = ['required', 'array'];
             $rules['options.option'] = ['required', 'array'];
             $rules['options.isCorrect'] = ['required', 'array'];

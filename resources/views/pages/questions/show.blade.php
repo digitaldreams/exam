@@ -43,9 +43,9 @@
         <div class="col-sm-6">
             @if($record->answer_type == \Exam\Enums\QuestionAnswerType::FILL_IN_THE_BLANK)
                 <h4>Fill In the Blank</h4>
-            <p>
-                {!! $record->getData('fill_in_the_blank.summary') !!}
-            </p>
+                <p>
+                    {!! $record->getData('fill_in_the_blank.summary') !!}
+                </p>
             @endif
             @if($record->exams()->count()>0)
                 <ul class="list-group">
@@ -93,6 +93,8 @@
                     </li>
                 </ul>
             @endif
+            @include('exam::cards.question_preview')
         </div>
     </div>
+
 @endSection

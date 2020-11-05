@@ -1,10 +1,9 @@
-@if(in_array(request('answer_type',$model->answer_type),[\Exam\Enums\QuestionAnswerType::SINGLE_CHOICE,\Exam\Enums\QuestionAnswerType::MULTIPLE_CHOICE]))
+@if(in_array(request('answer_type',$model->answer_type),[\Exam\Enums\QuestionAnswerType::CHOICE,\Exam\Enums\QuestionAnswerType::IMAGE]))
     <table class="table table-striped table-hover table-bordered" id="tblOptions">
         <thead>
         <tr>
             <th class="@error('options.option') border border-danger @enderror">Options<br/>
-                <small class="text-muted"> All of the below are required. Delete any options just clicking <i
-                        class="fa fa-remove btn btn-outline-danger btn-sm"></i>
+                <small class="text-muted"> All of the below are required.
                 </small>
                 @error('options.option')
                 <div class="alert alert-danger m-0 p-1">One or more options must be required.</div>
@@ -16,7 +15,8 @@
                 <div class="alert alert-danger m-0 p-1">You must select one or more as correct answer</div>
                 @enderror
             </th>
-            <th>&nbsp;</th>
+            <th>&nbsp; <i data-toggle="tooltip" class="fa fa-info-circle" title="Delete any options just clicking"></i>
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -24,9 +24,18 @@
             <tr>
                 <td>
                     <input type="hidden" name="optionNumber" value="{{$index}}">
-                    <input type="text" class="form-control option" name="options[option][{{$index}}]" value="{{$value}}"
-                           required
-                           placeholder="Type your option here">
+                    @if(request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::IMAGE)
+                        <input type="url" class="form-control option" name="options[option][{{$index}}]"
+                               value="{{$value}}"
+                               required
+                               placeholder="e.g. https://example.com/images/default.png">
+                    @else
+                        <input type="text" class="form-control option" name="options[option][{{$index}}]"
+                               value="{{$value}}"
+                               required
+                               placeholder="Type your option here">
+                    @endif
+
                 </td>
                 <td>
                     <div class="form-check-inline">
@@ -51,12 +60,10 @@
         @endforeach
         </tbody>
     </table>
-
-    @if(request('type',$model->type)==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-        <small>Please <a target="_blank" href="{{route('photo::photos.index')}}"> see list of images</a> and
-            copy image source URL into options field.
-        </small>
+    @if(request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::IMAGE)
+        <p>See <a href="{{route('photo::photos.index')}}" target="_blank"> list of photos here</a> or <a href="{{route('photo::photos.create')}}" target="_blank">Upload </a> </p>
     @endif
+
     <div class="form-group text-center">
         <a href="javascript:void(0)"
            onclick="addOption()"
@@ -64,6 +71,7 @@
             <i class="fa fa-plus"></i> Add New Option
         </a>
     </div>
+
 @elseif(request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::FILL_IN_THE_BLANK)
     <h4>Fill In the Blank</h4>
     <textarea name="data[fill_in_the_blank][summary]" class="form-control" id="fill_in_the_blank_summary"
@@ -133,7 +141,7 @@
     <div class="alert alert-danger">{{$message}}</div>
     @enderror
 
-@elseif(old('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::WRITE || request('answer_type')==\Exam\Enums\QuestionAnswerType::WRITE)
+@elseif(request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::WRITE)
     <div class="form-group">
         <label>Answer</label>
         <input type="text" name="answer[]" value="{{$model->getAnswers()[0]??''}}"
@@ -143,7 +151,7 @@
             Please provide correct answer if you Question Review Type is <b>Auto</b>. Leave it blank for <b>Manual</b>
         </small>
         @error('answer.0')
-           <div class="invalid-feedback">{{$message}}</div>
+        <div class="invalid-feedback">{{$message}}</div>
         @enderror
     </div>
 @endif

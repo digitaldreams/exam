@@ -23,7 +23,7 @@
     <div class="row">
         <div class="col-md-6">
             <form>
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <div class="dropdown">
                         <a class="btn btn-outline-secondary dropdown-toggle" href="#" role="button"
                            id="dropdownMenuLink"
@@ -45,6 +45,11 @@
                     <input type="search" name="search" value="{{request('search')}}" class="form-control"
                            placeholder="Search Exams" list="keywords" autocomplete="off"
                            aria-label="Search Post title" aria-describedby="button-addon2">
+                    @if(request('search'))
+                        <div class="input-group-append">
+                            <a href="?" class="btn btn-outline-secondary" type="submit" id="button-addon2">Clear</a>
+                        </div>
+                    @endif
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
                     </div>
@@ -54,6 +59,7 @@
                         <option value="{{$keyword['name']}}"/>
                     @endforeach
                 </datalist>
+                <p class="text-muted m-0 p-0 text-center">{{trans('exam::info.exam.search')}}</p>
             </form>
         </div>
         <div class="col-md-6 d-none d-sm-block">
@@ -61,21 +67,33 @@
         </div>
     </div>
     <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link {{empty(request('status'))?'active':''}}" href="?">
-                {{request('search')?'Search Result':'Recommendation'}}
-                @if(empty(request('activity')) && empty(request('status')))
-                    <span class="badge badge-secondary badge-pill"><b>{{$records->count()}}</b>
-                </span>
-                @endif
-            </a>
-        </li>
-        <li class="nav-item">
+        @if(request('search'))
+            <li class="nav-item ">
+                <a class="nav-link active"
+                   data-toggle="tooltip" href="?">
+                    Search Result
+                    <span class="badge badge-secondary badge-pill"><b>{{$records->count()}}</b></span>
+                </a>
+            </li>
+        @else
+            <li class="nav-item">
+                <a class="nav-link {{empty(request('status')) || empty(request('activity'))?'active':''}}"
+                   data-toggle="tooltip" href="?" title="{{trans('exam::info.exam.recommendation')}}">
+                    Recommendations
+                    @if(empty(request('activity')) && empty(request('status')))
+                        <span class="badge badge-secondary badge-pill"><b>{{$records->count()}}</b>
+                        </span>
+                    @endif
+                </a>
+            </li>
+        @endif
+
+        <li class="nav-item" data-toggle="tooltip" title="{{trans('exam::info.exam.completed')}}">
             <a class="nav-link {{request('status')=='completed'?'active':''}}" href="?status=completed">Completed
                 <span class="badge badge-light badge-pill">{{$completedExams}}</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-toggle="tooltip" title="{{trans('exam::info.exam.pending')}}">
             <a class="nav-link {{request('status')=='pending'?'active':''}}" href="?status=pending">Pending
                 <span class="badge badge-light badge-pill">{{$pendingExams}}</span>
             </a>

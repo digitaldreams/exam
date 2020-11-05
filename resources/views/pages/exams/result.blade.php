@@ -108,7 +108,7 @@
 
                                         @endif
                                     @endif
-                                    @if($answer->question->type==\Exam\Enums\QuestionType::IMG_TO_QUESTION)
+                                    @if($answer->question->type==\Exam\Enums\QuestionType::IMAGE)
                                         <img src="{{asset($answer->question->getData('media.url'))}}"
                                              class="card-img-top"
                                              style="max-height: 200px">
@@ -152,7 +152,7 @@
                                                             @foreach($correctAns as $key=>$value)
                                                                 <li class="list-group-item">{{$key}} <i
                                                                         class="fa fa-arrow-right"></i>
-                                                                    @if($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                                                                    @if($answer->question->answer_type==\Exam\Enums\QuestionAnswerType::IMAGE)
                                                                         <img title="Correct answer" src="{{$value}}"
                                                                              class="img-fluid img-thumbnail"/>
                                                                     @else
@@ -162,7 +162,7 @@
                                                             @endforeach
                                                         </ol>
                                                     @else
-                                                        @if($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                                                        @if($answer->question->answer_type==\Exam\Enums\QuestionAnswerType::IMAGE)
                                                             <img title="Correct answer"
                                                                  src="{{array_shift($correctAns)}}"
                                                                  class="img-fluid img-thumbnail"/>
@@ -171,33 +171,28 @@
                                                         @endif
 
                                                     @endif
-                                                @elseif($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-
                                                 @else
                                                     <b title="Correct answer"> {{$answer->question->answer ?? ''}}</b>
                                                 @endif
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <h5>Your Answer</h5>
-                                                @if($answer->question->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
-                                                    <img title="Your answer"
-                                                         src="{{str_replace(["[","]",'"'],"",$answer->getAnswers()[0]??'')}}"
-                                                         class="img-fluid img-thumbnail"/>
-                                                @else
-                                                    <ol class="list-group" title="Your answer">
-                                                        @if(count($answers=$answer->getAnswers())>1)
-                                                            @foreach($answers as $key=>$answer)
-                                                                <li class="list-group-item"> {{$key}} <i
-                                                                        class="fa fa-arrow-right"></i> {{$answer}}</li>
-                                                            @endforeach
-                                                        @else
-                                                            <?php $yourAnswer = $answer->getAnswers() ?>
 
-                                                            {{array_shift($yourAnswer)}}
-                                                        @endif
-                                                    </ol>
-
-                                                @endif
+                                                <ol class="list-group" title="Your answer">
+                                                    @foreach($answer->getAnswers() as $key=>$yourAnswer)
+                                                        <li class="list-group-item">
+                                                            @if($answer->question->answer_type==\Exam\Enums\QuestionAnswerType::IMAGE)
+                                                                <img src="{{$yourAnswer}}"
+                                                                     class="img-thumbnail img-fluid">
+                                                            @else
+                                                                @if($loop->count>1)
+                                                                    {{$key}} <i class="fa fa-arrow-right"></i>
+                                                                @endif
+                                                                {{$yourAnswer}}
+                                                            @endif
+                                                        </li>
+                                                    @endforeach
+                                                </ol>
                                             </div>
                                         </div>
                                     @endif

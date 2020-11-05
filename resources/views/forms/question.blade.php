@@ -24,28 +24,26 @@
                            name="hints"
                            id="hints"
                            value="{{old('hints',$model->hints)}}"
-                           placeholder="Help user by giving some hints about the possible answer." maxlength="191">
+                           placeholder="hints" maxlength="191">
                     @if($errors->has('hints'))
                         <div class="invalid-feedback">
                             <strong>{{ $errors->first('hints') }}</strong>
                         </div>
                     @endif
-                    <small class="text-muted">It will helps user to guess the correct answer.</small>
+                    <small class="text-muted">{{trans('exam::info.question.hints')}}</small>
                 </div>
                 <div class="form-group col">
                     <label for="explanation">Explanation</label>
                     <input type="text" class="form-control {{ $errors->has('explanation') ? ' is-invalid' : '' }}"
                            name="explanation" id="explanation" value="{{old('explanation',$model->explanation)}}"
-                           placeholder="Explain why answer is correct."
+                           placeholder="{{trans('exam::info.question.explainPlaceholder')}}"
                            maxlength="191">
                     @if($errors->has('explanation'))
                         <div class="invalid-feedback">
                             <strong>{{ $errors->first('explanation') }}</strong>
                         </div>
                     @endif
-                    <small class="text-muted">After submitted the answer it will shown to the user why the correct
-                        answer is right.
-                    </small>
+                    <small class="text-muted">{{trans('exam::info.question.explanation')}}</small>
                 </div>
             </div>
             <?php $type = request('type', $model->type);?>
@@ -70,7 +68,8 @@
         <div class="col-sm-3">
             <div class="bg-light p-1">
                 <div class="form-group">
-                    <label for="parent_id">Total Mark</label>
+                    <label for="parent_id">Total Mark <i class="fa fa-info-circle" data-toggle="tooltip"
+                                                         title="{{trans('exam::info.question.totalMark')}}"></i></label>
                     <input type="number" class="form-control" name="total_mark"
                            value="{{old('total_mark',$model->total_mark)}}"
                            placeholder="Total mark of this question e.g. 5"
@@ -79,7 +78,10 @@
                            max="99">
                 </div>
                 <div class="form-group">
-                    <label for="parent_id">Parent Question</label>
+                    <label for="parent_id">Parent Question
+                        <i class="fa fa-info-circle" data-toggle="tooltip"
+                           title="{{trans('exam::info.question.parentQuestion')}}"></i>
+                    </label>
                     <select class="form-control" name="parent_id" id="parentQuestionSearch">
                         @if($model->parent)
                             <option value="{{$model->parent->id}}" selected>{{$model->parent->title}}</option>
@@ -133,10 +135,11 @@
                         </label>
                     </div>
                     <br/>
-                    <small class="text-muted"> Manual review type will be reviewed by an teacher</small>
+                    <small class="text-muted"> {{trans('exam::info.question.reviewType')}}</small>
                 </div>
                 <div class="form-group">
-                    <label for="category_id">Category</label>
+                    <label for="category_id">Category <i class="fa fa-info-circle" data-toggle="tooltip"
+                                                         title="{{trans('exam::info.exam.category')}}"></i></label>
                     <select class="form-control {{ $errors->has('category_id') ? ' is-invalid' : '' }}"
                             name="category_id" id="category_id" required>
                         @if($model->category)
@@ -153,7 +156,7 @@
                     </a>
                 </div>
                 <div class="form-group">
-                    <label for="tags">Tags</label>
+                    <label for="tags">Tags <i class="fa fa-info-circle" data-toggle="tooltip" title="{{trans('exam::info.exam.tags')}}"></i></label>
                     <select class="form-control {{ $errors->has('tag_id') ? ' is-invalid' : '' }}" name="tags[]"
                             id="tags"
                             multiple>
@@ -166,8 +169,7 @@
                             <strong>{{ $errors->first('tags') }}</strong>
                         </div>
                     @endif
-                    <small>To create new tag. Just type tag name and add comma(,) at the end of your new tag name or
-                        select from dropdown.
+                    <small>{{trans('exam::info.exam.tagCreate')}}
                     </small>
                 </div>
             </div>

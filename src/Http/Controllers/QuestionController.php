@@ -107,7 +107,7 @@ class QuestionController extends Controller
 
         $model = new Question();
 
-        if (QuestionType::FREEHAND_WRITING == $request->get('type') || QuestionAnswerType::WRITE == $request->get('answer_type')) {
+        if (QuestionAnswerType::WRITE == $request->get('answer_type')) {
             $model->review_type = QuestionReview::MANUAL;
         } else {
             $model->review_type = QuestionReview::AUTO;

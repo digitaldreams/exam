@@ -58,7 +58,7 @@
                 {{method_field('PUT')}}
                 <div class="card">
                     <div class="card-header">
-                        @if($answer->question->type==\Exam\Enums\QuestionType::IMG_TO_QUESTION)
+                        @if($answer->question->type==\Exam\Enums\QuestionType::IMAGE)
                             <img src="{{asset($answer->question->getData('media.url'))}}" class="img-thumbnail img-fluid"/><br/>
                         @elseif($answer->question->type==\Exam\Enums\QuestionType::AUDIO)
                             @if($mp3=$answer->question->getData('media.url'))

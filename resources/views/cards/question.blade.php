@@ -46,7 +46,7 @@
 
     </div>
     <div class="body">
-        @if($record->type==\Exam\Enums\QuestionType::IMG_TO_QUESTION)
+        @if($record->type==\Exam\Enums\QuestionType::IMAGE)
             <img src="{{asset($record->getData('media.url'))}}" class="card-img-top" style="max-height: 200px">
         @elseif($record->type==\Exam\Enums\QuestionType::AUDIO)
             @if($mp3=$record->getData('media.url'))
@@ -70,7 +70,7 @@
                 <tr>
                     <th>Options</th>
                     <td>
-                        @if($record->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                        @if($record->answer_type==\Exam\Enums\QuestionAnswerType::IMAGE)
                             @foreach($record->getOptions() as $img)
                                 <img src="{{$img}}" width="100px" class="img-thumbnail img-bordered d-inline"/>
                             @endforeach
@@ -82,11 +82,11 @@
                     </td>
                 </tr>
             @endif
-            @if($record->type!==\Exam\Enums\QuestionType::FREEHAND_WRITING)
+            @if($record->review_type!==\Exam\Enums\QuestionReview::MANUAL)
                 <tr>
                     <th>Answer</th>
                     <td>
-                        @if($record->type==\Exam\Enums\QuestionType::QUESTION_TO_IMG)
+                        @if($record->answer_type==\Exam\Enums\QuestionAnswerType::IMAGE)
                             @foreach($record->getAnswers() as $img)
                                 <img src="{{$img}}" width="100px" class="img-thumbnail img-bordered d-inline"/>
                             @endforeach
@@ -97,15 +97,6 @@
                     </td>
                 </tr>
             @endif
-            <tr>
-                <th>Explanation</th>
-                <td>{{$record->explanation}}</td>
-            </tr>
-
-            <tr>
-                <th>Hints</th>
-                <td>{{$record->hints}}</td>
-            </tr>
 
             </tbody>
         </table>
