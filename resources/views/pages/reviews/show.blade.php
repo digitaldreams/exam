@@ -21,7 +21,7 @@
 
 @section('content')
     <h3> Your Answer</h3>
-    <p class="alert alert-secondary">{{$answer->answer}}</p>
+    <p class="alert alert-secondary">{{is_array($answer->answer)?$answer->answer[0]:$answer->answer}}</p>
     @if($answer->feedback)
         <h3>Teacher's Feedback</h3>
         {{$answer->feedback}}

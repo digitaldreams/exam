@@ -68,6 +68,14 @@ class Answer extends Model
     }
 
     /**
+     * @return bool
+     */
+    public function isPartiallyCorrect()
+    {
+        return AnswerStatus::PARTIALLY_CORRECT == $this->status;
+    }
+
+    /**
      * @return mixed|null
      */
     public function getAnswer()

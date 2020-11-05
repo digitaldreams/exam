@@ -102,7 +102,8 @@
                                     @else
                                         @if($answer->isCorrect())
                                             <i class="fa fa-check-circle-o text-success"> Correct</i>
-
+                                        @elseif($answer->isPartiallyCorrect())
+                                            <i class="fa fa-check-circle-o text-secondary">Partially Correct</i>
                                         @else
                                             <i class="fa fa-remove text-danger"> Wrong</i>
 
