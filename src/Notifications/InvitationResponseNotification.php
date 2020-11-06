@@ -70,7 +70,7 @@ class InvitationResponseNotification extends Notification
     public function toDatabase()
     {
         return [
-            'message' => $this->invitation->user->name . ' accepted invitation of  ' . $this->invitation->exam->title,
+            'message' => sprintf('%s accepted invitation of  %s', $this->invitation->user->name, $this->invitation->exam->title),
             'link' => route('exam::exams.show', $this->invitation->exam->slug),
         ];
     }

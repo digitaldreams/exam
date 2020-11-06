@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Channels\DatabaseChannel;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\WebPush\WebPushChannel;
 use NotificationChannels\WebPush\WebPushMessage;
 
 class PendingExamNotification extends Notification
@@ -35,7 +36,7 @@ class PendingExamNotification extends Notification
     public function __construct(ExamUser $examUser)
     {
         $this->examUser = $examUser;
-        $this->subject = 'Your exam ' . $this->examUser->exam->title . ' is pending over 24 hours.';
+        $this->subject = sprintf('Your exam %s is pending over 24 hours.', $this->examUser->exam->title);
         $this->link = route('exam::exams.start', $this->examUser->exam->slug);
     }
 
@@ -48,7 +49,7 @@ class PendingExamNotification extends Notification
      */
     public function via($notifiable)
     {
-        return [DatabaseChannel::class];
+        return [DatabaseChannel::class, WebPushChannel::class];
     }
 
     /**

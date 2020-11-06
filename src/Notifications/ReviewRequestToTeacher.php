@@ -4,11 +4,13 @@ namespace Exam\Notifications;
 
 use Exam\Models\ExamUser;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\WebPush\WebPushChannel;
 use NotificationChannels\WebPush\WebPushMessage;
 
-class ReviewRequestToTeacher extends Notification
+class ReviewRequestToTeacher extends Notification implements ShouldQueue
 {
     use Queueable;
     /**
@@ -26,7 +28,7 @@ class ReviewRequestToTeacher extends Notification
     public function __construct(ExamUser $examUser)
     {
         $this->examUser = $examUser;
-        $this->subject = $this->examUser->user->name . ' completed ' . $this->examUser->exam->title . ' has some question that need manual checking';
+        $this->subject = sprintf('%s  completed exam %s  has some question that need manual checking', $this->examUser->user->name, $this->examUser->exam->title);
         $this->link = route('exam::exams.reviews.index', $this->examUser->exam->slug);
     }
 
@@ -39,7 +41,7 @@ class ReviewRequestToTeacher extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', WebPushChannel::class];
     }
 
     /**

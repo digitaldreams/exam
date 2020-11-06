@@ -82,7 +82,7 @@ class ReviewCompletedNotification extends Notification
     public function toDatabase()
     {
         return [
-            'message' => 'Your exam question ' . $this->answer->question->title . ' answer reviewed. ',
+            'message' => sprintf('Your exam question %s  answer reviewed.', $this->answer->question->title),
             'link' => route('exam::exams.reviews.show', ['exam' => $this->exam->slug, 'answer' => $this->answer->id]),
         ];
     }

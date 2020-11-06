@@ -5,12 +5,13 @@ namespace Exam\Notifications;
 use App\Models\User;
 use Exam\Models\Invitation;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\WebPush\WebPushChannel;
 use NotificationChannels\WebPush\WebPushMessage;
 
-class InvitationNotification extends Notification
+class InvitationNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     /**
@@ -42,7 +43,7 @@ class InvitationNotification extends Notification
     {
         $this->invitation = $invitation;
         $this->actor = $actor;
-        $this->subject = 'You are invited to take ' . $this->invitation->exam->title . ' exam';
+        $this->subject = sprintf('You are invited to take %s exam', $this->invitation->exam->title);
         $this->link = route('exam::exams.invitations.response', [
             'exam' => $this->invitation->exam->slug,
             'invitation' => $this->invitation->token,

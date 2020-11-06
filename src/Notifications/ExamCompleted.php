@@ -4,10 +4,11 @@ namespace Exam\Notifications;
 
 use Exam\Models\Exam;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notification;
 
-class ExamCompleted extends Notification
+class ExamCompleted extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -61,7 +62,7 @@ class ExamCompleted extends Notification
     public function toDatabase()
     {
         return [
-            'message' => $this->user->name . ' completed ' . $this->exam->title,
+            'message' => sprintf('%s  completed  %s', $this->user->name, $this->exam->title),
             'link' => route('exam::exams.completed', $this->exam->slug),
         ];
     }
