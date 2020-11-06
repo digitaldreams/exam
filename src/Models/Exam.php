@@ -8,9 +8,9 @@ use Blog\Models\Category;
 use Blog\Models\Tag;
 use Blog\Services\FullTextSearch;
 use Exam\Enums\ExamShowAnswer;
-use Exam\Enums\ExamUserStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -72,6 +72,16 @@ class Exam extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    /**
+     * The Creator of the Exam.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

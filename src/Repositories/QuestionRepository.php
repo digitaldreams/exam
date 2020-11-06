@@ -52,13 +52,14 @@ class QuestionRepository extends Repository
             $data['data']['media']['url'] = $this->uploadFile($file);
         }
 
-        $question = $this->save($data, new Question());
-
+        $this->model->fill($data);
+        $this->model->user_id = auth()->id();
+        $this->model->save();
         if ($tags = $data['tags'] ?? []) {
-            $question->tags()->sync($this->tagRepository->saveTags($tags));
+            $this->model->tags()->sync($this->tagRepository->saveTags($tags));
         }
 
-        return $question;
+        return $this->model;
     }
 
     /**

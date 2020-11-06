@@ -2,6 +2,7 @@
 
 namespace Exam\Models;
 
+use App\Models\User;
 use Blog\Models\Category;
 use Blog\Models\Tag;
 use Blog\Services\FullTextSearch;
@@ -70,6 +71,16 @@ class Question extends Model
         'options' => 'array',
         'answer' => 'array',
     ];
+
+    /**
+     * The Creator of the Question.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
