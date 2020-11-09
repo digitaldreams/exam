@@ -1,6 +1,15 @@
-
 @extends(auth()->check()?config('exam.layouts.app'):config('exam.layouts.frontend'))
-
+@section('css')
+    <style>
+        body {
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+@endsection
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{route('exam::exams.index')}}">Exams</a>
@@ -62,5 +71,22 @@
 
 @endSection
 @section('scripts')
+    <script type="text/javascript">
+        var changeBrowerTabs = 0;
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === 'visible') {
+                if (changeBrowerTabs >= 1 && changeBrowerTabs < 2) {
+                    alert('If you change your tab again your exam will be postponed');
+                } else if (changeBrowerTabs >= 2) {
+                    window.location.href = "{{route('exam::exams.result',['exam_user'=>$examUser->id])}}"
+                }
+                changeBrowerTabs += 1;
+            } else {
+                //     console.log('User go outside');
+            }
+        });
+        var elem = document.documentElement;
 
+    </script>
 @endsection

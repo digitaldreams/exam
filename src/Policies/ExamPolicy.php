@@ -177,7 +177,7 @@ class ExamPolicy
     {
         return !$exam->examUsers()
             ->where('user_id', $user->id)
-            ->where('status', ExamUserStatus::COMPLETED)
+            ->where('status', ExamUserStatus::PENDING)
             ->exists();
     }
 }
