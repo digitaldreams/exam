@@ -5,10 +5,12 @@ namespace Exam;
 use Exam\Console\Commands\ExamReminderCommand;
 use Exam\Models\Exam;
 use Exam\Models\ExamUser;
+use Exam\Models\Feedback;
 use Exam\Models\Invitation;
 use Exam\Models\Question;
 use Exam\Policies\ExamPolicy;
 use Exam\Policies\ExamUserPolicy;
+use Exam\Policies\FeedbackPolicy;
 use Exam\Policies\InvitationPolicy;
 use Exam\Policies\QuestionPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -48,6 +50,7 @@ class ServiceProvider extends BaseServiceProvider
         ExamUser::class => ExamUserPolicy::class,
         Question::class => QuestionPolicy::class,
         Invitation::class => InvitationPolicy::class,
+        Feedback::class => FeedbackPolicy::class,
     ];
 
     /**

@@ -76,7 +76,7 @@
                             @endforeach
                         @else
                             @foreach($record->getOptions() as $key=>$option)
-                                <label class="badge badge-secondary p-1">{{$option}}</label>
+                                <label class="badge badge-secondary p-1">{{$option[0]??''}}</label>
                             @endforeach
                         @endif
                     </td>
