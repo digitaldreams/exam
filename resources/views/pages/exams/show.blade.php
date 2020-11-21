@@ -110,7 +110,7 @@
                 <div class="card">
                     <div class="card-header">Share Exam to Others</div>
                     <div class="card-body">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <div class="input-group">
                                 <input type="url" class="form-control" id="exam-public-url"
                                        value="{{route('exam::frontend.exams.show',$exam->slug)}}">

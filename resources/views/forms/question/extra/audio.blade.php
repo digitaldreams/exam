@@ -1,9 +1,9 @@
-<div class="form-group row">
+<div class="mb-3 row">
 
     <div class="col-sm-6">
-        <label for="upload-audio-file">Upload Your Audio file.</label>
+        <label for="upload-audio-file" class="form-label">Upload Your Audio file.</label>
         <input type="file" name="file" id="upload-audio-file"
-               class="form-control-file @error('file') is-invalid  @enderror"
+               class="form-control @error('file') is-invalid  @enderror"
                onchange="checkSize(8388608,'upload-audio-file','audio')"
                accept="audio/*" {{empty($model->id)?'required':''}}>
         @error('file')
@@ -13,7 +13,7 @@
         @enderror
     </div>
 </div>
-<small>Upload a audio file. Maximum Upload Size 8MB</small>
+<small class="form-text">Upload a audio file. Maximum Upload Size 8MB</small>
 <div class="">
     @if($mp3=$model->getData('media.url'))
         <audio controls class="">

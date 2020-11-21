@@ -3,8 +3,8 @@
     <input type="hidden" name="_method" value="{{$method ?? 'POST'}}"/>
     <input type="hidden" name="feedbackable_type" value="{{$feedbackable_type ?? ''}}">
     <input type="hidden" name="feedbackable_id" value="{{$feedbackable_id ?? ''}}">
-    <div class="form-group">
-        <label for="title">Feedback</label>
+    <div class="mb-3">
+        <label for="title" class="form-label">Feedback</label>
         <input type="text" class="form-control {{ $errors->has('feedback') ? ' is-invalid' : '' }}" name="feedback"
                id="feedback"
                value="{{old('feedback',$model->feedback)}}"
@@ -16,11 +16,11 @@
             </div>
         @endif
     </div>
-    <div class="form-row">
-        <div class="form-group col">
-            <label for="rating">Rating</label>
+    <div class="row">
+        <div class="mb-3 col">
+            <label for="rating" class="form-label">Rating</label>
             <div class="input-group">
-                <input type="range" class="{{ $errors->has('rating') ? ' is-invalid' : '' }}"
+                <input type="range" class="form-range {{ $errors->has('rating') ? ' is-invalid' : '' }}"
                        name="rating"
                        id="rating"
                        value="{{old('rating',$model->feedback)}}"
@@ -41,7 +41,7 @@
                 </div>
             @endif
         </div>
-        <div class="form-group col">
+        <div class="mb-3 col">
             <br/>
             <input type="reset" class="btn btn-default" value="Clear"/>
             <input type="submit" class="btn btn-primary" value="Save"/>

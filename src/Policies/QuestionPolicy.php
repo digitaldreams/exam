@@ -2,6 +2,7 @@
 
 namespace Exam\Policies;
 
+use App\Models\User;
 use Exam\Models\Question;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -26,7 +27,7 @@ class QuestionPolicy
      *
      * @return bool
      */
-    public function viewAny($user)
+    public function viewAny(User $user)
     {
         return false;
     }

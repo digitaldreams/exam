@@ -80,7 +80,7 @@
                         <h4>User Answer</h4>
                         <p class="alert alert-secondary">{!! $answer->getAnswer() !!}</p>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>This answer is </label> <br/>
                             <label class="form-check-inline">
                                 <input type="radio" name="status"  required value="{{\Exam\Enums\AnswerStatus::WRONG}}">
@@ -96,7 +96,7 @@
                                 Correct
                             </label>
                         </div>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Total mark you want to give.</label>
                             <input class="form-control" type="number" min="0" value="{{$answer->question->total_mark}}"
                                    max="{{$answer->question->total_mark}}" name="obtain_mark" required>
@@ -105,7 +105,7 @@
                             </small>
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Your Feedback</label>
                             <textarea name="feedback" class="form-control"
                                       placeholder="Write your feedback here."></textarea>

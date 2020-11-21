@@ -18,7 +18,7 @@
     {{$question->title}}
 </div>
 
-<div class="form-group">
+<div class="mb-3">
     @if(in_array($question->answer_type,[\Exam\Enums\QuestionAnswerType::CHOICE,\Exam\Enums\QuestionAnswerType::IMAGE]))
 
         @foreach(array_chunk($question->getOptions(),2) as $chucks)

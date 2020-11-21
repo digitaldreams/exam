@@ -142,7 +142,7 @@
     @enderror
 
 @elseif(request('answer_type',$model->answer_type)==\Exam\Enums\QuestionAnswerType::WRITE)
-    <div class="form-group">
+    <div class="mb-3">
         <label>Answer</label>
         <input type="text" name="answer[]" value="{{$model->getAnswers()[0]??''}}"
                class="form-control @error('answer.0') is-invalid @enderror"

@@ -4,8 +4,8 @@
 
     <div class="row">
         <div class="col-sm-9">
-            <div class="form-group">
-                <label for="title">Exam name</label>
+            <div class="mb-3">
+                <label for="title" class="form-label">Exam name</label>
                 <input type="text" class="form-control {{ $errors->has('title') ? ' is-invalid' : '' }}" name="title"
                        id="title"
                        value="{{old('title',$model->title)}}" placeholder="e.g. Degree changing." maxlength="191"
@@ -16,8 +16,8 @@
                     </div>
                 @endif
             </div>
-            <div class="form-group">
-                <label for="description">Description
+            <div class="mb-3">
+                <label for="description" class="form-label">Description
                     <i data-toggle="tooltip" class="fa fa-info-circle"
                        title="{{trans('exam::info.exam.description')}}"></i>
                 </label>
@@ -31,8 +31,8 @@
                     </div>
                 @endif
             </div>
-            <div class="form-group ">
-                <label>Duration in Minutes
+            <div class="mb-3">
+                <label class="form-label">Duration in Minutes
                     <i class="fa fa-info-circle" data-toggle="tooltip"
                        title="{{trans('exam::info.exam.duration')}}">
                     </i>
@@ -47,9 +47,9 @@
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group col-sm">
-                    <label for="category_id">Category
+            <div class="row">
+                <div class="mb-3 col-sm">
+                    <label for="category_id" class="form-label">Category
                         <i class="fa fa-info-circle" data-toggle="tooltip"
                            title="{{trans('exam::info.exam.category')}}"></i>
                     </label>
@@ -68,8 +68,8 @@
                         <small class="text-muted">Create a new category</small>
                     </a>
                 </div>
-                <div class="form-group col-sm">
-                    <label for="tags">Tags
+                <div class="mb-3 col-sm">
+                    <label for="tags" class="form-label">Tags
                         <i class="fa fa-info-circle" data-toggle="tooltip"
                            title="{{trans('exam::info.exam.tags')}}"></i>
                     </label>
@@ -89,8 +89,8 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="must_completed">Must Complete this exams</label>
+            <div class="mb-3">
+                <label for="must_completed" class="form-label">Must Complete this exams</label>
                 <select name="must_completed[]" class="form-control" id="must_completed" multiple>
                     @foreach($model->mustCompletedExams() as $parentExam)
                         <option value="{{$parentExam->id}}" selected>{{$parentExam->title}}</option>
@@ -101,8 +101,8 @@
         </div>
         <div class="col-sm-3 bg-light pt-3">
             <h3>Settings</h3>
-            <div class="form-group">
-                <label>Visibility
+            <div class="mb-3">
+                <label class="form-label">Visibility
                     <i class="fa fa-info-circle" data-toggle="tooltip"
                        title="{{trans('exam::info.exam.visibility')}}"></i>
                 </label> <br/>
@@ -117,8 +117,8 @@
                     Private
                 </label>
             </div>
-            <div class="form-group">
-                <label>Status <i class="fa fa-info-circle" title="{{trans('exam::info.exam.status')}}"
+            <div class="mb-3">
+                <label class="form-label">Status <i class="fa fa-info-circle" title="{{trans('exam::info.exam.status')}}"
                                  data-toggle="tooltip"></i></label> <br/>
                 <div>
                     <label class="form-check-inline">
@@ -133,8 +133,8 @@
                     </label>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Show Answer
+            <div class="mb-3">
+                <label class="form-label">Show Answer
                     <i class="fa fa-info-circle" data-toggle="tooltip"
                        title="{{trans('exam::info.exam.showAnswer')}}"></i>
                 </label>
