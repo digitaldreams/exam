@@ -40,20 +40,18 @@
         <div class="col-md-6">
             <form>
                 <div class="input-group mb-3">
-                    <select name="type" class="form-control">
+                    <select name="type" class="form-select">
                         <option value="">All</option>
                         @foreach(\Exam\Enums\QuestionType::toArray() as $key=>$name)
                             <option value="{{$key}}" {{request('type')==$key?'selected':''}}>{{$name}}</option>
                         @endforeach
                     </select>
-                    <input type="search" name="search" value="{{request('search')}}" class="form-control"
+                    <input type="search" name="search" value="{{request('search')}}" class="form-control w-75"
                            placeholder="Search Questions"
                            autocomplete="off"
                            list="keywords"
                            aria-label="Search Question" aria-describedby="button-addon2">
-                    <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
-                    </div>
                 </div>
                 <datalist id="keywords">
                     @foreach($keywords as $keyword)

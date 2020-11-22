@@ -73,8 +73,8 @@
                         <li class="list-group-item">
                             <a href="{{route('exam::questions.show',$child->id)}}">
                                 #{{$child->id}} {{$child->title}}
-                                <span class="badge badge-secondary">{{$child->type}}</span> <span
-                                    class="badge badge-secondary">{{$child->answer_type}}</span>
+                                <span class="badge bg-secondary">{{$child->type}}</span> <span
+                                    class="badge bg-secondary">{{$child->answer_type}}</span>
                             </a>
                         </li>
                     @endforeach
@@ -87,8 +87,8 @@
                     <li class="list-group-item">
                         <a href="{{route('exam::questions.show',$record->parent_id)}}">
                             #{{$record->parent->id}} {{$record->parent->title}}
-                            <span class="badge badge-secondary">{{$record->parent->type}}</span> <span
-                                class="badge badge-secondary">{{$record->parent->answer_type}}</span>
+                            <span class="badge bg-secondary">{{$record->parent->type}}</span> <span
+                                class="badge bg-secondary">{{$record->parent->answer_type}}</span>
                         </a>
                     </li>
                 </ul>

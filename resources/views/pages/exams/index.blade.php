@@ -110,7 +110,7 @@
         </li>
 
     </ul>
-    <div class="row exam-card">
+    <div class="row mt-3">
 
         @foreach($records as $record)
             <div class="col-sm-6 col-md-4">

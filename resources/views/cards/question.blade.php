@@ -2,10 +2,9 @@
     <div class="card-header">
         <div class="row">
             <div class="col-11">
-
                 <h4>
-
-                    <a href="{{route('exam::questions.show',$record->id)}}">#{{$record->id}} {{$record->title}}   </a>
+                    <a class="link-secondary text-decoration-none" href="{{route('exam::questions.show',$record->id)}}">#{{$record->id}} {{$record->title}}
+                    </a>
                 </h4>
 
             </div>
@@ -17,7 +16,7 @@
                         <ul class="dropdown-menu">
                             @can('update',$record)
                                 <li>
-                                    <a class="btn btn-light btn-block"
+                                    <a class="btn btn-light d-block"
                                        href="{{route('exam::questions.edit',$record->id)}}">
                                         <i class="fa fa-pencil"></i> Edit
                                     </a>
@@ -25,12 +24,12 @@
                             @endcan
                             @can('delete',$record)
                                 <li>
-                                    <form class="card-link"
+                                    <form class=""
                                           onsubmit="return confirm('Are you sure you want to delete?')"
                                           action="{{route('exam::questions.destroy',$record->id)}}" method="post">
                                         {{csrf_field()}}
                                         {{method_field('DELETE')}}
-                                        <button class="btn btn-light text-danger btn-block" type="submit">
+                                        <button class="btn btn-light d-block" type="submit">
                                             <i class="fa fa-remove"></i>
                                             Delete
                                         </button>
@@ -76,7 +75,7 @@
                             @endforeach
                         @else
                             @foreach($record->getOptions() as $key=>$option)
-                                <label class="badge badge-secondary p-1">{{$option[0]??''}}</label>
+                                <label class="badge bg-secondary p-1">{{$option[0]??''}}</label>
                             @endforeach
                         @endif
                     </td>
@@ -102,24 +101,24 @@
         </table>
     </div>
     <div class="card-footer text-right">
-        <label class="badge badge-info" title="Answer Type" data-toggle="tooltip">
+        <label class="badge bg-info" title="Answer Type" data-toggle="tooltip">
             {{$record->answer_type}}
         </label>
-        <label class="badge badge-info" title="Review Type" data-toggle="tooltip">
+        <label class="badge bg-info" title="Review Type" data-toggle="tooltip">
             {{$record->review_type}}
         </label>
         @if($record->category)
             <a class="text-muted" href="?search={{$record->category->title}}">
-                <span class="badge badge-secondary">{{$record->category->title}}</span>
+                <span class="badge bg-secondary">{{$record->category->title}}</span>
             </a>
         @endif
         @foreach($record->tags as $tag)
-            <a href="?search={{$tag->name}}"><span class="badge badge-light">{{$tag->name}}</span></a>
+            <a href="?search={{$tag->name}}"><span class="badge bg-secondary">{{$tag->name}}</span></a>
         @endforeach
-        <label class="badge badge-secondary" title="Question Type" data-toggle="tooltip">
+        <label class="badge bg-secondary" title="Question Type" data-toggle="tooltip">
             {{$record->type}}
         </label>
-        <label class="badge badge-secondary" title="Total marks" data-toggle="tooltip">
+        <label class="badge bg-secondary" title="Total marks" data-toggle="tooltip">
             {{$record->total_mark}} marks
         </label>
 

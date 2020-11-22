@@ -50,15 +50,18 @@
             @can('update',$exam)
                 <form action="{{route('exam::exams.questionAdd',$exam->slug)}}" method="post">
                     {{csrf_field()}}
-                    <div class="form-group form-row">
-                        <select name="questions[]" list="questionKeywords" class="form-control col-11"
-                                id="questionSearch"
-                                placeholder="Search question" multiple>
-                        </select>
-                        <button class="btn btn-secondary input-group-append col-1">Add</button>
-                        <small class="text-muted">Add question to this exam. Don't find a suitable question? <a
+                    <div class="mb-3 row">
+                        <div class="input-group">
+                            <select name="questions[]" list="questionKeywords" class="form-control col-11"
+                                    id="questionSearch"
+                                    placeholder="Search question" multiple>
+                            </select>
+                            <button class="btn btn-secondary ">Add</button>
+                        </div>
+                        <small class="form-text">Add question to this exam. Don't find a suitable question? <a
                                 href="{{route('exam::questions.create',['exam_id'=>$exam->id])}}">Create a new
-                                Question</a></small>
+                                Question</a>
+                        </small>
                     </div>
                 </form>
 
@@ -66,11 +69,11 @@
                     <li class="list-group-item bg-light">Questions</li>
                     @foreach($exam->questions as $question)
                         <li class="list-group-item">
-                            <a href="{{route('exam::questions.show',$question->id)}}">
+                            <a class="lead text-decoration-none" href="{{route('exam::questions.show',$question->id)}}">
                                 #{{$question->id}} {{$question->title}}
                             </a>
-                            <label class="badge badge-secondary badge-pill"><b>{{$question->type}}</b></label>
-                            <label class="badge badge-light badge-pill">{{$question->answer_type}}</label>
+                            <label class="badge bg-info badge-pill"><b>{{$question->type}}</b></label>
+                            <label class="badge bg-secondary badge-pill">{{$question->answer_type}}</label>
 
                             <form
                                 onsubmit="return confirm('{{trans('exam::flash.question.detachConfirmationAlert')}}')"
@@ -89,13 +92,13 @@
                                     <li class="list-group-item bg-light py-0">Child Questions</li>
                                     @foreach($question->children as $child)
                                         <li class="list-group-item ">
-                                            <a href="{{route('exam::questions.show',$child->id)}}">
+                                            <a class="text-decoration-none text-secondary" href="{{route('exam::questions.show',$child->id)}}">
                                                 #{{$child->id}} {{$child->title}}
                                             </a>
                                             <label
-                                                class="badge badge-secondary badge-pill"><b>{{$child->type}}</b></label>
+                                                class="badge bg-secondary badge-pill"><b>{{$child->type}}</b></label>
                                             <label
-                                                class="badge badge-light badge-pill">{{$child->answer_type}}</label>
+                                                class="badge bg-light badge-pill">{{$child->answer_type}}</label>
                                         </li>
                                     @endforeach
                                 </ol>

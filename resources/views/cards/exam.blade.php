@@ -14,7 +14,7 @@ if (request('status') == 'completed') {
                         <i title="this is a private exam." data-toggle="tooltip" class="fa fa-lock text-danger"></i>
                     @endif
                     @can('update',$record)
-                        <a href="{{route('exam::exams.show',$record->slug)}}">
+                        <a class="link-secondary text-decoration-none" href="{{route('exam::exams.show',$record->slug)}}">
                             #{{$record->id}}  {{$record->title}} {!! $record->stars() !!}
                         </a>
                     @else
@@ -93,12 +93,12 @@ if (request('status') == 'completed') {
             {{$record->description}}
         </p>
         <p class="text-right m-0 p-0">
-        <a class="badge badge-secondary" title="Exam Category" href="?search={{$record->category->title}}">
+        <a class="badge bg-info link-light text-decoration-none" title="Exam Category" href="?search={{$record->category->title}}">
             {{$record->category->title ??''}}
         </a>
 
         @foreach($record->tags as $tag)
-            <a  class="badge badge-light" href="?search={{$tag->name}}">
+            <a  class="badge bg-secondary text-decoration-none" href="?search={{$tag->name}}">
                 {{$tag->name ?? ''}}
             </a>
         @endforeach
@@ -109,13 +109,17 @@ if (request('status') == 'completed') {
     <!-- this is card footer -->
 
     <div class="card-footer text-right ">
-
+        @if($record->hasTimeLimit())
+            <label title="Exam duration. Must be completed within this time frame. Once exam started can't be paused" data-toggle="tooltip" class="badge bg-secondary">
+                <i class="fa fa-clock-o"></i> {{$record->duration}} min
+            </label>
+        @endif
         &nbsp;<form title="Click here to like this exam"  action="{{route('blog::activities.store')}}" method="post" class="d-inline">
             {{csrf_field()}}
             <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
             <input type="hidden" name="activityable_id" value="{{$record->id }}">
             <input type="hidden" name="type" value="like">
-            <button class="btn badge badge-light">
+            <button class="btn btn-outline-secondary btn-sm">
                 <i class="fa fa-thumbs-up"></i> Like {{$record->likes()->count()}}
             </button>
         </form>
@@ -125,20 +129,16 @@ if (request('status') == 'completed') {
             <input type="hidden" name="activityable_type" value="{{get_class($record)}}">
             <input type="hidden" name="activityable_id" value="{{$record->id }}">
             <input type="hidden" name="type" value="favourite">
-            <button  class="btn badge badge-light">
+            <button  class="btn btn-outline-secondary btn-sm">
                 <i class="fa fa-star"></i> Favourite {{$record->favourites()->count()}}
             </button>
         </form>&nbsp;
 
 
-        @if($record->hasTimeLimit())
-            <label title="Exam duration. Must be completed within this time frame. Once exam started can't be paused" data-toggle="tooltip" class="badge badge-secondary">
-                <i class="fa fa-clock-o"></i> {{$record->duration}} min
-            </label>
-        @endif
+
         @can('update',$record)
 
-            <a title="Invite your friends to take this exam." data-toggle="tooltip" class="btn btn-light btn-sm"
+            <a title="Invite your friends to take this exam." data-toggle="tooltip" class="btn btn-outline-secondary btn-sm"
                href="{{route('exam::exams.invitations.create',$record->slug)}}">
                 <span class="fa fa-envelope"></span> Invite
             </a>
